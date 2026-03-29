@@ -1,0 +1,188 @@
+"use client";
+
+import { use, useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import Navbar from "../../components/Navbar";
+import Footer from "../../components/Footer";
+import ProductCard from "../../components/ProductCard";
+import { products, getProductById, formatPrice } from "../../lib/data";
+
+const PAD = "px-6 md:px-14 lg:px-20";
+const MAX = "max-w-[1440px] mx-auto";
+
+export default function ProductDetailPage({ params }) {
+  const { id } = use(params);
+  const product = getProductById(id);
+  const [quantity, setQuantity] = useState(1);
+  const [activeImage, setActiveImage] = useState(0);
+  const [openAccordion, setOpenAccordion] = useState("artistry");
+  const [wishlisted, setWishlisted] = useState(false);
+
+  if (!product) {
+    return (
+      <>
+        <Navbar />
+        <main className="min-h-screen flex items-center justify-center bg-[#faf8f3] pt-[136px]">
+          <div className="text-center space-y-6">
+            <div className="w-12 h-[1px] bg-[#c8c4bb] mx-auto" />
+            <h1 className="font-headline text-3xl text-[#0a0a0a] font-light italic">Piece Not Found</h1>
+            <p className="font-body text-[#6b6b6b] text-[13px]">This treasure may have been moved or is no longer available.</p>
+            <Link href="/collections" className="btn-primary inline-flex mt-4">Browse The Archive</Link>
+          </div>
+        </main>
+        <Footer />
+      </>
+    );
+  }
+
+  const relatedProducts = products.filter((p) => p.id !== product.id && p.collection === product.collection).slice(0, 4);
+  const discount = product.originalPrice ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100) : 0;
+
+  const accordionSections = [
+    { id: "artistry", title: "Technical Artistry", content: product.details?.join(" — ") || "Our proprietary alloy is tempered to achieve a unique finish, balancing the richness of high-karat gold with the structural integrity required for archival-grade jewelry." },
+    { id: "provenance", title: "Provenance & Setting", content: "Every stone is set under a microscope by master craftsmen with over 30 years of experience. Each piece comes with a digital certificate of authenticity and ethical sourcing." },
+    { id: "care", title: "Care & Preservation", content: "Store in the provided archival box when not wearing. Avoid contact with perfumes and harsh chemicals. Clean gently with a soft, dry cloth. Remove before swimming." },
+    { id: "shipping", title: "Shipping & Returns", content: "Complimentary insured shipping on all orders. Standard delivery 5–7 business days. 30-day return policy. All pieces ship in signature SWARNIKA archival packaging." },
+  ];
+
+  const images = product.images || [product.image];
+
+  return (
+    <>
+      <Navbar />
+
+      <main className="bg-[#faf8f3]" style={{ paddingTop: '136px' }}>
+
+        {/* ─── Breadcrumb ─── */}
+        <div className={`${PAD} py-5 bg-[#f4f1ea] border-b border-[#e8e4db]`}>
+          <div className={`${MAX} flex flex-wrap items-center gap-2 md:gap-3 font-label text-[9px] tracking-[0.2em] uppercase`}>
+            <Link href="/" className="text-[#6b6b6b] hover:text-[#0a0a0a] transition-colors">The Archive</Link>
+            <span className="text-[#c8c4bb]">→</span>
+            <Link href="/collections" className="text-[#6b6b6b] hover:text-[#0a0a0a] transition-colors">Collections</Link>
+            <span className="text-[#c8c4bb]">→</span>
+            <span className="text-[#0a0a0a] font-semibold overflow-hidden text-ellipsis whitespace-nowrap max-w-[150px] md:max-w-[300px]">
+              {product.name}
+            </span>
+          </div>
+        </div>
+
+        {/* ─── Product Section ─── */}
+        <section className={`${PAD} py-12 md:py-16 bg-[#faf8f3]`}>
+          <div className={`${MAX} grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16`}>
+
+            {/* LEFT — Image Gallery */}
+            <div className="lg:border-r lg:border-[#e8e4db] lg:pr-10 animate-scale-in">
+              <div className="relative aspect-[3/4] bg-[#f4f1ea] overflow-hidden mb-4">
+                <Image src={images[activeImage] || images[0]} alt={product.name} fill priority sizes="(max-width: 1024px) 100vw, 50vw" className="object-cover transition-opacity duration-500" />
+                {product.badge && (
+                  <div className="absolute top-4 md:top-5 left-4 md:left-5 z-10">
+                    <span className="inline-block px-3 py-1.5 font-label text-[8px] tracking-[0.2em] uppercase font-semibold bg-[#0a0a0a] text-white">
+                      {product.badge}
+                    </span>
+                  </div>
+                )}
+                <button onClick={() => setWishlisted(!wishlisted)} className="absolute top-4 md:top-5 right-4 md:right-5 z-10 w-10 h-10 bg-white/90 flex items-center justify-center">
+                  <span className={`material-symbols-outlined text-[20px] ${wishlisted ? "text-[#c9a44a]" : "text-[#6b6b6b]"}`}>favorite</span>
+                </button>
+              </div>
+              {images.length > 1 && (
+                <div className="flex gap-2 overflow-x-auto no-scrollbar pb-2">
+                  {images.map((img, idx) => (
+                    <button key={idx} onClick={() => setActiveImage(idx)} className={`relative flex-shrink-0 w-16 h-20 border-2 transition-opacity ${activeImage === idx ? 'border-[#0a0a0a] opacity-100' : 'border-transparent opacity-60'}`}>
+                      <Image src={img} alt="" fill className="object-cover" />
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* RIGHT — Product Info */}
+            <div className="flex flex-col gap-8 animate-fade-in-up delay-200">
+              <div>
+                <span className="font-label text-[9px] tracking-[0.3em] uppercase text-[#7a6130] font-semibold block mb-2">{product.collection}</span>
+                <h1 className="font-headline text-[#0a0a0a] font-light italic leading-[1.05] text-3xl md:text-5xl">{product.name}</h1>
+              </div>
+
+              <div className="flex items-baseline gap-4 border-t border-[#e8e4db] pt-6 md:pt-8">
+                <span className="font-headline text-[28px] text-[#0a0a0a] font-light">{formatPrice(product.price)}</span>
+                {product.originalPrice && (
+                  <>
+                    <span className="font-body text-[#6b6b6b] text-[15px] line-through">{formatPrice(product.originalPrice)}</span>
+                    <span className="font-label text-[8px] tracking-[0.15em] uppercase text-[#c9a44a] border border-[#c9a44a]/40 px-2 py-1">{discount}% Off</span>
+                  </>
+                )}
+              </div>
+
+              <p className="font-body text-[#3a3a3a] text-[13px] leading-loose">{product.description}</p>
+
+              <div className="flex items-center gap-6">
+                <span className="font-label text-[9px] tracking-[0.22em] uppercase text-[#6b6b6b] font-semibold">Quantity</span>
+                <div className="flex items-center border border-[#e8e4db]">
+                  <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="qty-btn w-10 h-11 flex items-center justify-center text-lg hover:bg-[#f4f1ea] transition-colors">−</button>
+                  <span className="w-10 h-11 inline-flex items-center justify-center text-[13px] font-medium text-[#0a0a0a] border-x border-[#e8e4db]">{quantity}</span>
+                  <button onClick={() => setQuantity(quantity + 1)} className="qty-btn w-10 h-11 flex items-center justify-center text-lg hover:bg-[#f4f1ea] transition-colors">+</button>
+                </div>
+              </div>
+
+              <div className="flex flex-col sm:flex-row gap-3">
+                <button className="btn-primary w-full py-5 text-[10px] flex items-center justify-center gap-2">
+                  <span className="material-symbols-outlined text-[16px]">shopping_bag</span> Add to Cart
+                </button>
+                <button onClick={() => setWishlisted(!wishlisted)} className={`btn-secondary w-full py-5 text-[10px] flex items-center justify-center gap-2 ${wishlisted ? "border-[#c9a44a] text-[#7a6130]" : ""}`}>
+                  <span className="material-symbols-outlined text-[16px]">favorite</span>
+                  {wishlisted ? "Saved" : "Add to Wishlist"}
+                </button>
+              </div>
+
+              <div className="flex flex-wrap gap-3 border-t border-[#e8e4db] pt-6">
+                {["Certified Authentic", "Free Shipping", "30-Day Returns", "Gift Packaged"].map((t) => (
+                  <span key={t} className="trust-tag">{t}</span>
+                ))}
+              </div>
+
+              <div className="border-t border-[#e8e4db] pt-6">
+                <p className="section-eyebrow mb-4">Technical Artistry</p>
+                {accordionSections.map((section) => (
+                  <div key={section.id} className="border-b border-[#e8e4db]">
+                    <button onClick={() => setOpenAccordion(openAccordion === section.id ? null : section.id)} className="w-full flex items-center justify-between py-5 text-left group">
+                      <span className="accordion-label group-hover:text-[#0a0a0a] transition-colors">{section.title}</span>
+                      <span className="material-symbols-outlined text-[#6b6b6b] transition-transform duration-300" style={{ transform: openAccordion === section.id ? 'rotate(45deg)' : 'rotate(0deg)', fontSize: '18px' }}>add</span>
+                    </button>
+                    <div className="overflow-hidden transition-all duration-400 ease-in-out" style={{ maxHeight: openAccordion === section.id ? '20rem' : '0', paddingBottom: openAccordion === section.id ? '1.25rem' : '0' }}>
+                      <p className="font-body text-[#6b6b6b] text-[12px] leading-[1.8]">{section.content}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+        {/* ─── Complete the Look ─── */}
+        {relatedProducts.length > 0 && (
+          <section className={`${PAD} py-20 bg-[#f4f1ea]`}>
+            <div className={MAX}>
+              <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-12">
+                <div>
+                  <span className="section-eyebrow">Complete the Look</span>
+                  <h2 className="font-headline text-3xl md:text-[46px] text-[#0a0a0a] font-light italic leading-tight mt-1">View Full Set</h2>
+                </div>
+                <Link href="/collections" className="btn-ghost self-start md:self-auto">
+                  View All Archives <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
+                </Link>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-10">
+                {relatedProducts.map((p, i) => <ProductCard key={p.id} product={p} index={i} />)}
+              </div>
+            </div>
+          </section>
+        )}
+
+      </main>
+
+      <Footer />
+    </>
+  );
+}
