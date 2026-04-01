@@ -2,7 +2,7 @@
 
 @theme inline {
   /* ── Color Palette: The Archive (Refined) ── */
-  --color-background: #FFFAF0;
+  --color-background: #FEFAEF;
   --color-surface: var(--color-background);
   --color-surface-low: var(--color-background);
   --color-surface-dim: #e8e4db;
