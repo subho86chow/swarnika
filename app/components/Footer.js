@@ -7,14 +7,14 @@ const MAX = "max-w-[1440px] mx-auto";
 
 export default function Footer() {
   return (
-    <footer className="w-full bg-[#0a0a0a] text-white">
+    <footer className="w-full bg-navy text-white">
 
       {/* ── Newsletter Strip ── */}
       <div className="border-b border-white/10">
         <div className={`${PAD} py-16 ${MAX}`}>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10 items-center">
             <div>
-              <span className="section-eyebrow text-[#c9a44a]">The Inner Circle</span>
+              <span className="section-eyebrow text-gold-light">The Inner Circle</span>
               <h4 className="font-headline text-3xl md:text-4xl text-white font-light italic leading-tight mt-1">
                 Join The Archive
               </h4>
@@ -30,12 +30,12 @@ export default function Footer() {
               <input
                 type="email"
                 placeholder="Your email address"
-                className="subscribe-input w-full sm:flex-1 bg-white/5 border border-white/20 text-white px-5 py-4 font-body text-[13px] placeholder:text-white/40 focus:outline-none focus:border-[#c9a44a] transition-colors"
+                className="subscribe-input w-full sm:flex-1 bg-white/5 border border-white/20 text-white px-5 py-4 font-body text-[13px] placeholder:text-white/40 focus:outline-none focus:border-gold-light transition-colors"
                 required
               />
               <button
                 type="submit"
-                className="subscribe-btn bg-white text-[#0a0a0a] font-label text-[9px] tracking-[0.2em] uppercase font-bold px-8 py-4 sm:py-0 hover:bg-white/80 transition-colors"
+                className="subscribe-btn bg-white text-navy font-label text-[9px] tracking-[0.2em] uppercase font-bold px-8 py-4 sm:py-0 hover:bg-white/80 transition-colors"
               >
                 Subscribe
               </button>
@@ -51,7 +51,7 @@ export default function Footer() {
           {/* Brand Column */}
           <div className="lg:col-span-4 space-y-6">
             <div>
-              <span className="text-[9px] tracking-[0.4em] uppercase text-[#c9a44a] font-label font-medium block mb-1">
+              <span className="text-[9px] tracking-[0.4em] uppercase text-gold-light font-label font-medium block mb-1">
                 The Archive
               </span>
               <span className="font-headline text-2xl tracking-[0.2em] uppercase text-white font-light block">
@@ -159,7 +159,7 @@ export default function Footer() {
         {/* Global Flagships */}
         <div className="mt-14 pt-10 border-t border-white/10 grid grid-cols-1 md:grid-cols-3 gap-8">
           <div>
-            <span className="section-eyebrow text-[#c9a44a]">Global Flagships</span>
+            <span className="section-eyebrow text-gold-light">Global Flagships</span>
           </div>
           {[
             {

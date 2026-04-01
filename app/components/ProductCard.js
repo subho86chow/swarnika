@@ -12,8 +12,7 @@ export default function ProductCard({ product, index = 0 }) {
           alt={product.name}
           fill
           sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
-          className="object-cover object-center"
-          style={{ transitionProperty: 'transform', transitionDuration: '1.2s', transitionTimingFunction: 'cubic-bezier(0.25,0.46,0.45,0.94)' }}
+          className="object-cover object-center transition-transform duration-[1200ms] ease-[cubic-bezier(0.25,0.46,0.45,0.94)] will-change-transform group-hover:scale-[1.06]"
         />
 
         {/* Badge */}
@@ -26,29 +25,16 @@ export default function ProductCard({ product, index = 0 }) {
         {/* Hover Overlay */}
         <div
           style={{ position: 'absolute', inset: 0, background: 'rgba(10,10,10,0)', zIndex: 10, transition: 'background 0.5s' }}
-          className="group-hover:bg-[#0a0a0a]/10"
+          className="group-hover:bg-navy/10"
         />
 
-        {/* Slide-up action bar */}
-        <div
-          style={{
-            position: 'absolute', inset: '0 0 0 0', bottom: 0, top: 'auto',
-            transform: 'translateY(100%)', zIndex: 20,
-            transition: 'transform 0.4s cubic-bezier(0.16,1,0.3,1)',
-          }}
-          className="group-hover:translate-y-0"
+        {/* Favourites Button */}
+        <button
+          onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
+          className="absolute top-3 right-3 z-20 w-9 h-9 bg-white/90 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:bg-white"
         >
-          <div style={{ display: 'flex', background: 'rgba(250,248,243,0.97)', backdropFilter: 'blur(4px)', borderTop: '1px solid #e8e4db' }}>
-            <button className="card-action-btn" style={{ borderRight: '1px solid #e8e4db' }}>
-              <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>favorite</span>
-              Wishlist
-            </button>
-            <button className="card-action-btn">
-              <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>visibility</span>
-              View
-            </button>
-          </div>
-        </div>
+          <span className="material-symbols-outlined text-[18px] text-outline hover:text-gold-light transition-colors duration-200">favorite</span>
+        </button>
       </div>
 
       {/* Info */}
@@ -63,7 +49,7 @@ export default function ProductCard({ product, index = 0 }) {
           fontFamily: 'var(--font-headline)', fontSize: '18px',
           color: '#0a0a0a', lineHeight: 1.25, fontWeight: 300,
           transition: 'color 0.3s',
-        }} className="group-hover:text-[#7a6130]">
+        }} className="group-hover:text-gold">
           {product.name}
         </h3>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', paddingTop: '0.125rem' }}>

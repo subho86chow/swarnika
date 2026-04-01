@@ -43,24 +43,24 @@ function CollectionsContent() {
     <>
       <Navbar />
 
-      <main className="bg-[#faf8f3]" style={{ paddingTop: '136px' }}>
+      <main className="bg-background" style={{ paddingTop: '136px' }}>
 
         {/* ─── Collections Header ─── */}
-        <section className={`${PAD} pt-10 pb-0 bg-[#faf8f3]`}>
+        <section className={`${PAD} pt-10 pb-0 bg-background`}>
           <div className={MAX}>
             <div className="flex items-center gap-3 mb-8">
-              <span className="font-label text-[9px] tracking-[0.3em] uppercase text-[#6b6b6b] font-medium">The Archive</span>
-              <span className="text-[#c8c4bb] text-xs">→</span>
-              <span className="font-label text-[9px] tracking-[0.3em] uppercase text-[#0a0a0a] font-semibold">Masterpieces</span>
+              <span className="font-label text-[9px] tracking-[0.3em] uppercase text-outline font-medium">The Archive</span>
+              <span className="text-outline-var text-xs">→</span>
+              <span className="font-label text-[9px] tracking-[0.3em] uppercase text-navy font-semibold">Masterpieces</span>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8 items-end pb-10 border-b border-[#e8e4db]">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8 items-end pb-10 border-b border-surface-dim">
               <div>
-                <h1 className="font-headline text-[#0a0a0a] font-light italic leading-[1.0] text-5xl md:text-7xl lg:text-[96px]">
+                <h1 className="font-headline text-navy font-light italic leading-[1.0] text-5xl md:text-7xl lg:text-[96px]">
                   Masterpieces
                 </h1>
               </div>
               <div className="max-w-[380px]">
-                <p className="font-body text-[#6b6b6b] text-[13px] leading-relaxed">
+                <p className="font-body text-outline text-[13px] leading-relaxed">
                   An archival journey through centuries of craftsmanship. Each piece selected for its historical significance and artistic merit.
                 </p>
               </div>
@@ -69,7 +69,7 @@ function CollectionsContent() {
         </section>
 
         {/* ─── Sticky Filters ─── */}
-        <section className={`${PAD} sticky top-[136px] z-30 py-0 bg-[#faf8f3]/95 border-b border-[#e8e4db] backdrop-blur-md`}>
+        <section className={`${PAD} sticky top-[136px] z-30 py-0 bg-background/95 border-b border-surface-dim backdrop-blur-md`}>
           <div className={MAX}>
             <div className="tab-strip overflow-x-auto whitespace-nowrap flex no-scrollbar">
               <button
@@ -92,7 +92,7 @@ function CollectionsContent() {
         </section>
 
         {/* ─── Tag pills + sort ─── */}
-        <section className={`${PAD} py-5 bg-[#f4f1ea] border-b border-[#e8e4db]`}>
+        <section className={`${PAD} py-5 bg-ivory-dark border-b border-surface-dim`}>
           <div className={`${MAX} flex flex-col md:flex-row flex-wrap md:items-center justify-between gap-4`}>
             <div className="flex flex-wrap gap-2">
               {activeTag && (
@@ -115,11 +115,11 @@ function CollectionsContent() {
               ))}
             </div>
             <div className="flex items-center justify-between md:justify-end gap-6 w-full md:w-auto">
-              <span className="font-body text-[11px] text-[#6b6b6b]">
+              <span className="font-body text-[11px] text-outline">
                 {filteredProducts.length} piece{filteredProducts.length !== 1 ? "s" : ""}
               </span>
               <div className="flex items-center gap-2">
-                <span className="text-[9px] text-[#6b6b6b] tracking-wide uppercase font-label">Sort</span>
+                <span className="text-[9px] text-outline tracking-wide uppercase font-label">Sort</span>
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
@@ -136,7 +136,7 @@ function CollectionsContent() {
         </section>
 
         {/* ─── Product Grid ─── */}
-        <section className={`${PAD} py-16 bg-[#faf8f3]`}>
+        <section className={`${PAD} py-16 bg-background`}>
           <div className={MAX}>
             {filteredProducts.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-10">
@@ -152,9 +152,9 @@ function CollectionsContent() {
               </div>
             ) : (
               <div className="text-center py-28 space-y-6">
-                <div className="w-16 h-[1px] bg-[#c8c4bb] mx-auto" />
-                <h3 className="font-headline text-2xl text-[#0a0a0a] font-light italic">No pieces found</h3>
-                <p className="font-body text-[#6b6b6b] text-[13px]">Try adjusting your filters to discover more treasures.</p>
+                <div className="w-16 h-[1px] bg-outline-var mx-auto" />
+                <h3 className="font-headline text-2xl text-navy font-light italic">No pieces found</h3>
+                <p className="font-body text-outline text-[13px]">Try adjusting your filters to discover more treasures.</p>
                 <button onClick={() => { setActiveCollection("all"); setActiveTag(""); }} className="btn-primary mt-2">
                   Clear Filters
                 </button>
@@ -164,9 +164,9 @@ function CollectionsContent() {
         </section>
 
         {/* ─── Heritage Vault CTA ─── */}
-        <section className={`${PAD} py-20 bg-[#0a0a0a]`}>
+        <section className={`${PAD} py-20 bg-navy`}>
           <div className={`${MAX} text-center`}>
-            <span className="section-eyebrow flex justify-center text-[#c9a44a]">Heritage Vault</span>
+            <span className="section-eyebrow flex justify-center text-gold-light">Heritage Vault</span>
             <h2 className="font-headline text-[36px] md:text-[52px] text-white font-light italic mt-2 mb-6">
               Step Inside the Sanctuary
             </h2>
@@ -187,10 +187,10 @@ function CollectionsContent() {
 export default function CollectionsPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center bg-[#faf8f3]">
+      <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center space-y-3">
-          <div className="w-8 h-[1px] bg-[#c9a44a] mx-auto" />
-          <span className="font-label text-[9px] tracking-[0.4em] uppercase text-[#0a0a0a] animate-pulse">
+          <div className="w-8 h-[1px] bg-gold-light mx-auto" />
+          <span className="font-label text-[9px] tracking-[0.4em] uppercase text-navy animate-pulse">
             Loading The Archive...
           </span>
         </div>

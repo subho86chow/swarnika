@@ -33,11 +33,11 @@ export default function HomePage() {
     <>
       <Navbar />
 
-      <main className="pt-0 bg-[#faf8f3]">
+      <main className="pt-0 bg-background">
 
         {/* ─── Hero ─── */}
         <section className="relative w-full h-[92vh] overflow-hidden">
-          <div className="absolute inset-0 z-0 bg-[#0a0a0a]">
+          <div className="absolute inset-0 z-0 bg-navy">
             {heroImages.map((src, idx) => (
               <Image 
                 key={src}
@@ -55,8 +55,8 @@ export default function HomePage() {
           <div className={`${PAD} relative z-10 h-full flex items-end pb-20`}>
             <div className="max-w-[700px] animate-fade-in-up">
               <div className="flex items-center gap-4 mb-5">
-                <div className="w-[40px] h-[1px] bg-[#c9a44a]" />
-                <span className="font-label text-[9px] tracking-[0.4em] uppercase text-[#c9a44a] font-medium">The Signature Collection</span>
+                <div className="w-[40px] h-[1px] bg-gold-light" />
+                <span className="font-label text-[9px] tracking-[0.4em] uppercase text-gold-light font-medium">The Signature Collection</span>
               </div>
               <h1 className="font-headline text-white font-light italic leading-[1.0] mb-6 text-5xl md:text-7xl lg:text-[88px]">
                 Ancient Spirit,<br /><span className="font-normal">Modern Grace.</span>
@@ -65,7 +65,7 @@ export default function HomePage() {
                 A curation of high-jewelry pieces that bridge the gap between ancestral craftsmanship and contemporary silhouettes. Each piece a quiet testament to eternal beauty.
               </p>
               <div className="flex flex-wrap gap-4 delay-300 animate-fade-in">
-                <Link href="/collections" className="bg-white text-[#0a0a0a] py-4 px-10 font-label text-[9px] font-bold tracking-[0.28em] uppercase flex items-center transition-colors hover:bg-white/90">Explore The Archive</Link>
+                <Link href="/collections" className="bg-white text-navy py-4 px-10 font-label text-[9px] font-bold tracking-[0.28em] uppercase flex items-center transition-colors hover:bg-white/90">Explore The Archive</Link>
                 <Link href="/contact" className="border border-white/50 text-white py-4 px-10 font-label text-[9px] font-medium tracking-[0.28em] uppercase flex items-center transition-colors hover:bg-white/10">Book a Private Viewing</Link>
               </div>
             </div>
@@ -88,7 +88,7 @@ export default function HomePage() {
         </section>
 
         {/* ─── Category Rail ─── */}
-        <section className={`${PAD} bg-[#0a0a0a] py-5 overflow-x-auto overflow-y-hidden no-scrollbar`}>
+        <section className={`${PAD} bg-navy py-5 overflow-x-auto overflow-y-hidden no-scrollbar`}>
           <div className={`${MAX} flex gap-8 md:gap-16 justify-start md:justify-center min-w-max items-center`}>
             {[
               { name: "Earrings", url: "/collections?tag=diamond" },
@@ -100,19 +100,19 @@ export default function HomePage() {
             ].map((cat, i) => (
               <Link key={cat.name} href={cat.url} className="flex items-center gap-3 group whitespace-nowrap">
                 {i > 0 && <span className="text-white/15 text-xs">◆</span>}
-                <span className="font-label text-[9.5px] tracking-[0.28em] uppercase text-white/50 group-hover:text-[#c9a44a] transition-colors duration-300 font-medium">{cat.name}</span>
+                <span className="font-label text-[9.5px] tracking-[0.28em] uppercase text-white/50 group-hover:text-gold-light transition-colors duration-300 font-medium">{cat.name}</span>
               </Link>
             ))}
           </div>
         </section>
 
         {/* ─── Bestsellers ─── */}
-        <section className={`${PAD} py-20 bg-[#faf8f3]`}>
+        <section className={`${PAD} py-20 bg-background`}>
           <div className={MAX}>
             <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 md:mb-12 gap-4">
               <div>
                 <span className="section-eyebrow">The Signature Selection</span>
-                <h2 className="font-headline text-[38px] md:text-[52px] text-[#0a0a0a] font-light leading-tight">Bestsellers</h2>
+                <h2 className="font-headline text-[38px] md:text-[52px] text-navy font-light leading-tight">Bestsellers</h2>
               </div>
               <Link href="/collections?tag=bestseller" className="btn-ghost self-start md:self-auto mb-1">
                 View All Archives <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
@@ -134,15 +134,15 @@ export default function HomePage() {
         </section>
 
         {/* ─── Heritage Banner ─── */}
-        <section className={`${PAD} py-24 bg-[#0a0a0a] relative overflow-hidden`}>
+        <section className={`${PAD} py-24 bg-navy relative overflow-hidden`}>
           <div className="absolute inset-0 opacity-10">
             <div className="absolute inset-0" style={{ backgroundImage: 'repeating-linear-gradient(45deg, #c9a44a 0, #c9a44a 1px, transparent 0, transparent 50%)', backgroundSize: '8px 8px' }} />
           </div>
           <div className={`${MAX} relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center`}>
             <div className="animate-fade-in-up order-2 lg:order-1">
               <div className="flex items-center gap-4 mb-6">
-                <div className="w-[32px] h-[1px] bg-[#c9a44a]" />
-                <span className="font-label text-[9px] tracking-[0.4em] uppercase text-[#c9a44a] font-medium">The Art of the Slow Craft</span>
+                <div className="w-[32px] h-[1px] bg-gold-light" />
+                <span className="font-label text-[9px] tracking-[0.4em] uppercase text-gold-light font-medium">The Art of the Slow Craft</span>
               </div>
               <h2 className="font-headline text-white font-light italic leading-[1.05] mb-8 text-4xl md:text-5xl lg:text-[58px]">
                 A Heritage<br /><span className="font-normal">Reborn</span>
@@ -157,18 +157,18 @@ export default function HomePage() {
             </div>
             <div className="relative aspect-[4/5] overflow-hidden order-1 lg:order-2 w-full max-w-md mx-auto lg:max-w-full">
               <Image src="/products/product-7.jpg" alt="The Art of Slow Craft" fill className="object-cover opacity-80" />
-              <div className="absolute inset-6 border border-[#c9a44a]/20 pointer-events-none" />
+              <div className="absolute inset-6 border border-gold-light/20 pointer-events-none" />
             </div>
           </div>
         </section>
 
         {/* ─── New Arrivals ─── */}
-        <section className={`${PAD} py-20 bg-[#f4f1ea]`}>
+        <section className={`${PAD} py-20 bg-background`}>
           <div className={MAX}>
             <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 md:mb-12 gap-4">
               <div>
                 <span className="section-eyebrow">Just Arrived</span>
-                <h2 className="font-headline text-[38px] md:text-[52px] text-[#0a0a0a] font-light leading-tight">New Pieces</h2>
+                <h2 className="font-headline text-[38px] md:text-[52px] text-navy font-light leading-tight">New Pieces</h2>
               </div>
               <Link href="/collections" className="btn-ghost self-start md:self-auto mb-1">
                 View All <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
@@ -185,18 +185,18 @@ export default function HomePage() {
         </section>
 
         {/* ─── Private Viewing CTA ─── */}
-        <section className={`${PAD} py-20 bg-[#faf8f3]`}>
+        <section className={`${PAD} py-20 bg-background`}>
           <div className={MAX}>
-            <div className="border border-[#e8e4db] px-6 py-12 md:py-16 md:px-20 text-center relative max-w-4xl mx-auto">
+            <div className="border border-surface-dim px-6 py-12 md:py-16 md:px-20 text-center relative max-w-4xl mx-auto">
               {/* Corner Accents */}
-              <div className="absolute top-4 left-4 w-8 h-8 border-t border-l border-[#c9a44a]/40" />
-              <div className="absolute top-4 right-4 w-8 h-8 border-t border-r border-[#c9a44a]/40" />
-              <div className="absolute bottom-4 left-4 w-8 h-8 border-b border-l border-[#c9a44a]/40" />
-              <div className="absolute bottom-4 right-4 w-8 h-8 border-b border-r border-[#c9a44a]/40" />
+              <div className="absolute top-4 left-4 w-8 h-8 border-t border-l border-gold-light/40" />
+              <div className="absolute top-4 right-4 w-8 h-8 border-t border-r border-gold-light/40" />
+              <div className="absolute bottom-4 left-4 w-8 h-8 border-b border-l border-gold-light/40" />
+              <div className="absolute bottom-4 right-4 w-8 h-8 border-b border-r border-gold-light/40" />
               
               <span className="section-eyebrow flex justify-center">A Private Viewing</span>
-              <h2 className="font-headline text-[36px] md:text-[52px] text-[#0a0a0a] font-light italic leading-tight mt-2 mb-6">Experience the Collection</h2>
-              <p className="font-body text-[#6b6b6b] text-[13px] leading-relaxed mx-auto mb-10 max-w-[512px]">
+              <h2 className="font-headline text-[36px] md:text-[52px] text-navy font-light italic leading-tight mt-2 mb-6">Experience the Collection</h2>
+              <p className="font-body text-outline text-[13px] leading-relaxed mx-auto mb-10 max-w-[512px]">
                 Experience the collection in the quiet luxury of our flagship stores, or via a virtual consultation with our master curators.
               </p>
               <div className="flex flex-wrap gap-4 justify-center">
@@ -208,7 +208,7 @@ export default function HomePage() {
         </section>
 
         {/* ─── Trust Pillars ─── */}
-        <section className={`${PAD} py-12 bg-[#0a0a0a] border-t border-white/10`}>
+        <section className={`${PAD} py-12 bg-navy border-t border-white/10`}>
           <div className={`${MAX} grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-0`}>
             {[
               { num: "01", label: "Certified Authentic", sub: "Every piece verified" },
@@ -217,7 +217,7 @@ export default function HomePage() {
               { num: "04", label: "Lifetime Warranty", sub: "Archival guarantee" },
             ].map((item, i) => (
               <div key={item.label} className={`flex flex-col items-center justify-center gap-2 px-6 py-4 text-center ${i > 0 ? 'lg:border-l lg:border-white/10' : ''}`}>
-                <span className="font-headline text-[28px] font-light leading-none text-[#c9a44a]/40">{item.num}</span>
+                <span className="font-headline text-[28px] font-light leading-none text-gold-light/40">{item.num}</span>
                 <span className="font-label text-[9px] tracking-[0.22em] uppercase font-semibold text-white/70 mt-1">{item.label}</span>
                 <span className="font-body text-[11px] text-white/30">{item.sub}</span>
               </div>
