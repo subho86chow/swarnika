@@ -1,108 +1,106 @@
-"use client";
-
 import Link from "next/link";
 import Image from "next/image";
-import { useState, useEffect } from "react";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import ProductCard from "./components/ProductCard";
-import { products, formatPrice } from "./lib/data";
+import HeroSlider from "./components/HeroSlider";
+import { prisma } from "./lib/prisma";
 
 const PAD = "px-6 md:px-14 lg:px-20";
 const MAX = "max-w-[1440px] mx-auto";
 
-export default function HomePage() {
-  const [currentSlide, setCurrentSlide] = useState(0);
+export const revalidate = 0; // Disable static rendering for now to ensure we see fresh DB data
+
+export default async function HomePage() {
+  // Fetch Hero Configuration
+  const [heroTitleConfig, heroSubtitleConfig] = await Promise.all([
+    prisma.siteContent.findUnique({ where: { key: "hero_title" } }),
+    prisma.siteContent.findUnique({ where: { key: "hero_subtitle" } })
+  ]);
+
+  // Default values
+  const rawHeroTitle = heroTitleConfig?.value || "Ancient Spirit,\nModern Grace.";
+  const heroSubtitle = heroSubtitleConfig?.value || "A curation of high-jewelry pieces that bridge the gap between ancestral craftsmanship and contemporary silhouettes. Each piece a quiet testament to eternal beauty.";
+
+  // Format Hero Title (e.g. replace \n with <br /> and wrapped texts)
+  // Let's assume the first part until the newline is normal, the second part is wrapped in span.
+  const parts = rawHeroTitle.split("\n");
+  const formattedHeroTitle = parts.length > 1 
+    ? `${parts[0]}<br /><span class="font-normal">${parts[1]}</span>` 
+    : rawHeroTitle;
+
   const heroImages = [
     "/products/product-1.jpg",
     "/products/product-3.jpg",
     "/products/product-4.jpg"
   ];
 
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % heroImages.length);
-    }, 5000);
-    return () => clearInterval(timer);
-  }, [heroImages.length]);
+  // Fetch Products (assume bestsellers = first 4, new arrivals = next 4)
+  const products = await prisma.product.findMany({
+    include: { images: true },
+    orderBy: { createdAt: "asc" },
+    take: 8
+  });
 
-  const bestsellers = products.slice(0, 4);
-  const newArrivals = products.slice(4, 8);
+  const bestsellers = products.slice(0, 4).map(p => ({
+    ...p,
+    image: p.images[0]?.url || "",
+  }));
+  const newArrivals = products.slice(4, 8).map(p => ({
+    ...p,
+    image: p.images[0]?.url || "",
+  }));
 
   return (
     <>
       <Navbar />
 
       <main className="pt-0 bg-background">
+        <HeroSlider 
+          heroTitle={formattedHeroTitle} 
+          heroSubtitle={heroSubtitle} 
+          heroImages={heroImages} 
+        />
 
-        {/* ─── Hero ─── */}
-        <section className="relative w-full h-[92vh] overflow-hidden">
-          <div className="absolute inset-0 z-0 bg-navy">
-            {heroImages.map((src, idx) => (
-              <Image 
-                key={src}
-                src={src} 
-                alt="The Archive Background" 
-                fill 
-                priority={idx === 0} 
-                className={`object-cover object-center transition-opacity duration-[1500ms] ${idx === currentSlide ? "opacity-100" : "opacity-0"}`} 
-                sizes="100vw" 
-              />
-            ))}
-            <div className="absolute inset-0 bg-gradient-to-r from-black/65 via-black/30 to-black/10" />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
-          </div>
-          <div className={`${PAD} relative z-10 h-full flex items-end pb-20`}>
-            <div className="max-w-[700px] animate-fade-in-up">
-              <div className="flex items-center gap-4 mb-5">
-                <div className="w-[40px] h-[1px] bg-gold-light" />
-                <span className="font-label text-[9px] tracking-[0.4em] uppercase text-gold-light font-medium">The Signature Collection</span>
-              </div>
-              <h1 className="font-headline text-white font-light italic leading-[1.0] mb-6 text-5xl md:text-7xl lg:text-[88px]">
-                Ancient Spirit,<br /><span className="font-normal">Modern Grace.</span>
-              </h1>
-              <p className="font-body text-white/70 text-[13px] leading-relaxed mb-10 delay-200 animate-fade-in max-w-[480px]">
-                A curation of high-jewelry pieces that bridge the gap between ancestral craftsmanship and contemporary silhouettes. Each piece a quiet testament to eternal beauty.
-              </p>
-              <div className="flex flex-wrap gap-4 delay-300 animate-fade-in">
-                <Link href="/collections" className="bg-white text-navy py-4 px-10 font-label text-[9px] font-bold tracking-[0.28em] uppercase flex items-center transition-colors hover:bg-white/90">Explore The Archive</Link>
-                <Link href="/contact" className="border border-white/50 text-white py-4 px-10 font-label text-[9px] font-medium tracking-[0.28em] uppercase flex items-center transition-colors hover:bg-white/10">Book a Private Viewing</Link>
-              </div>
+        {/* ─── Everyday Demifine Jewellery ─── */}
+        <section className="bg-background py-10 md:py-16">
+          <div className="max-w-[1440px] mx-auto px-0 md:px-8">
+            <h2 className="text-center font-headline text-[16px] md:text-[20px] tracking-wide text-navy mb-8 md:mb-12 uppercase">
+              Everyday Demifine Jewellery
+            </h2>
+            <div className="grid grid-cols-2 md:grid-cols-6 gap-[2px] md:gap-4 px-2 md:px-0">
+              {[
+                { name: "Earrings", img: "/products/product-1.jpg", url: "/collections?tag=earrings" },
+                { name: "Necklaces", img: "/products/product-2.jpg", url: "/collections?tag=necklaces" },
+                { name: "Bracelets", img: "/products/product-3.jpg", url: "/collections?tag=bracelets" },
+                { name: "Mangalsutras", img: "/products/product-4.jpg", url: "/collections?tag=mangalsutras" },
+                { name: "Mens", img: "/products/product-5.jpg", url: "/collections?tag=mens" },
+                { name: "Rings", img: "/products/product-6.jpg", url: "/collections?tag=rings" },
+              ].map((cat) => (
+                <Link key={cat.name} href={cat.url} className="group relative block aspect-[4/5] overflow-hidden bg-surface-dim">
+                  <Image
+                    src={cat.img}
+                    alt={cat.name}
+                    fill
+                    sizes="(max-width: 768px) 50vw, 16vw"
+                    className="object-cover transition-transform duration-[1200ms] ease-[cubic-bezier(0.25,0.46,0.45,0.94)] group-hover:scale-[1.08]"
+                  />
+                  {/* Subtle bottom gradient to ensure text readability */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent opacity-80" />
+                  
+                  <div className="absolute bottom-4 md:bottom-5 left-0 w-full flex items-center justify-center gap-1.5 z-10 transition-transform duration-500 ease-out group-hover:-translate-y-1">
+                    <span className="font-label text-[9px] md:text-[10px] tracking-[0.15em] font-semibold uppercase text-white drop-shadow-md">
+                      {cat.name}
+                    </span>
+                    <div className="w-3.5 h-3.5 md:w-4 md:h-4 rounded-full bg-white flex items-center justify-center shadow-sm transition-transform duration-300 group-hover:scale-110">
+                      <svg width="6" height="8" viewBox="0 0 6 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M1.5 1L4.5 4L1.5 7" stroke="#0f172a" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    </div>
+                  </div>
+                </Link>
+              ))}
             </div>
-          </div>
-          <div className="absolute bottom-8 right-10 z-10 flex-col items-center gap-2 opacity-50 hidden md:flex">
-            <span className="font-label text-[8px] tracking-[0.3em] uppercase text-white rotate-90 origin-center">Scroll</span>
-          </div>
-          
-          {/* Slide Indicators */}
-          <div className="absolute bottom-10 left-6 md:left-14 lg:left-20 z-20 flex gap-2.5">
-            {heroImages.map((_, idx) => (
-              <button 
-                key={idx} 
-                onClick={() => setCurrentSlide(idx)}
-                aria-label={`Go to slide ${idx + 1}`}
-                className={`transition-all duration-500 rounded-full ${idx === currentSlide ? "w-6 bg-white" : "w-1.5 bg-white/40 hover:bg-white/70"} h-1.5`}
-              />
-            ))}
-          </div>
-        </section>
-
-        {/* ─── Category Rail ─── */}
-        <section className={`${PAD} bg-navy py-5 overflow-x-auto overflow-y-hidden no-scrollbar`}>
-          <div className={`${MAX} flex gap-8 md:gap-16 justify-start md:justify-center min-w-max items-center`}>
-            {[
-              { name: "Earrings", url: "/collections?tag=diamond" },
-              { name: "Necklaces", url: "/collections?collection=The Heritage Line" },
-              { name: "Bracelets", url: "/collections?tag=gold" },
-              { name: "Rings", url: "/collections?tag=new" },
-              { name: "Bridal", url: "/collections?tag=bridal" },
-              { name: "Bespoke", url: "/contact" },
-            ].map((cat, i) => (
-              <Link key={cat.name} href={cat.url} className="flex items-center gap-3 group whitespace-nowrap">
-                {i > 0 && <span className="text-white/15 text-xs">◆</span>}
-                <span className="font-label text-[9.5px] tracking-[0.28em] uppercase text-white/50 group-hover:text-gold-light transition-colors duration-300 font-medium">{cat.name}</span>
-              </Link>
-            ))}
           </div>
         </section>
 
@@ -193,7 +191,7 @@ export default function HomePage() {
               <div className="absolute top-4 right-4 w-8 h-8 border-t border-r border-gold-light/40" />
               <div className="absolute bottom-4 left-4 w-8 h-8 border-b border-l border-gold-light/40" />
               <div className="absolute bottom-4 right-4 w-8 h-8 border-b border-r border-gold-light/40" />
-              
+
               <span className="section-eyebrow flex justify-center">A Private Viewing</span>
               <h2 className="font-headline text-[36px] md:text-[52px] text-navy font-light italic leading-tight mt-2 mb-6">Experience the Collection</h2>
               <p className="font-body text-outline text-[13px] leading-relaxed mx-auto mb-10 max-w-[512px]">

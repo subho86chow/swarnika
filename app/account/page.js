@@ -57,7 +57,7 @@ export default function AccountPage() {
                       Forgot password?
                     </a>
                   </div>
-                  <button className="w-full bg-navy text-white py-4 text-[10px] tracking-[0.2em] uppercase font-medium hover:bg-navy-light transition-all duration-300">
+                  <button className="btn-primary w-full py-4">
                     Sign In
                   </button>
                 </form>
@@ -84,7 +84,7 @@ export default function AccountPage() {
                     </li>
                   ))}
                 </ul>
-                <button className="w-full border border-navy text-navy py-4 text-[10px] tracking-[0.2em] uppercase font-medium hover:bg-navy hover:text-white transition-all duration-300">
+                <button className="btn-secondary w-full py-4">
                   Create Account
                 </button>
               </div>

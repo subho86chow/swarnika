@@ -175,13 +175,13 @@ export default function AboutPage() {
             <div className="flex flex-col sm:flex-row justify-center gap-4 pt-4">
               <Link
                 href="/collections"
-                className="bg-gold text-white px-10 py-4 text-[10px] tracking-[0.2em] uppercase font-medium hover:bg-gold-light hover:text-navy transition-all duration-300"
+                className="btn-primary-gold"
               >
                 Explore Collections
               </Link>
               <Link
                 href="/contact"
-                className="border border-white/20 text-white px-10 py-4 text-[10px] tracking-[0.2em] uppercase font-medium hover:bg-white/10 transition-all duration-300"
+                className="btn-primary-gold"
               >
                 Book Appointment
               </Link>

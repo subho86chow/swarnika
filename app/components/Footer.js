@@ -35,7 +35,7 @@ export default function Footer() {
               />
               <button
                 type="submit"
-                className="subscribe-btn bg-white text-navy font-label text-[9px] tracking-[0.2em] uppercase font-bold px-8 py-4 sm:py-0 hover:bg-white/80 transition-colors"
+                className="subscribe-btn px-8 py-4 sm:py-0"
               >
                 Subscribe
               </button>

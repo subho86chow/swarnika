@@ -1,14 +1,18 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
 import { formatPrice } from "../lib/data";
 
 export default function ProductCard({ product, index = 0 }) {
+  const imgSrc = product.image || (product.images && product.images[0]?.url) || (product.images && product.images[0]) || "/products/product-1.jpg";
+
   return (
     <Link href={`/product/${product.id}`} className="group block">
       {/* Image Container */}
       <div style={{ position: 'relative', aspectRatio: '3/4', marginBottom: '1rem', overflow: 'hidden', background: '#f4f1ea' }}>
         <Image
-          src={product.images[0]}
+          src={imgSrc}
           alt={product.name}
           fill
           sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"

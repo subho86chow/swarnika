@@ -200,7 +200,7 @@ export default function CartPage() {
                       </span>
                     </div>
 
-                    <button className="w-full bg-navy text-white py-4 text-[10px] tracking-[0.2em] uppercase font-medium hover:bg-navy-light transition-all duration-300">
+                    <button className="btn-primary w-full py-4">
                       Proceed to Checkout
                     </button>
 

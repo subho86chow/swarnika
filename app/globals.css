@@ -2,9 +2,9 @@
 
 @theme inline {
   /* ── Color Palette: The Archive (Refined) ── */
-  --color-background: #C8F2C8;
+  --color-background: #F8F4F0;
   --color-surface: var(--color-background);
-  --color-surface-low: var(--color-background);
+  --color-surface-low: #F0EBE5;
   --color-surface-dim: #e8e4db;
   --color-surface-high: var(--color-background);
   --color-surface-highest: var(--color-background);
@@ -24,8 +24,8 @@
 
   /* Semantic aliases */
   --color-ivory: var(--color-background);
-  --color-ivory-dark: var(--color-background);
-  --color-ivory-darker: var(--color-background);
+  --color-ivory-dark: #F0EBE5;
+  --color-ivory-darker: #E8E3DC;
   --color-navy: #0a0a0a;
   --color-navy-light: #1a1a1a;
   --color-gold: #7a6130;
@@ -328,20 +328,22 @@
     padding: 1rem 2rem;
     font-family: var(--font-label);
     font-size: 9px;
-    font-weight: 700;
-    letter-spacing: 0.28em;
+    font-weight: 500;
+    letter-spacing: 0.2em;
     text-transform: uppercase;
-    background: var(--color-gold-light);
+    background: white;
     color: var(--color-navy);
-    border: 1px solid var(--color-gold-light);
+    border: 1px solid white;
     cursor: pointer;
     white-space: nowrap;
-    transition: background 0.3s, color 0.3s;
+    transition: background 0.4s, border-color 0.4s, color 0.4s, letter-spacing 0.3s;
   }
 
   .subscribe-btn:hover {
-    background: #b8923d;
-    border-color: #b8923d;
+    background: transparent;
+    color: white;
+    letter-spacing: 0.32em;
+    border-color: white;
   }
 
   /* ── Footer email input ── */
@@ -694,6 +696,33 @@
   letter-spacing: 0.32em;
 }
 
+/* Hero variant — white bg for use on dark/overlay sections */
+.btn-primary.hero {
+  background: #fff;
+  border-color: #fff;
+  color: var(--color-navy);
+}
+
+.btn-primary.hero:hover {
+  background: transparent;
+  color: #fff;
+  letter-spacing: 0.32em;
+}
+
+/* Hero secondary — white outline on dark backgrounds */
+.btn-secondary.hero {
+  background: transparent;
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.6);
+}
+
+.btn-secondary.hero:hover {
+  background: #fff;
+  border-color: #fff;
+  color: var(--color-navy);
+  letter-spacing: 0.32em;
+}
+
 .btn-primary-gold {
   display: inline-flex;
   align-items: center;
@@ -708,13 +737,29 @@
   letter-spacing: 0.28em;
   text-transform: uppercase;
   border: 1px solid var(--color-gold);
-  transition: background 0.4s, border-color 0.4s, color 0.4s;
+  transition: background 0.4s, border-color 0.4s, color 0.4s, letter-spacing 0.3s;
   cursor: pointer;
+  white-space: nowrap;
 }
 
 .btn-primary-gold:hover {
   background: transparent;
   color: var(--color-gold);
+  letter-spacing: 0.32em;
+}
+
+/* Hero variant — gold bg for dark/overlay sections */
+.btn-primary-gold.hero {
+  background: var(--color-gold-light);
+  border-color: var(--color-gold-light);
+  color: var(--color-navy);
+}
+
+.btn-primary-gold.hero:hover {
+  background: transparent;
+  color: #fff;
+  border-color: #fff;
+  letter-spacing: 0.32em;
 }
 
 .btn-secondary {
@@ -730,14 +775,16 @@
   font-weight: 600;
   letter-spacing: 0.28em;
   text-transform: uppercase;
-  border: 1px solid var(--color-outline-var);
-  transition: border-color 0.3s, background 0.3s, letter-spacing 0.3s;
+  border: 1px solid var(--color-navy);
+  transition: background 0.4s, border-color 0.4s, color 0.4s, letter-spacing 0.3s;
   cursor: pointer;
+  white-space: nowrap;
 }
 
 .btn-secondary:hover {
+  background: var(--color-navy);
   border-color: var(--color-navy);
-  background: var(--color-surface-low);
+  color: #fff;
   letter-spacing: 0.32em;
 }
 

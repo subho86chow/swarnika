@@ -28,14 +28,22 @@ export const metadata = {
   },
 };
 
-function AnnouncementBar() {
-  const items = [
+import { prisma } from "./lib/prisma";
+
+async function AnnouncementBar() {
+  let items = [
     "Complimentary express shipping on all orders above ₹50,000",
     "Bespoke commissions by appointment",
-    "Ethically sourced gemstones — certified conflict-free",
-    "Lifetime warranty on all pieces from The Archive",
-    "Private viewings available at our flagship salons",
   ];
+
+  try {
+    const config = await prisma.siteContent.findUnique({ where: { key: "announcement_texts" } });
+    if (config?.value) items = JSON.parse(config.value).filter(Boolean);
+  } catch (e) {
+    // fallback
+  }
+
+  if (items.length === 0) return null;
 
   return (
     <div className="announcement-bar">
@@ -51,6 +59,8 @@ function AnnouncementBar() {
   );
 }
 
+import ClientLayoutWrapper from "./components/ClientLayoutWrapper";
+
 export default function RootLayout({ children }) {
   return (
     <html lang="en" className={`${cormorant.variable} ${manrope.variable}`}>
@@ -61,8 +71,9 @@ export default function RootLayout({ children }) {
         />
       </head>
       <body>
-        <AnnouncementBar />
-        {children}
+        <ClientLayoutWrapper AnnouncementBar={<AnnouncementBar />}>
+          {children}
+        </ClientLayoutWrapper>
       </body>
     </html>
   );

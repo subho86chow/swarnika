@@ -3,8 +3,12 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
 
 export default function Navbar() {
+  const pathname = usePathname();
+  const isHome = pathname === "/";
+
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [heroVisible, setHeroVisible] = useState(true);
@@ -25,13 +29,14 @@ export default function Navbar() {
     { href: "/contact", label: "Stores" },
   ];
 
+  const useDarkText = !isHome || scrolled;
+
   return (
     <nav
-      className={`fixed top-9 w-full z-50 transition-all duration-700 ${
-        scrolled
-          ? "bg-background/96 backdrop-blur-md shadow-[0_4px_32px_rgba(10,10,10,0.06)] border-b border-surface-dim"
-          : "bg-background/0 backdrop-blur-[2px]"
-      }`}
+      className={`fixed top-9 w-full z-50 transition-all duration-700 ${scrolled
+        ? "bg-background/96 backdrop-blur-md shadow-[0_4px_32px_rgba(10,10,10,0.06)] border-b border-surface-dim"
+        : "bg-background/0 backdrop-blur-[2px]"
+        }`}
     >
       <div className="flex justify-between items-center w-full py-5" style={{ paddingLeft: '3.5rem', paddingRight: '3.5rem', maxWidth: '1440px', margin: '0 auto' }}>
 
@@ -41,11 +46,10 @@ export default function Navbar() {
             <Link
               key={link.href}
               href={link.href}
-              className={`hover-underline font-label text-[9.5px] tracking-[0.28em] uppercase leading-relaxed transition-colors duration-300 ${
-                scrolled
-                  ? (i === 0 ? "text-navy font-semibold" : "text-outline hover:text-navy font-medium")
-                  : (i === 0 ? "text-white font-semibold" : "text-white/80 hover:text-white font-medium")
-              }`}
+              className={`hover-underline font-label text-[9.5px] tracking-[0.28em] uppercase leading-relaxed transition-colors duration-300 ${useDarkText
+                ? (i === 0 ? "text-navy font-semibold" : "text-outline hover:text-navy font-medium")
+                : (i === 0 ? "text-white font-semibold" : "text-white/80 hover:text-white font-medium")
+                }`}
             >
               {link.label}
             </Link>
@@ -58,22 +62,21 @@ export default function Navbar() {
           onClick={() => setMenuOpen(!menuOpen)}
           aria-label="Toggle menu"
         >
-          <span className={`block w-5 h-[1px] transition-all duration-300 ${scrolled || menuOpen ? 'bg-navy' : 'bg-white'} ${menuOpen ? "rotate-45 translate-y-[6px]" : ""}`} />
-          <span className={`block w-5 h-[1px] transition-all duration-300 ${scrolled || menuOpen ? 'bg-navy' : 'bg-white'} ${menuOpen ? "opacity-0" : ""}`} />
-          <span className={`block w-5 h-[1px] transition-all duration-300 ${scrolled || menuOpen ? 'bg-navy' : 'bg-white'} ${menuOpen ? "-rotate-45 -translate-y-[6px]" : ""}`} />
+          <span className={`block w-5 h-[1px] transition-all duration-300 ${useDarkText || menuOpen ? 'bg-navy' : 'bg-white'} ${menuOpen ? "rotate-45 translate-y-[6px]" : ""}`} />
+          <span className={`block w-5 h-[1px] transition-all duration-300 ${useDarkText || menuOpen ? 'bg-navy' : 'bg-white'} ${menuOpen ? "opacity-0" : ""}`} />
+          <span className={`block w-5 h-[1px] transition-all duration-300 ${useDarkText || menuOpen ? 'bg-navy' : 'bg-white'} ${menuOpen ? "-rotate-45 -translate-y-[6px]" : ""}`} />
         </button>
 
         {/* Center: Logo */}
         <div className="flex-1 flex justify-center">
           <Link href="/" className="flex flex-col items-center">
-            <Image 
-              src="/logo.png" 
-              alt="Swarnika Logo" 
-              width={150} 
-              height={82} 
-              priority 
-              quality={100}
-              className="w-[100px] sm:w-[120px] md:w-[140px] lg:w-[150px] h-auto object-contain transition-all duration-300" 
+            <Image
+              src="products/logo.svg"
+              alt="Swarnika Logo"
+              width={80}
+              height={42}
+              priority
+              className="w-[80px] sm:w-[100px] md:w-[120px] lg:w-[100px] h-auto object-contain transition-all duration-300"
             />
           </Link>
         </div>
@@ -82,7 +85,7 @@ export default function Navbar() {
         <div className="flex-1 flex justify-end items-center gap-5 md:gap-7">
           <button
             aria-label="Search"
-            className={`hidden md:flex items-center transition-colors duration-300 ${scrolled ? "text-outline hover:text-navy" : "text-white/80 hover:text-white"}`}
+            className={`hidden md:flex items-center transition-colors duration-300 ${useDarkText ? "text-outline hover:text-navy" : "text-white/80 hover:text-white"}`}
           >
             <span className="material-symbols-outlined text-[20px]">search</span>
           </button>
@@ -90,7 +93,7 @@ export default function Navbar() {
           <Link
             href="/favorites"
             aria-label="Wishlist"
-            className={`hidden md:flex items-center transition-colors duration-300 ${scrolled ? "text-outline hover:text-navy" : "text-white/80 hover:text-white"}`}
+            className={`hidden md:flex items-center transition-colors duration-300 ${useDarkText ? "text-outline hover:text-navy" : "text-white/80 hover:text-white"}`}
           >
             <span className="material-symbols-outlined text-[20px]">favorite</span>
           </Link>
@@ -98,7 +101,7 @@ export default function Navbar() {
           <Link
             href="/account"
             aria-label="Account"
-            className={`hidden md:flex items-center transition-colors duration-300 ${scrolled ? "text-outline hover:text-navy" : "text-white/80 hover:text-white"}`}
+            className={`hidden md:flex items-center transition-colors duration-300 ${useDarkText ? "text-outline hover:text-navy" : "text-white/80 hover:text-white"}`}
           >
             <span className="material-symbols-outlined text-[20px]">person</span>
           </Link>
@@ -106,10 +109,10 @@ export default function Navbar() {
           <Link
             href="/cart"
             aria-label="Shopping bag"
-            className={`flex items-center transition-colors duration-300 relative ${scrolled ? "text-navy hover:text-gold" : "text-white hover:text-white/80"}`}
+            className={`flex items-center transition-colors duration-300 relative ${useDarkText ? "text-navy hover:text-gold" : "text-white hover:text-white/80"}`}
           >
             <span className="material-symbols-outlined text-[20px]">shopping_bag</span>
-            <span className="absolute -top-1.5 -right-1.5 bg-gold-light text-white text-[8px] font-bold w-[14px] h-[14px] flex items-center justify-center" style={{borderRadius:"50%"}}>
+            <span className="absolute -top-1.5 -right-1.5 bg-gold-light text-white text-[8px] font-bold w-[14px] h-[14px] flex items-center justify-center" style={{ borderRadius: "50%" }}>
               0
             </span>
           </Link>
@@ -118,9 +121,8 @@ export default function Navbar() {
 
       {/* Mobile Dropdown */}
       <div
-        className={`md:hidden absolute top-full left-0 w-full bg-background transition-all duration-400 overflow-hidden border-t border-surface-dim ${
-          menuOpen ? "max-h-[520px] shadow-xl" : "max-h-0"
-        }`}
+        className={`md:hidden absolute top-full left-0 w-full bg-background transition-all duration-400 overflow-hidden border-t border-surface-dim ${menuOpen ? "max-h-[520px] shadow-xl" : "max-h-0"
+          }`}
       >
         <div className="flex flex-col px-8 py-10 gap-7">
           <div className="relative">
