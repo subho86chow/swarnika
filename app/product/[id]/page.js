@@ -7,7 +7,7 @@ import Link from "next/link";
 export const revalidate = 0; // Disable static rendering for fresh DB data
 
 export default async function ProductDetailPage({ params }) {
-  const { id } = params;
+  const { id } = await params;
 
   const initialProduct = await prisma.product.findUnique({
     where: { id },

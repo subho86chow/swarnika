@@ -3,7 +3,7 @@ import ProductForm from "../../components/ProductForm";
 import { notFound } from "next/navigation";
 
 export default async function EditProductPage({ params }) {
-  const { id } = params;
+  const { id } = await params;
 
   const product = await prisma.product.findUnique({
     where: { id },

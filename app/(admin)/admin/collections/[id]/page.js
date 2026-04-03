@@ -3,7 +3,7 @@ import CollectionForm from "../../components/CollectionForm";
 import { notFound } from "next/navigation";
 
 export default async function EditCollectionPage({ params }) {
-  const { id } = params;
+  const { id } = await params;
 
   const collection = await prisma.collection.findUnique({
     where: { id },
