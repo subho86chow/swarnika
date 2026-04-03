@@ -4,6 +4,7 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import ProductCard from "./components/ProductCard";
 import HeroSlider from "./components/HeroSlider";
+import CampaignCarousel from "./components/CampaignCarousel";
 import { prisma } from "./lib/prisma";
 
 const PAD = "px-6 md:px-14 lg:px-20";
@@ -25,8 +26,8 @@ export default async function HomePage() {
   // Format Hero Title (e.g. replace \n with <br /> and wrapped texts)
   // Let's assume the first part until the newline is normal, the second part is wrapped in span.
   const parts = rawHeroTitle.split("\n");
-  const formattedHeroTitle = parts.length > 1 
-    ? `${parts[0]}<br /><span class="font-normal">${parts[1]}</span>` 
+  const formattedHeroTitle = parts.length > 1
+    ? `${parts[0]}<br /><span class="font-normal">${parts[1]}</span>`
     : rawHeroTitle;
 
   const heroImages = [
@@ -56,26 +57,31 @@ export default async function HomePage() {
       <Navbar />
 
       <main className="pt-0 bg-background">
-        <HeroSlider 
-          heroTitle={formattedHeroTitle} 
-          heroSubtitle={heroSubtitle} 
-          heroImages={heroImages} 
+        <HeroSlider
+          heroTitle={formattedHeroTitle}
+          heroSubtitle={heroSubtitle}
+          heroImages={heroImages}
         />
 
         {/* ─── Everyday Demifine Jewellery ─── */}
         <section className="bg-background py-10 md:py-16">
+          <div className="max-w-[1440px] mx-auto px-6 md:px-14 lg:px-20">
+            <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 md:mb-12 gap-4">
+              <div>
+                <span className="section-eyebrow">Shop By Category</span>
+                <h2 className="font-headline text-[38px] md:text-[52px] text-navy font-light leading-tight">Everyday Demifine Jewellery</h2>
+              </div>
+            </div>
+          </div>
           <div className="max-w-[1440px] mx-auto px-0 md:px-8">
-            <h2 className="text-center font-headline text-[16px] md:text-[20px] tracking-wide text-navy mb-8 md:mb-12 uppercase">
-              Everyday Demifine Jewellery
-            </h2>
             <div className="grid grid-cols-2 md:grid-cols-6 gap-[2px] md:gap-4 px-2 md:px-0">
               {[
-                { name: "Earrings", img: "/products/product-1.jpg", url: "/collections?tag=earrings" },
-                { name: "Necklaces", img: "/products/product-2.jpg", url: "/collections?tag=necklaces" },
-                { name: "Bracelets", img: "/products/product-3.jpg", url: "/collections?tag=bracelets" },
-                { name: "Mangalsutras", img: "/products/product-4.jpg", url: "/collections?tag=mangalsutras" },
-                { name: "Mens", img: "/products/product-5.jpg", url: "/collections?tag=mens" },
-                { name: "Rings", img: "/products/product-6.jpg", url: "/collections?tag=rings" },
+                { name: "Earrings", img: "/products/rings_cat.png", url: "/collections?tag=earrings" },
+                { name: "Necklaces", img: "/products/neckless_cat.png", url: "/collections?tag=necklaces" },
+                { name: "Bracelets", img: "/products/bracelet_cat.png", url: "/collections?tag=bracelets" },
+                { name: "Mangalsutras", img: "/products/mangalsutra_cat.png", url: "/collections?tag=mangalsutras" },
+                { name: "Mens", img: "/products/bracelet_men_cat.png", url: "/collections?tag=mens" },
+                { name: "Rings", img: "/products/rings_cat.png", url: "/collections?tag=rings" },
               ].map((cat) => (
                 <Link key={cat.name} href={cat.url} className="group relative block aspect-[4/5] overflow-hidden bg-surface-dim">
                   <Image
@@ -87,20 +93,36 @@ export default async function HomePage() {
                   />
                   {/* Subtle bottom gradient to ensure text readability */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent opacity-80" />
-                  
+
                   <div className="absolute bottom-4 md:bottom-5 left-0 w-full flex items-center justify-center gap-1.5 z-10 transition-transform duration-500 ease-out group-hover:-translate-y-1">
                     <span className="font-label text-[9px] md:text-[10px] tracking-[0.15em] font-semibold uppercase text-white drop-shadow-md">
                       {cat.name}
                     </span>
                     <div className="w-3.5 h-3.5 md:w-4 md:h-4 rounded-full bg-white flex items-center justify-center shadow-sm transition-transform duration-300 group-hover:scale-110">
                       <svg width="6" height="8" viewBox="0 0 6 8" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M1.5 1L4.5 4L1.5 7" stroke="#0f172a" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                        <path d="M1.5 1L4.5 4L1.5 7" stroke="#0f172a" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                       </svg>
                     </div>
                   </div>
                 </Link>
               ))}
             </div>
+          </div>
+        </section>
+
+        {/* ─── Promotion Banner ─── */}
+        <section className={`${PAD} pb-10 pt-4 bg-background`}>
+          <div className={`${MAX} relative w-full overflow-hidden bg-surface-dim group cursor-pointer`}>
+            <Link href="/collections">
+              <Image
+                src="/products/discount_banner.png"
+                alt="Discount Promotional Banner"
+                width={1440}
+                height={400}
+                className="w-full h-auto transition-transform duration-700 group-hover:scale-[1.02]"
+              />
+              <div className="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-colors duration-500" />
+            </Link>
           </div>
         </section>
 
@@ -130,6 +152,8 @@ export default async function HomePage() {
             </div>
           </div>
         </section>
+
+        <CampaignCarousel />
 
         {/* ─── Heritage Banner ─── */}
         <section className={`${PAD} py-24 bg-navy relative overflow-hidden`}>

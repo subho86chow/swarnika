@@ -60,6 +60,7 @@ async function AnnouncementBar() {
 }
 
 import ClientLayoutWrapper from "./components/ClientLayoutWrapper";
+import ChatBot from "./components/ChatBot";
 
 export default function RootLayout({ children }) {
   return (
@@ -73,6 +74,7 @@ export default function RootLayout({ children }) {
       <body>
         <ClientLayoutWrapper AnnouncementBar={<AnnouncementBar />}>
           {children}
+          <ChatBot />
         </ClientLayoutWrapper>
       </body>
     </html>

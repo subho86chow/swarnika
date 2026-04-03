@@ -29,49 +29,60 @@ export default function Navbar() {
     { href: "/contact", label: "Stores" },
   ];
 
-  const useDarkText = !isHome || scrolled;
+  const useDarkText = !isHome || scrolled || menuOpen;
 
   return (
-    <nav
-      className={`fixed top-9 w-full z-50 transition-all duration-700 ${scrolled
-        ? "bg-background/96 backdrop-blur-md shadow-[0_4px_32px_rgba(10,10,10,0.06)] border-b border-surface-dim"
-        : "bg-background/0 backdrop-blur-[2px]"
-        }`}
-    >
-      <div className="flex justify-between items-center w-full py-5" style={{ paddingLeft: '3.5rem', paddingRight: '3.5rem', maxWidth: '1440px', margin: '0 auto' }}>
+    <>
+      {/* Clickaway Overlay */}
+      {menuOpen && (
+        <div 
+          className="fixed inset-0 z-40 bg-black/20 backdrop-blur-sm md:hidden transition-opacity duration-300"
+          onClick={() => setMenuOpen(false)}
+          aria-hidden="true"
+        />
+      )}
+      <nav
+        className={`fixed top-9 w-full z-50 transition-all duration-700 ${scrolled || menuOpen
+          ? "bg-background/96 backdrop-blur-md shadow-[0_4px_32px_rgba(10,10,10,0.06)] border-b border-surface-dim"
+          : "bg-background/0 backdrop-blur-[2px]"
+          }`}
+      >
+        <div className="flex justify-between items-center w-full py-4 md:py-5 px-5 md:px-14 max-w-[1440px] mx-auto">
 
-        {/* Left: Desktop Nav Links */}
-        <div className="flex-1 hidden md:flex gap-8 lg:gap-12 items-center">
-          {navLinks.map((link, i) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className={`hover-underline font-label text-[9.5px] tracking-[0.28em] uppercase leading-relaxed transition-colors duration-300 ${useDarkText
-                ? (i === 0 ? "text-navy font-semibold" : "text-outline hover:text-navy font-medium")
-                : (i === 0 ? "text-white font-semibold" : "text-white/80 hover:text-white font-medium")
-                }`}
+          {/* Left: Desktop Nav Links */}
+          <div className="flex-1 hidden md:flex gap-8 lg:gap-12 items-center">
+            {navLinks.map((link, i) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={`hover-underline font-label text-[9.5px] tracking-[0.28em] uppercase leading-relaxed transition-colors duration-300 ${useDarkText
+                  ? (i === 0 ? "text-navy font-semibold" : "text-outline hover:text-navy font-medium")
+                  : (i === 0 ? "text-white font-semibold" : "text-white/80 hover:text-white font-medium")
+                  }`}
+              >
+                {link.label}
+              </Link>
+            ))}
+          </div>
+
+          {/* Mobile: Hamburger */}
+          <div className="flex-1 flex md:hidden justify-start items-center">
+            <button
+              className="flex flex-col gap-[5px] p-1 mr-4"
+              onClick={() => setMenuOpen(!menuOpen)}
+              aria-label="Toggle menu"
             >
-              {link.label}
-            </Link>
-          ))}
+              <span className={`block w-5 h-[1px] transition-all duration-300 ${useDarkText ? 'bg-navy' : 'bg-white'} ${menuOpen ? "rotate-45 translate-y-[6px]" : ""}`} />
+              <span className={`block w-5 h-[1px] transition-all duration-300 ${useDarkText ? 'bg-navy' : 'bg-white'} ${menuOpen ? "opacity-0" : ""}`} />
+              <span className={`block w-5 h-[1px] transition-all duration-300 ${useDarkText ? 'bg-navy' : 'bg-white'} ${menuOpen ? "-rotate-45 -translate-y-[6px]" : ""}`} />
+          </button>
         </div>
-
-        {/* Mobile: Hamburger */}
-        <button
-          className="md:hidden flex flex-col gap-[5px] p-1 mr-4"
-          onClick={() => setMenuOpen(!menuOpen)}
-          aria-label="Toggle menu"
-        >
-          <span className={`block w-5 h-[1px] transition-all duration-300 ${useDarkText || menuOpen ? 'bg-navy' : 'bg-white'} ${menuOpen ? "rotate-45 translate-y-[6px]" : ""}`} />
-          <span className={`block w-5 h-[1px] transition-all duration-300 ${useDarkText || menuOpen ? 'bg-navy' : 'bg-white'} ${menuOpen ? "opacity-0" : ""}`} />
-          <span className={`block w-5 h-[1px] transition-all duration-300 ${useDarkText || menuOpen ? 'bg-navy' : 'bg-white'} ${menuOpen ? "-rotate-45 -translate-y-[6px]" : ""}`} />
-        </button>
 
         {/* Center: Logo */}
         <div className="flex-1 flex justify-center">
           <Link href="/" className="flex flex-col items-center">
             <Image
-              src="products/logo.svg"
+              src="/products/logo.svg"
               alt="Swarnika Logo"
               width={80}
               height={42}
@@ -121,7 +132,7 @@ export default function Navbar() {
 
       {/* Mobile Dropdown */}
       <div
-        className={`md:hidden absolute top-full left-0 w-full bg-background transition-all duration-400 overflow-hidden border-t border-surface-dim ${menuOpen ? "max-h-[520px] shadow-xl" : "max-h-0"
+        className={`md:hidden absolute top-full left-0 w-full bg-background transition-all duration-400 overflow-hidden ${menuOpen ? "max-h-[520px] shadow-xl border-t border-surface-dim" : "max-h-0 border-t-0 border-transparent"
           }`}
       >
         <div className="flex flex-col px-8 py-10 gap-7">
@@ -157,5 +168,6 @@ export default function Navbar() {
         </div>
       </div>
     </nav>
+    </>
   );
 }
