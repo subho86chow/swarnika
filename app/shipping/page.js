@@ -1,11 +1,6 @@
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
-
 export default function ShippingPage() {
   return (
-    <>
-      <Navbar />
-      <main className="pt-[72px]">
+    <main className="pt-[72px]">
         {/* Hero */}
         <section className="bg-navy py-16 md:py-20 px-6 md:px-12">
           <div className="max-w-[1440px] mx-auto text-center space-y-4">
@@ -89,7 +84,5 @@ export default function ShippingPage() {
           </div>
         </section>
       </main>
-      <Footer />
-    </>
-  );
-}
+    );
+  }

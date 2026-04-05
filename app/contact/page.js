@@ -1,9 +1,5 @@
-"use client";
-
 import { useState } from "react";
 import Image from "next/image";
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
 
 const PAD = "px-6 md:px-14 lg:px-20";
 const MAX = "max-w-[1440px] mx-auto";
@@ -33,10 +29,7 @@ export default function ContactPage() {
   ];
 
   return (
-    <>
-      <Navbar />
-
-      <main className="bg-background pt-0">
+    <main className="bg-background pt-0">
 
         {/* ─── Editorial Header ─── */}
         <section className="relative overflow-hidden h-[52vh]">
@@ -166,8 +159,5 @@ export default function ContactPage() {
         </section>
 
       </main>
-
-      <Footer />
-    </>
-  );
-}
+    );
+  }

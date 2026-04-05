@@ -1,14 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
 
 export default function AccountPage() {
   return (
-    <>
-      <Navbar />
-      <main className="pt-[72px]">
+    <main className="pt-[72px]">
         <section className="bg-navy py-16 md:py-20 px-6 md:px-12">
           <div className="max-w-[1440px] mx-auto text-center space-y-4">
             <span className="font-body text-gold-light tracking-[0.3em] uppercase text-[10px] font-semibold block">
@@ -92,7 +88,5 @@ export default function AccountPage() {
           </div>
         </section>
       </main>
-      <Footer />
-    </>
-  );
-}
+    );
+  }

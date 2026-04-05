@@ -2,8 +2,6 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
 import { products } from "../lib/data";
 import ProductCard from "../components/ProductCard";
 
@@ -21,10 +19,7 @@ export default function FavoritesPage() {
   };
 
   return (
-    <>
-      <Navbar />
-
-      <main className="pt-[72px] bg-background min-h-screen">
+    <main className="pt-[72px] bg-background min-h-screen">
         {/* Header */}
         <section className="bg-navy py-16 md:py-20 px-6 md:px-12">
           <div className="max-w-[1440px] mx-auto text-center space-y-4">
@@ -74,8 +69,5 @@ export default function FavoritesPage() {
           </div>
         </section>
       </main>
-
-      <Footer />
-    </>
-  );
-}
+    );
+  }

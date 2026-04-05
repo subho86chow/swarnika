@@ -1,8 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
 
 const faqs = [
   {
@@ -75,9 +73,7 @@ export default function FaqPage() {
   };
 
   return (
-    <>
-      <Navbar />
-      <main className="pt-[72px]">
+    <main className="pt-[72px]">
         <section className="bg-navy py-16 md:py-20 px-6 md:px-12">
           <div className="max-w-[1440px] mx-auto text-center space-y-4">
             <span className="font-body text-gold-light tracking-[0.3em] uppercase text-[10px] font-semibold block">
@@ -151,7 +147,5 @@ export default function FaqPage() {
           </div>
         </section>
       </main>
-      <Footer />
-    </>
-  );
-}
+    );
+  }
