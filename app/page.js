@@ -107,8 +107,8 @@ export default async function HomePage() {
         </section>
 
         {/* ─── Promotion Banner ─── */}
-        <section className={`${PAD} pb-10 pt-4 bg-background`}>
-          <div className={`${MAX} relative w-full overflow-hidden bg-surface-dim group cursor-pointer`}>
+        <section className={`pb-10 pt-4 bg-background`}>
+          <div className={`relative w-full overflow-hidden bg-surface-dim group cursor-pointer`}>
             <Link href="/categories">
               <Image
                 src="/products/discount_banner.png"
@@ -174,7 +174,7 @@ export default async function HomePage() {
               <Link href="/about" className="btn-primary-gold inline-flex">Discover Our Heritage</Link>
             </div>
             <div className="relative aspect-[4/5] overflow-hidden order-1 lg:order-2 w-full max-w-md mx-auto lg:max-w-full">
-              <Image src="/products/product-7.jpg" alt="The Art of Slow Craft" fill className="object-cover opacity-80" />
+              <Image src="/products/person.png" alt="The Art of Slow Craft" fill className="object-cover opacity-80" />
               <div className="absolute inset-6 border border-gold-light/20 pointer-events-none" />
             </div>
           </div>
@@ -226,7 +226,7 @@ export default async function HomePage() {
         </section>
 
         {/* ─── Trust Pillars ─── */}
-      <section className={`${PAD} py-12 bg-navy border-t border-white/10`}>
+        <section className={`${PAD} py-12 bg-navy border-t border-white/10`}>
           <div className={`${MAX} grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-0`}>
             {[
               { num: "01", label: "Certified Authentic", sub: "Every piece verified" },
