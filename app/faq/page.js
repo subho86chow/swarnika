@@ -74,78 +74,76 @@ export default function FaqPage() {
 
   return (
     <main className="pt-[72px]">
-        <section className="bg-navy py-16 md:py-20 px-6 md:px-12">
-          <div className="max-w-[1440px] mx-auto text-center space-y-4">
-            <span className="font-body text-gold-light tracking-[0.3em] uppercase text-[10px] font-semibold block">
-              How Can We Help?
-            </span>
-            <h1 className="font-headline text-3xl md:text-4xl text-white italic">
-              Frequently Asked Questions
-            </h1>
-          </div>
-        </section>
+      <section className="bg-navy py-16 md:py-20 px-6 md:px-12">
+        <div className="max-w-[1440px] mx-auto text-center space-y-4">
+          <span className="font-body text-gold-light tracking-[0.3em] uppercase text-[10px] font-semibold block">
+            How Can We Help?
+          </span>
+          <h1 className="font-headline text-3xl md:text-4xl text-white italic">
+            Frequently Asked Questions
+          </h1>
+        </div>
+      </section>
 
-        <section className="py-16 md:py-24 px-6 md:px-12 bg-ivory">
-          <div className="max-w-3xl mx-auto space-y-10">
-            {faqs.map((category) => (
-              <div key={category.category} className="space-y-4">
-                <h2 className="font-headline text-xl text-navy flex items-center gap-2">
-                  {category.category}
-                </h2>
-                <div className="space-y-2">
-                  {category.questions.map((faq, i) => {
-                    const id = `${category.category}-${i}`;
-                    const isOpen = openIndex === id;
-                    return (
-                      <div
-                        key={id}
-                        className="bg-white border border-outline-light/30"
+      <section className="py-16 md:py-24 px-6 md:px-12 bg-ivory">
+        <div className="max-w-3xl mx-auto space-y-10">
+          {faqs.map((category) => (
+            <div key={category.category} className="space-y-4">
+              <h2 className="font-headline text-xl text-navy flex items-center gap-2">
+                {category.category}
+              </h2>
+              <div className="space-y-2">
+                {category.questions.map((faq, i) => {
+                  const id = `${category.category}-${i}`;
+                  const isOpen = openIndex === id;
+                  return (
+                    <div
+                      key={id}
+                      className="bg-white border border-outline-light/30"
+                    >
+                      <button
+                        onClick={() => toggle(id)}
+                        className="w-full flex items-center justify-between px-5 py-4 text-left"
                       >
-                        <button
-                          onClick={() => toggle(id)}
-                          className="w-full flex items-center justify-between px-5 py-4 text-left"
-                        >
-                          <span className="font-body text-sm text-navy font-medium pr-4">
-                            {faq.q}
-                          </span>
-                          <span
-                            className={`material-symbols-outlined text-gold text-lg transition-transform duration-300 flex-shrink-0 ${
-                              isOpen ? "rotate-180" : ""
+                        <span className="font-body text-sm text-navy font-medium pr-4">
+                          {faq.q}
+                        </span>
+                        <span
+                          className={`material-symbols-outlined text-gold text-lg transition-transform duration-300 flex-shrink-0 ${isOpen ? "rotate-180" : ""
                             }`}
-                          >
-                            expand_more
-                          </span>
-                        </button>
-                        <div
-                          className={`overflow-hidden transition-all duration-300 ${
-                            isOpen ? "max-h-60 pb-5" : "max-h-0"
-                          }`}
                         >
-                          <p className="px-5 text-slate-subtle text-sm leading-relaxed">
-                            {faq.a}
-                          </p>
-                        </div>
+                          expand_more
+                        </span>
+                      </button>
+                      <div
+                        className={`overflow-hidden transition-all duration-300 ${isOpen ? "max-h-60 pb-5" : "max-h-0"
+                          }`}
+                      >
+                        <p className="px-5 text-slate-subtle text-sm leading-relaxed">
+                          {faq.a}
+                        </p>
                       </div>
-                    );
-                  })}
-                </div>
+                    </div>
+                  );
+                })}
               </div>
-            ))}
-
-            {/* Still have questions CTA */}
-            <div className="text-center pt-8 space-y-4">
-              <p className="text-slate-subtle text-sm">
-                Still have questions?
-              </p>
-              <a
-                href="/contact"
-                className="inline-block bg-navy text-white px-10 py-4 text-[10px] tracking-[0.2em] uppercase font-medium hover:bg-navy-light transition-all duration-300"
-              >
-                Contact Our Team
-              </a>
             </div>
+          ))}
+
+          {/* Still have questions CTA */}
+          <div className="text-center pt-8 space-y-4">
+            <p className="text-slate-subtle text-sm">
+              Still have questions?
+            </p>
+            <a
+              href="/contact"
+              className="inline-block bg-navy text-white px-10 py-4 text-[10px] tracking-[0.2em] uppercase font-medium hover:bg-navy-light transition-all duration-300"
+            >
+              Contact Our Team
+            </a>
           </div>
-        </section>
-      </main>
-    );
-  }
+        </div>
+      </section>
+    </main>
+  );
+}
