@@ -5,10 +5,13 @@ import { notFound } from "next/navigation";
 export default async function EditProductPage({ params }) {
   const { id } = await params;
 
-  const product = await prisma.product.findUnique({
-    where: { id },
-    include: { tags: true }
-  });
+  const [product, categories] = await Promise.all([
+    prisma.product.findUnique({
+      where: { id },
+      include: { tags: true }
+    }),
+    prisma.category.findMany({ orderBy: { name: "asc" } })
+  ]);
 
   if (!product) {
     notFound();
@@ -16,7 +19,7 @@ export default async function EditProductPage({ params }) {
 
   return (
     <>
-      <ProductForm product={product} />
+      <ProductForm product={product} categories={categories} />
     </>
   );
 }

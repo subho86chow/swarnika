@@ -35,7 +35,7 @@ export default function ProductClient({ product, relatedProducts }) {
           <div className={`${MAX} flex flex-wrap items-center gap-2 md:gap-3 font-label text-[9px] tracking-[0.2em] uppercase`}>
             <Link href="/" className="text-outline hover:text-navy transition-colors">The Archive</Link>
             <span className="text-outline-var">→</span>
-            <Link href="/collections" className="text-outline hover:text-navy transition-colors">Collections</Link>
+            <Link href="/categories" className="text-outline hover:text-navy transition-colors">Categories</Link>
             <span className="text-outline-var">→</span>
             <span className="text-navy font-semibold overflow-hidden text-ellipsis whitespace-nowrap max-w-[150px] md:max-w-[300px]">
               {product.name}
@@ -78,7 +78,7 @@ export default function ProductClient({ product, relatedProducts }) {
             {/* RIGHT — Product Info */}
             <div className="flex flex-col gap-8 animate-fade-in-up delay-200">
               <div>
-                <span className="font-label text-[9px] tracking-[0.3em] uppercase text-gold font-semibold block mb-2">{product.collection}</span>
+                <span className="font-label text-[9px] tracking-[0.3em] uppercase text-gold font-semibold block mb-2">{product.category?.name || ""}</span>
                 <h1 className="font-headline text-navy font-light italic leading-[1.05] text-3xl md:text-5xl">{product.name}</h1>
               </div>
 
@@ -147,7 +147,7 @@ export default function ProductClient({ product, relatedProducts }) {
                   <span className="section-eyebrow">Complete the Look</span>
                   <h2 className="font-headline text-3xl md:text-[46px] text-navy font-light italic leading-tight mt-1">View Full Set</h2>
                 </div>
-                <Link href="/collections" className="btn-ghost self-start md:self-auto">
+                <Link href="/categories" className="btn-ghost self-start md:self-auto">
                   View All Archives <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
                 </Link>
               </div>

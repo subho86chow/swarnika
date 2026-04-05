@@ -4,19 +4,19 @@ import { useState, useMemo, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import ProductCard from "../components/ProductCard";
 
-function CollectionsFilterLogic({ initialProducts, initialCollections }) {
+function CategoriesFilterLogic({ initialProducts, initialCategories }) {
   const searchParams = useSearchParams();
-  const initialCollection = searchParams.get("collection") || "all";
+  const initialCategory = searchParams.get("category") || "all";
   const initialTag = searchParams.get("tag") || "";
 
-  const [activeCollection, setActiveCollection] = useState(initialCollection);
+  const [activeCategory, setActiveCategory] = useState(initialCategory);
   const [activeTag, setActiveTag] = useState(initialTag);
   const [sortBy, setSortBy] = useState("featured");
 
   const filteredProducts = useMemo(() => {
     let result = [...initialProducts];
-    if (activeCollection !== "all") {
-      result = result.filter((p) => p.collection === activeCollection);
+    if (activeCategory !== "all") {
+      result = result.filter((p) => p.category?.name === activeCategory);
     }
     if (activeTag) {
       result = result.filter((p) => p.tags.some(t => t.name === activeTag));
@@ -28,7 +28,7 @@ function CollectionsFilterLogic({ initialProducts, initialCollections }) {
       default: break;
     }
     return result;
-  }, [initialProducts, activeCollection, activeTag, sortBy]);
+  }, [initialProducts, activeCategory, activeTag, sortBy]);
 
   const allTags = [...new Set(initialProducts.flatMap((p) => p.tags.map(t => t.name)))];
 
@@ -41,18 +41,18 @@ function CollectionsFilterLogic({ initialProducts, initialCollections }) {
         <div className={MAX}>
           <div className="tab-strip overflow-x-auto whitespace-nowrap flex no-scrollbar">
             <button
-              onClick={() => { setActiveCollection("all"); setActiveTag(""); }}
-              className={`filter-tab shrink-0 ${activeCollection === "all" && !activeTag ? " active" : ""}`}
+              onClick={() => { setActiveCategory("all"); setActiveTag(""); }}
+              className={`filter-tab shrink-0 ${activeCategory === "all" && !activeTag ? " active" : ""}`}
             >
               All Pieces
             </button>
-            {initialCollections.map((col) => (
+            {initialCategories.map((cat) => (
               <button
-                key={col.id}
-                onClick={() => { setActiveCollection(col.name); setActiveTag(""); }}
-                className={`filter-tab shrink-0 ${activeCollection === col.name ? " active" : ""}`}
+                key={cat.id}
+                onClick={() => { setActiveCategory(cat.name); setActiveTag(""); }}
+                className={`filter-tab shrink-0 ${activeCategory === cat.name ? " active" : ""}`}
               >
-                {col.name}
+                {cat.name}
               </button>
             ))}
           </div>
@@ -123,7 +123,7 @@ function CollectionsFilterLogic({ initialProducts, initialCollections }) {
               <div className="w-16 h-[1px] bg-outline-var mx-auto" />
               <h3 className="font-headline text-2xl text-navy font-light italic">No pieces found</h3>
               <p className="font-body text-outline text-[13px]">Try adjusting your filters to discover more treasures.</p>
-              <button onClick={() => { setActiveCollection("all"); setActiveTag(""); }} className="btn-primary mt-2">
+              <button onClick={() => { setActiveCategory("all"); setActiveTag(""); }} className="btn-primary mt-2">
                 Clear Filters
               </button>
             </div>
@@ -134,7 +134,7 @@ function CollectionsFilterLogic({ initialProducts, initialCollections }) {
   );
 }
 
-export default function CollectionsClient(props) {
+export default function CategoriesClient(props) {
   return (
     <Suspense fallback={
        <div className="text-center py-28 space-y-6">
@@ -144,7 +144,7 @@ export default function CollectionsClient(props) {
           </span>
        </div>
     }>
-      <CollectionsFilterLogic {...props} />
+      <CategoriesFilterLogic {...props} />
     </Suspense>
   );
 }

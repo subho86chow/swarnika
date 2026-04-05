@@ -12,11 +12,10 @@ export async function saveProduct(formData) {
 
   const productData = {
     name: data.name,
-    collection: data.collection,
+    categoryId: data.categoryId || null,
     price: parseInt(data.price),
     originalPrice: data.originalPrice ? parseInt(data.originalPrice) : null,
     description: data.description,
-    category: data.category,
     inStock: data.inStock === "true",
     badge: data.badge || null,
   };
@@ -33,10 +32,8 @@ export async function saveProduct(formData) {
     });
   }
 
-  let productId;
-
   if (isNew) {
-    const created = await prisma.product.create({
+    await prisma.product.create({
       data: {
         ...productData,
         tags: {
@@ -44,9 +41,7 @@ export async function saveProduct(formData) {
         }
       }
     });
-    productId = created.id;
   } else {
-    // For update, reset tags first then connect
     await prisma.product.update({
       where: { id },
       data: {
@@ -57,7 +52,6 @@ export async function saveProduct(formData) {
         }
       }
     });
-    productId = id;
   }
 
   revalidatePath("/admin/products");
@@ -90,30 +84,60 @@ export async function saveSiteContent(formData) {
   revalidatePath("/");
 }
 
-export async function saveCollection(formData) {
+export async function saveCategory(formData) {
   const data = Object.fromEntries(formData);
   const id = data.id;
 
   if (id) {
-    await prisma.collection.update({
+    await prisma.category.update({
       where: { id },
       data: {
         name: data.name,
-        description: data.description,
-        image: data.image
+        description: data.description || null,
+        image: data.image || null
       }
     });
   } else {
-    await prisma.collection.create({
+    await prisma.category.create({
       data: {
         name: data.name,
-        description: data.description,
-        image: data.image
+        description: data.description || null,
+        image: data.image || null
       }
     });
   }
 
-  revalidatePath("/admin/collections");
+  revalidatePath("/admin/categories");
+  revalidatePath("/categories");
   revalidatePath("/");
-  redirect("/admin/collections");
+  redirect("/admin/categories");
+}
+
+export async function deleteCategory(id) {
+  // Unlink products first, then delete category
+  await prisma.product.updateMany({
+    where: { categoryId: id },
+    data: { categoryId: null }
+  });
+  await prisma.category.delete({ where: { id } });
+
+  revalidatePath("/admin/categories");
+  revalidatePath("/categories");
+  revalidatePath("/");
+}
+
+export async function deleteTag(id) {
+  await prisma.tag.delete({ where: { id } });
+
+  revalidatePath("/admin/tags");
+  revalidatePath("/categories");
+  revalidatePath("/");
+}
+
+export async function deleteProduct(id) {
+  await prisma.product.delete({ where: { id } });
+
+  revalidatePath("/admin/products");
+  revalidatePath("/categories");
+  revalidatePath("/");
 }

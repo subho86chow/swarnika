@@ -35,7 +35,7 @@ export default function ProductCard({ product, index = 0 }) {
         {/* Favourites Button */}
         <button
           onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
-          className="absolute top-3 right-3 z-20 w-9 h-9 bg-white/90 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:bg-white"
+          className="absolute top-3 right-3 z-20 w-9 h-9 bg-white/90 flex items-center justify-center opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:bg-white"
         >
           <span className="material-symbols-outlined text-[18px] text-outline hover:text-gold-light transition-colors duration-200">favorite</span>
         </button>
@@ -47,7 +47,7 @@ export default function ProductCard({ product, index = 0 }) {
           fontFamily: 'var(--font-label)', color: '#7a6130',
           fontSize: '8.5px', letterSpacing: '0.22em', textTransform: 'uppercase', display: 'block'
         }}>
-          {product.collection}
+          {product.category?.name || product.collection}
         </span>
         <h3 style={{
           fontFamily: 'var(--font-headline)', fontSize: '18px',

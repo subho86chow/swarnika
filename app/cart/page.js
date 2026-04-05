@@ -3,8 +3,6 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
 import { products, formatPrice } from "../lib/data";
 
 const initialCartItems = [
@@ -37,10 +35,7 @@ export default function CartPage() {
   const total = subtotal + shipping;
 
   return (
-    <>
-      <Navbar />
-
-      <main className="pt-[72px]">
+    <main className="pt-[72px]">
         {/* Header */}
         <section className="bg-navy py-16 md:py-20 px-6 md:px-12">
           <div className="max-w-[1440px] mx-auto text-center space-y-4">
@@ -65,7 +60,7 @@ export default function CartPage() {
                   Discover our collections and add your favorite pieces.
                 </p>
                 <Link
-                  href="/collections"
+                  href="/categories"
                   className="inline-block bg-navy text-white px-10 py-4 text-[10px] tracking-[0.2em] uppercase font-medium mt-4"
                 >
                   Browse Collections
@@ -225,8 +220,5 @@ export default function CartPage() {
           </div>
         </section>
       </main>
-
-      <Footer />
-    </>
-  );
-}
+    );
+  }

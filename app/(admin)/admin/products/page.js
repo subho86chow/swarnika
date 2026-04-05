@@ -5,7 +5,7 @@ import Image from "next/image";
 export default async function ProductsManagementPage() {
   const products = await prisma.product.findMany({
     orderBy: { createdAt: "desc" },
-    include: { images: true }
+    include: { images: true, category: true }
   });
 
   return (
@@ -26,7 +26,7 @@ export default async function ProductsManagementPage() {
             <thead className="bg-ivory-dark border-b border-surface-dim uppercase text-[10px] tracking-wider text-outline font-label">
               <tr>
                 <th className="p-4 font-semibold">Product</th>
-                <th className="p-4 font-semibold">Collection</th>
+                <th className="p-4 font-semibold">Category</th>
                 <th className="p-4 font-semibold">Price</th>
                 <th className="p-4 font-semibold">Status</th>
                 <th className="p-4 font-semibold text-right">Actions</th>
@@ -51,11 +51,10 @@ export default async function ProductsManagementPage() {
                         </div>
                         <div>
                           <p className="font-semibold text-navy truncate max-w-[200px]">{product.name}</p>
-                          <p className="text-[11px] text-outline mt-0.5">{product.category}</p>
                         </div>
                       </div>
                     </td>
-                    <td className="p-4 text-[13px]">{product.collection}</td>
+                    <td className="p-4 text-[13px]">{product.category?.name || "—"}</td>
                     <td className="p-4 text-[13px]">
                       ₹{product.price.toLocaleString("en-IN")}
                     </td>

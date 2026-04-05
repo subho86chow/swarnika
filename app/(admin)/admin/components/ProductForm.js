@@ -4,7 +4,7 @@ import { useTransition } from "react";
 import { saveProduct } from "../../actions";
 import Link from "next/link";
 
-export default function ProductForm({ product }) {
+export default function ProductForm({ product, categories = [] }) {
   const [isPending, startTransition] = useTransition();
 
   const handleSubmit = (e) => {
@@ -32,8 +32,17 @@ export default function ProductForm({ product }) {
           <input required type="text" name="name" defaultValue={product?.name || ""} className="w-full border border-surface-dim p-3 font-body text-sm text-navy focus:outline-none focus:border-navy" />
         </div>
         <div className="space-y-2">
-          <label className="font-label text-[10px] tracking-widest uppercase text-outline">Collection</label>
-          <input required type="text" name="collection" defaultValue={product?.collection || "The Heritage Line"} className="w-full border border-surface-dim p-3 font-body text-sm text-navy focus:outline-none focus:border-navy" />
+          <label className="font-label text-[10px] tracking-widest uppercase text-outline">Category</label>
+          <select
+            name="categoryId"
+            defaultValue={product?.categoryId || ""}
+            className="w-full border border-surface-dim p-3 font-body text-sm text-navy focus:outline-none focus:border-navy bg-white"
+          >
+            <option value="">— No Category —</option>
+            {categories.map((cat) => (
+              <option key={cat.id} value={cat.id}>{cat.name}</option>
+            ))}
+          </select>
         </div>
       </div>
 
@@ -55,26 +64,20 @@ export default function ProductForm({ product }) {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-2">
-          <label className="font-label text-[10px] tracking-widest uppercase text-outline">Category (e.g. necklace-sets)</label>
-          <input required type="text" name="category" defaultValue={product?.category || "necklace-sets"} className="w-full border border-surface-dim p-3 font-body text-sm text-navy focus:outline-none focus:border-navy" />
-        </div>
-        <div className="space-y-2">
           <label className="font-label text-[10px] tracking-widest uppercase text-outline">Tags (comma separated)</label>
           <input type="text" name="tags" defaultValue={product?.tags?.map(t => t.name).join(", ") || ""} placeholder="diamond, bridal, premium" className="w-full border border-surface-dim p-3 font-body text-sm text-navy focus:outline-none focus:border-navy" />
         </div>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-2">
           <label className="font-label text-[10px] tracking-widest uppercase text-outline">Badge (e.g. Bestseller, Sale) - Optional</label>
           <input type="text" name="badge" defaultValue={product?.badge || ""} className="w-full border border-surface-dim p-3 font-body text-sm text-navy focus:outline-none focus:border-navy" />
         </div>
-        <div className="space-y-2 flex flex-col justify-center">
-           <label className="flex items-center gap-3 cursor-pointer mt-4">
-             <input type="checkbox" name="inStock" value="true" defaultChecked={product ? product.inStock : true} className="w-4 h-4 accent-navy" />
-             <span className="font-label text-[10px] tracking-widest uppercase text-navy font-semibold">In Stock</span>
-           </label>
-        </div>
+      </div>
+
+      <div className="space-y-2 flex flex-col justify-center">
+        <label className="flex items-center gap-3 cursor-pointer">
+          <input type="checkbox" name="inStock" value="true" defaultChecked={product ? product.inStock : true} className="w-4 h-4 accent-navy" />
+          <span className="font-label text-[10px] tracking-widest uppercase text-navy font-semibold">In Stock</span>
+        </label>
       </div>
 
       <div className="pt-6 border-t border-surface-dim">

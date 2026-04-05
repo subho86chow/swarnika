@@ -2,7 +2,6 @@ import { prisma } from "../../lib/prisma";
 import Link from "next/link";
 
 export default function AdminDashboard() {
-  // Use a Server Component to fetch basic metrics
   return (
     <div className="space-y-8 animate-fade-in-up">
       <div>
@@ -10,17 +9,19 @@ export default function AdminDashboard() {
         <p className="font-body text-outline text-sm">Welcome to the Swarnika control panel.</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <DashboardCard title="Total Products" model="product" href="/admin/products" />
-        <DashboardCard title="Active Collections" model="collection" href="/admin/collections" />
-        <DashboardCard title="Site Sections Configured" model="siteContent" href="/admin/settings" />
+        <DashboardCard title="Categories" model="category" href="/admin/categories" />
+        <DashboardCard title="Tags" model="tag" href="/admin/tags" />
+        <DashboardCard title="Site Sections" model="siteContent" href="/admin/settings" />
       </div>
 
       <div className="bg-white border border-surface-dim p-6">
         <h3 className="font-headline text-xl text-navy mb-4">Quick Actions</h3>
         <div className="flex flex-wrap gap-4">
           <Link href="/admin/products/new" className="btn-primary">Add New Product</Link>
-          <Link href="/admin/collections" className="btn-secondary">Manage Collections</Link>
+          <Link href="/admin/categories" className="btn-secondary">Manage Categories</Link>
+          <Link href="/admin/tags" className="btn-secondary">Manage Tags</Link>
           <Link href="/admin/settings" className="btn-secondary">Update Front Page Hero</Link>
         </div>
       </div>
@@ -28,12 +29,12 @@ export default function AdminDashboard() {
   );
 }
 
-// A simple async component that loads the count for a model
 async function DashboardCard({ title, model, href }) {
   let count = 0;
   try {
     if (model === "product") count = await prisma.product.count();
-    else if (model === "collection") count = await prisma.collection.count();
+    else if (model === "category") count = await prisma.category.count();
+    else if (model === "tag") count = await prisma.tag.count();
     else if (model === "siteContent") count = await prisma.siteContent.count();
   } catch (e) {
     console.error("Failed to load metrics for", model);

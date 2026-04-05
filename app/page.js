@@ -1,7 +1,5 @@
 import Link from "next/link";
 import Image from "next/image";
-import Navbar from "./components/Navbar";
-import Footer from "./components/Footer";
 import ProductCard from "./components/ProductCard";
 import HeroSlider from "./components/HeroSlider";
 import CampaignCarousel from "./components/CampaignCarousel";
@@ -36,9 +34,14 @@ export default async function HomePage() {
     "/products/product-4.jpg"
   ];
 
+  // Fetch Categories
+  const categories = await prisma.category.findMany({
+    orderBy: { name: "asc" }
+  });
+
   // Fetch Products (assume bestsellers = first 4, new arrivals = next 4)
   const products = await prisma.product.findMany({
-    include: { images: true },
+    include: { images: true, category: true },
     orderBy: { createdAt: "asc" },
     take: 8
   });
@@ -54,7 +57,7 @@ export default async function HomePage() {
 
   return (
     <>
-      <Navbar />
+
 
       <main className="pt-0 bg-background">
         <HeroSlider
@@ -73,19 +76,12 @@ export default async function HomePage() {
               </div>
             </div>
           </div>
-          <div className="max-w-[1440px] mx-auto px-0 md:px-8">
-            <div className="grid grid-cols-2 md:grid-cols-6 gap-[2px] md:gap-4 px-2 md:px-0">
-              {[
-                { name: "Earrings", img: "/products/rings_cat.png", url: "/collections?tag=earrings" },
-                { name: "Necklaces", img: "/products/neckless_cat.png", url: "/collections?tag=necklaces" },
-                { name: "Bracelets", img: "/products/bracelet_cat.png", url: "/collections?tag=bracelets" },
-                { name: "Mangalsutras", img: "/products/mangalsutra_cat.png", url: "/collections?tag=mangalsutras" },
-                { name: "Mens", img: "/products/bracelet_men_cat.png", url: "/collections?tag=mens" },
-                { name: "Rings", img: "/products/rings_cat.png", url: "/collections?tag=rings" },
-              ].map((cat) => (
-                <Link key={cat.name} href={cat.url} className="group relative block aspect-[4/5] overflow-hidden bg-surface-dim">
+          <div className={`${MAX} ${PAD}`}>
+            <div className="grid grid-cols-2 md:grid-cols-6 gap-3 md:gap-4">
+              {categories.map((cat) => (
+                <Link key={cat.id} href={`/categories?category=${encodeURIComponent(cat.name)}`} className="group relative block aspect-[4/5] overflow-hidden bg-surface-dim">
                   <Image
-                    src={cat.img}
+                    src={cat.image || "/products/rings_cat.png"}
                     alt={cat.name}
                     fill
                     sizes="(max-width: 768px) 50vw, 16vw"
@@ -113,7 +109,7 @@ export default async function HomePage() {
         {/* ─── Promotion Banner ─── */}
         <section className={`${PAD} pb-10 pt-4 bg-background`}>
           <div className={`${MAX} relative w-full overflow-hidden bg-surface-dim group cursor-pointer`}>
-            <Link href="/collections">
+            <Link href="/categories">
               <Image
                 src="/products/discount_banner.png"
                 alt="Discount Promotional Banner"
@@ -134,7 +130,7 @@ export default async function HomePage() {
                 <span className="section-eyebrow">The Signature Selection</span>
                 <h2 className="font-headline text-[38px] md:text-[52px] text-navy font-light leading-tight">Bestsellers</h2>
               </div>
-              <Link href="/collections?tag=bestseller" className="btn-ghost self-start md:self-auto mb-1">
+              <Link href="/categories?tag=bestseller" className="btn-ghost self-start md:self-auto mb-1">
                 View All Archives <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
               </Link>
             </div>
@@ -192,7 +188,7 @@ export default async function HomePage() {
                 <span className="section-eyebrow">Just Arrived</span>
                 <h2 className="font-headline text-[38px] md:text-[52px] text-navy font-light leading-tight">New Pieces</h2>
               </div>
-              <Link href="/collections" className="btn-ghost self-start md:self-auto mb-1">
+              <Link href="/categories" className="btn-ghost self-start md:self-auto mb-1">
                 View All <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
               </Link>
             </div>
@@ -223,14 +219,14 @@ export default async function HomePage() {
               </p>
               <div className="flex flex-wrap gap-4 justify-center">
                 <Link href="/contact" className="btn-primary">Book an Appointment</Link>
-                <Link href="/collections" className="btn-secondary">View All Collections</Link>
+                <Link href="/categories" className="btn-secondary">View All Categories</Link>
               </div>
             </div>
           </div>
         </section>
 
         {/* ─── Trust Pillars ─── */}
-        <section className={`${PAD} py-12 bg-navy border-t border-white/10`}>
+      <section className={`${PAD} py-12 bg-navy border-t border-white/10`}>
           <div className={`${MAX} grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-0`}>
             {[
               { num: "01", label: "Certified Authentic", sub: "Every piece verified" },
@@ -248,8 +244,6 @@ export default async function HomePage() {
         </section>
 
       </main>
-
-      <Footer />
     </>
   );
 }

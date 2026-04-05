@@ -49,7 +49,7 @@ export default function FavoritesPage() {
                   Curate a collection of your favorite pieces from the archive. They will be saved here for your next visit.
                 </p>
                 <Link
-                  href="/collections"
+                  href="/categories"
                   className="inline-block bg-navy text-white px-10 py-4 text-[10px] tracking-[0.2em] uppercase font-bold mt-6 hover:bg-navy-light transition-colors"
                 >
                   Explore The Archive

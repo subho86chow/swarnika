@@ -1,11 +1,16 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
+import { FaInstagram, FaFacebookF, FaTwitter } from "react-icons/fa";
+import NewsletterForm from "./NewsletterForm";
 
 const PAD = "px-6 md:px-14 lg:px-20";
 const MAX = "max-w-[1440px] mx-auto";
 
-export default function Footer() {
+export default function Footer({ categories = [] }) {
+  const topCategories = categories.slice(0, 5);
+
   return (
     <footer className="w-full bg-navy text-white">
 
@@ -23,23 +28,7 @@ export default function Footer() {
                 invitations to bespoke consultations.
               </p>
             </div>
-            <form
-              className="flex flex-col sm:flex-row items-stretch gap-0 w-full"
-              onSubmit={(e) => e.preventDefault()}
-            >
-              <input
-                type="email"
-                placeholder="Your email address"
-                className="subscribe-input w-full sm:flex-1 bg-white/5 border border-white/20 text-white px-5 py-4 font-body text-[13px] placeholder:text-white/40 focus:outline-none focus:border-gold-light transition-colors"
-                required
-              />
-              <button
-                type="submit"
-                className="subscribe-btn px-8 py-4 sm:py-0"
-              >
-                Subscribe
-              </button>
-            </form>
+            <NewsletterForm />
           </div>
         </div>
       </div>
@@ -51,15 +40,15 @@ export default function Footer() {
           {/* Brand Column */}
           <div className="lg:col-span-4 space-y-6">
             <div>
-              <span className="text-[9px] tracking-[0.4em] uppercase text-gold-light font-label font-medium block mb-1">
-                The Archive
-              </span>
-              <span className="font-headline text-2xl tracking-[0.2em] uppercase text-white font-light block">
-                SWARNIKA
-              </span>
-              <span className="font-label text-[8px] tracking-[0.35em] uppercase text-white/40 font-medium">
-                House of Jewelry
-              </span>
+              <Link href="/">
+                <Image
+                  src="/products/logo.svg"
+                  alt="Swarnika Logo"
+                  width={140}
+                  height={48}
+                  className="w-[120px] h-auto opacity-90 hover:opacity-100 transition-opacity"
+                />
+              </Link>
             </div>
             <p className="font-body text-[13px] text-white/50 leading-relaxed max-w-xs">
               Bridging ancestral craftsmanship and contemporary silhouettes. Each
@@ -68,17 +57,17 @@ export default function Footer() {
             {/* Social */}
             <div className="flex gap-3 pt-2">
               {[
-                { label: "Instagram", icon: "photo_camera" },
-                { label: "Pinterest", icon: "interests" },
-                { label: "Facebook", icon: "public" },
-              ].map(({ label, icon }) => (
+                { label: "Facebook", Icon: FaFacebookF },
+                { label: "Instagram", Icon: FaInstagram },
+                { label: "Twitter", Icon: FaTwitter },
+              ].map(({ label, Icon }) => (
                 <a
                   key={label}
                   href="#"
                   aria-label={label}
                   className="social-btn w-10 h-10 border border-white/20 rounded-full flex items-center justify-center text-white/50 hover:text-white hover:border-white/50 transition-colors"
                 >
-                  <span className="material-symbols-outlined text-[16px]">{icon}</span>
+                  <Icon size={16} />
                 </a>
               ))}
             </div>
@@ -87,25 +76,24 @@ export default function Footer() {
           {/* Spacer */}
           <div className="hidden lg:block lg:col-span-1" />
 
-          {/* Collections */}
+          {/* Categories */}
           <div className="lg:col-span-2 space-y-5">
             <h5 className="font-label text-[9px] font-bold tracking-[0.28em] uppercase text-white/80">
-              Collections
+              Categories
             </h5>
             <ul className="space-y-3.5">
-              {[
-                { href: "/collections?tag=new", label: "New Arrivals" },
-                { href: "/collections?tag=bestseller", label: "Best Sellers" },
-                { href: "/collections", label: "All Jewelry" },
-                { href: "/collections?tag=bridal", label: "Bridal Suite" },
-                { href: "/collections?collection=The Heritage Line", label: "Heritage Line" },
-              ].map((link) => (
-                <li key={link.href}>
-                  <Link href={link.href} className="hover-underline font-body text-[12px] text-white/40 hover:text-white/80 transition-colors duration-200">
-                    {link.label}
+              {topCategories.map((cat) => (
+                <li key={cat.id}>
+                  <Link href={`/categories?category=${encodeURIComponent(cat.name)}`} className="hover-underline font-body text-[12px] text-white/40 hover:text-white/80 transition-colors duration-200">
+                    {cat.name}
                   </Link>
                 </li>
               ))}
+              <li>
+                <Link href="/categories" className="hover-underline font-body text-[12px] text-white/40 hover:text-white/80 transition-colors duration-200 font-semibold italic">
+                  View All Collection
+                </Link>
+              </li>
             </ul>
           </div>
 
@@ -163,26 +151,23 @@ export default function Footer() {
           </div>
           {[
             {
-              city: "London",
-              address: "42 New Bond Street, Mayfair, W1S 2ST",
-              phone: "+44 20 7946 0123",
-            },
-            {
-              city: "Paris",
-              address: "12 Place Vendôme, 75001 Paris",
-              phone: "+33 1 42 61 58 58",
+              city: "Lucknow",
+              address: "262, Sushila Sadan\nKaushalpuri Khargapur\nGomtinagar Lucknow\nUttar Pradesh\n226010",
+              phone: "",
             },
           ].map((store) => (
-            <div key={store.city} className="space-y-1.5">
+            <div key={store.city} className="space-y-1.5 md:col-start-3">
               <p className="font-label text-[10px] tracking-[0.2em] uppercase text-white/80 font-semibold">
                 {store.city}
               </p>
-              <p className="font-body text-[12px] text-white/40 leading-relaxed">
+              <p className="font-body text-[12px] text-white/40 leading-relaxed whitespace-pre-line">
                 {store.address}
               </p>
-              <p className="font-body text-[12px] text-white/30">
-                {store.phone}
-              </p>
+              {store.phone && (
+                <p className="font-body text-[12px] text-white/30">
+                  {store.phone}
+                </p>
+              )}
             </div>
           ))}
         </div>

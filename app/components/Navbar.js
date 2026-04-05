@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 
-export default function Navbar() {
+export default function Navbar({ categories = [] }) {
   const pathname = usePathname();
   const isHome = pathname === "/";
 
@@ -23,8 +23,8 @@ export default function Navbar() {
   }, []);
 
   const navLinks = [
-    { href: "/collections", label: "Collections" },
-    { href: "/collections?tag=bridal", label: "Bespoke" },
+    { href: "/categories", label: "Categories" },
+    { href: "/categories?tag=bridal", label: "Bespoke" },
     { href: "/about", label: "Heritage" },
     { href: "/contact", label: "Stores" },
   ];

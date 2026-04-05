@@ -174,7 +174,7 @@ export default function AboutPage() {
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-4 pt-4">
               <Link
-                href="/collections"
+                href="/categories"
                 className="btn-primary-gold"
               >
                 Explore Collections

@@ -102,7 +102,7 @@ export default function CampaignCarousel() {
               transform: `translateX(${translateX}%) translateZ(${translateZ}px) rotateY(${rotateY}deg) scale(${scale})`,
               zIndex,
               opacity,
-              transition: "all 0.8s cubic-bezier(0.25, 0.8, 0.25, 1)", // highly smooth easing
+              transition: "transform 0.8s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.8s cubic-bezier(0.25, 0.8, 0.25, 1)", // highly smooth easing
             };
 
             return (

@@ -62,7 +62,11 @@ async function AnnouncementBar() {
 import ClientLayoutWrapper from "./components/ClientLayoutWrapper";
 import ChatBot from "./components/ChatBot";
 
-export default function RootLayout({ children }) {
+export default async function RootLayout({ children }) {
+  const categories = await prisma.category.findMany({
+    orderBy: { name: "asc" }
+  });
+
   return (
     <html lang="en" className={`${cormorant.variable} ${manrope.variable}`}>
       <head>
@@ -72,7 +76,7 @@ export default function RootLayout({ children }) {
         />
       </head>
       <body>
-        <ClientLayoutWrapper AnnouncementBar={<AnnouncementBar />}>
+        <ClientLayoutWrapper AnnouncementBar={<AnnouncementBar />} categories={categories}>
           {children}
           <ChatBot />
         </ClientLayoutWrapper>
