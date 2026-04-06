@@ -85,7 +85,7 @@ export default async function HomePage() {
                     alt={cat.name}
                     fill
                     sizes="(max-width: 768px) 50vw, 16vw"
-                    className="object-cover transition-transform duration-[1200ms] ease-[cubic-bezier(0.25,0.46,0.45,0.94)] group-hover:scale-[1.08]"
+                    className="object-cover object-top transition-transform duration-[1200ms] ease-[cubic-bezier(0.25,0.46,0.45,0.94)] group-hover:scale-[1.08]"
                   />
                   {/* Subtle bottom gradient to ensure text readability */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent opacity-80" />
@@ -174,7 +174,7 @@ export default async function HomePage() {
               <Link href="/about" className="btn-primary-gold inline-flex">Discover Our Heritage</Link>
             </div>
             <div className="relative aspect-[4/5] overflow-hidden order-1 lg:order-2 w-full max-w-md mx-auto lg:max-w-full">
-              <Image src="/products/person.png" alt="The Art of Slow Craft" fill className="object-cover opacity-80" />
+              <Image src="/products/person.png" alt="The Art of Slow Craft" fill className="object-cover object-top opacity-80" />
               <div className="absolute inset-6 border border-gold-light/20 pointer-events-none" />
             </div>
           </div>

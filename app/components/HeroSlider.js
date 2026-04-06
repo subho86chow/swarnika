@@ -26,7 +26,7 @@ export default function HeroSlider({ heroTitle, heroSubtitle, heroImages }) {
             alt="The Archive Background"
             fill
             priority={idx === 0}
-            className={`object-cover object-center transition-opacity duration-[1500ms] ${idx === currentSlide ? "opacity-100" : "opacity-0"}`}
+            className={`object-cover object-top transition-opacity duration-[1500ms] ${idx === currentSlide ? "opacity-100" : "opacity-0"}`}
             sizes="100vw"
           />
         ))}

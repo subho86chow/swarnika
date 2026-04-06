@@ -123,7 +123,7 @@ export default function CampaignCarousel() {
                     alt={item.title}
                     fill
                     sizes="(max-width: 768px) 80vw, 45vw"
-                    className="object-cover transition-transform duration-1000 group-hover:scale-105"
+                    className="object-cover object-top transition-transform duration-1000 group-hover:scale-105"
                   />
 
                   {/* Text Overlay */}
