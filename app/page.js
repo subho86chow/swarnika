@@ -174,7 +174,7 @@ export default async function HomePage() {
               <Link href="/about" className="btn-primary-gold inline-flex">Discover Our Heritage</Link>
             </div>
             <div className="relative aspect-[4/5] overflow-hidden order-1 lg:order-2 w-full max-w-md mx-auto lg:max-w-full">
-              <Image src="/products/person.png" alt="The Art of Slow Craft" fill className="object-cover object-top opacity-80" />
+              <Image src="/products/product-1.jpg" alt="The Art of Slow Craft" fill className="object-cover object-top opacity-80" />
               <div className="absolute inset-6 border border-gold-light/20 pointer-events-none" />
             </div>
           </div>
