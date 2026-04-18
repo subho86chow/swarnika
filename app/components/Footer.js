@@ -57,13 +57,13 @@ export default function Footer({ categories = [] }) {
             {/* Social */}
             <div className="flex gap-3 pt-2">
               {[
-                { label: "Facebook", Icon: FaFacebookF },
-                { label: "Instagram", Icon: FaInstagram },
-                { label: "Twitter", Icon: FaTwitter },
-              ].map(({ label, Icon }) => (
+                { label: "Facebook", Icon: FaFacebookF, link: "https://www.facebook.com/share/1bwQTZUsb1/" },
+                { label: "Instagram", Icon: FaInstagram, link: "https://www.instagram.com/swar_nikaofficial?igsh=MWtzc2szazJoZjc4ZA==" },
+                { label: "Twitter", Icon: FaTwitter, link: "https://x.com/SwarnikaJewels" },
+              ].map(({ label, Icon, link }) => (
                 <a
                   key={label}
-                  href="#"
+                  href={link}
                   aria-label={label}
                   className="social-btn w-10 h-10 border border-white/20 rounded-full flex items-center justify-center text-white/50 hover:text-white hover:border-white/50 transition-colors"
                 >
