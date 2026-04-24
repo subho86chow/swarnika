@@ -127,7 +127,7 @@ export default function ContactPage() {
                 <span className="section-eyebrow text-gold-light">Private Viewing</span>
                 <h3 className="font-headline text-[26px] text-white font-light italic leading-tight mt-2 mb-4">Experience our most exclusive high-jewelry pieces in the comfort of our private salons.</h3>
                 <p className="font-body text-white/40 text-[12px] leading-relaxed mb-7">Our specialists curate a bespoke selection tailored to your style and occasion.</p>
-                <button className="btn-primary-gold inline-flex">Book Appointment</button>
+                <button className="btn-primary inline-flex">Book Appointment</button>
               </div>
 
               <div>

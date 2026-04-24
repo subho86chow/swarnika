@@ -1,5 +1,6 @@
 import CategoriesClient from "./CategoriesClient";
 import { prisma } from "../lib/prisma";
+import { withCache, cacheKeys, CACHE_TTL } from "../lib/cache";
 
 const PAD = "px-6 md:px-14 lg:px-20";
 const MAX = "max-w-[1440px] mx-auto";
@@ -7,16 +8,24 @@ const MAX = "max-w-[1440px] mx-auto";
 export const revalidate = 0;
 
 export default async function CategoriesPage() {
-  const initialProducts = await prisma.product.findMany({
-    include: { images: true, tags: true, category: true }
-  });
+  const initialProducts = await withCache(
+    cacheKeys.productList("categories", 1),
+    () => prisma.product.findMany({
+      include: { images: true, tags: true, category: true }
+    }),
+    CACHE_TTL.PRODUCTS_LIST
+  );
 
   const formattedProducts = initialProducts.map(p => ({
     ...p,
     image: p.images[0]?.url || "",
   }));
 
-  const initialCategories = await prisma.category.findMany();
+  const initialCategories = await withCache(
+    cacheKeys.categories(),
+    () => prisma.category.findMany(),
+    CACHE_TTL.CATEGORIES
+  );
 
   return (
     <main className="bg-background" style={{ paddingTop: '136px' }}>
@@ -56,7 +65,7 @@ export default async function CategoriesPage() {
             <p className="font-body text-white/50 text-[13px] leading-relaxed max-w-md mx-auto mb-10">
               These one-of-a-kind pieces are not available for public sale and require a verified invitation for viewing.
             </p>
-            <a href="/contact" className="btn-primary-gold inline-flex">Request an Invitation</a>
+            <a href="/contact" className="btn-primary inline-flex">Request an Invitation</a>
           </div>
         </section>
 

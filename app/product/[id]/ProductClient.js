@@ -1,10 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useUser } from "@clerk/nextjs";
 import ProductCard from "../../components/ProductCard";
+import ProductCoupons from "../../components/ProductCoupons";
 import { formatPrice } from "../../lib/data";
+import { useCart } from "../../lib/cartStore";
+import { recordProductView } from "../../lib/viewActions";
 
 const PAD = "px-6 md:px-14 lg:px-20";
 const MAX = "max-w-[1440px] mx-auto";
@@ -13,7 +17,38 @@ export default function ProductClient({ product, relatedProducts }) {
   const [quantity, setQuantity] = useState(1);
   const [activeImage, setActiveImage] = useState(0);
   const [openAccordion, setOpenAccordion] = useState("artistry");
-  const [wishlisted, setWishlisted] = useState(false);
+  const [addedToCart, setAddedToCart] = useState(false);
+  const { addToCart, toggleFavorite, isFavorite } = useCart();
+  const { isSignedIn, user } = useUser();
+  const wishlisted = isFavorite(product.id);
+
+  // Track time spent on product page
+  useEffect(() => {
+    const startTime = Date.now();
+
+    const handleRecord = () => {
+      const duration = (Date.now() - startTime) / 1000;
+      if (isSignedIn && user?.id && duration >= 3) {
+        recordProductView(user.id, product.id, duration);
+      }
+    };
+
+    window.addEventListener("beforeunload", handleRecord);
+    return () => {
+      window.removeEventListener("beforeunload", handleRecord);
+      handleRecord();
+    };
+  }, [isSignedIn, user?.id, product.id]);
+
+  const handleAddToCart = () => {
+    addToCart(product, quantity);
+    setAddedToCart(true);
+    setTimeout(() => setAddedToCart(false), 2000);
+  };
+
+  const handleToggleFavorite = () => {
+    toggleFavorite(product.id);
+  };
 
   const discount = product.originalPrice ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100) : 0;
 
@@ -60,7 +95,7 @@ export default function ProductClient({ product, relatedProducts }) {
                     </span>
                   </div>
                 )}
-                <button onClick={() => setWishlisted(!wishlisted)} className="absolute top-4 md:top-5 right-4 md:right-5 z-10 w-10 h-10 bg-white/90 flex items-center justify-center">
+                <button onClick={handleToggleFavorite} className="absolute top-4 md:top-5 right-4 md:right-5 z-10 w-10 h-10 bg-white/90 flex items-center justify-center">
                   <span className={`material-symbols-outlined text-[20px] ${wishlisted ? "text-gold-light" : "text-outline"}`}>favorite</span>
                 </button>
               </div>
@@ -94,6 +129,8 @@ export default function ProductClient({ product, relatedProducts }) {
 
               <p className="font-body text-slate-subtle text-[13px] leading-loose">{product.description}</p>
 
+              <ProductCoupons productId={product.id} price={product.price} categoryId={product.categoryId} />
+
               <div className="flex items-center gap-6">
                 <span className="font-label text-[9px] tracking-[0.22em] uppercase text-outline font-semibold">Quantity</span>
                 <div className="flex items-center border border-surface-dim">
@@ -104,10 +141,14 @@ export default function ProductClient({ product, relatedProducts }) {
               </div>
 
               <div className="flex flex-col sm:flex-row gap-3">
-                <button className="btn-primary w-full py-5 text-[10px] flex items-center justify-center gap-2">
-                  <span className="material-symbols-outlined text-[16px]">shopping_bag</span> Add to Cart
+                <button
+                  onClick={handleAddToCart}
+                  className="btn-primary w-full py-5 text-[10px] flex items-center justify-center gap-2"
+                >
+                  <span className="material-symbols-outlined text-[16px]">{addedToCart ? "check" : "shopping_bag"}</span>
+                  {addedToCart ? "Added to Bag" : "Add to Cart"}
                 </button>
-                <button onClick={() => setWishlisted(!wishlisted)} className={`btn-secondary w-full py-5 text-[10px] flex items-center justify-center gap-2 ${wishlisted ? "border-gold-light text-gold" : ""}`}>
+                <button onClick={handleToggleFavorite} className={`btn-secondary w-full py-5 text-[10px] flex items-center justify-center gap-2 ${wishlisted ? "border-gold-light text-gold" : ""}`}>
                   <span className="material-symbols-outlined text-[16px]">favorite</span>
                   {wishlisted ? "Saved" : "Add to Wishlist"}
                 </button>

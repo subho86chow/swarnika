@@ -1,92 +1,84 @@
 "use client";
 
 import Link from "next/link";
+import { useUser } from "@clerk/nextjs";
 
-export default function AccountPage() {
-  return (
-    <main className="pt-[72px]">
-        <section className="bg-navy py-16 md:py-20 px-6 md:px-12">
-          <div className="max-w-[1440px] mx-auto text-center space-y-4">
-            <span className="font-body text-gold-light tracking-[0.3em] uppercase text-[10px] font-semibold block">
-              Welcome Back
-            </span>
-            <h1 className="font-headline text-3xl md:text-4xl text-white italic">
-              My Account
-            </h1>
-          </div>
-        </section>
+const quickLinks = [
+  { href: "/account/profile", label: "My Profile", icon: "person", desc: "Manage your personal information" },
+  { href: "/account/addresses", label: "Addresses", icon: "location_on", desc: "Saved delivery addresses" },
+  { href: "/account/orders", label: "Order History", icon: "receipt_long", desc: "View past orders and status" },
+  { href: "/account/password", label: "Security", icon: "lock", desc: "Change your password" },
+];
 
-        <section className="py-16 md:py-24 px-6 md:px-12 bg-background">
-          <div className="max-w-3xl mx-auto">
-            {/* Login / Register Form */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-              {/* Login */}
-              <div className="space-y-6">
-                <h2 className="font-headline text-2xl text-navy">Sign In</h2>
-                <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
-                  <div className="space-y-2">
-                    <label className="text-[10px] tracking-[0.15em] uppercase text-outline font-medium block">
-                      Email Address
-                    </label>
-                    <input
-                      type="email"
-                      className="w-full border border-surface-dim bg-white px-4 py-3 text-[12px] text-navy placeholder:text-outline/60 focus:outline-none focus:border-gold-light transition-colors"
-                      placeholder="you@example.com"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-[10px] tracking-[0.15em] uppercase text-outline font-medium block">
-                      Password
-                    </label>
-                    <input
-                      type="password"
-                      className="w-full border border-surface-dim bg-white px-4 py-3 text-[12px] text-navy placeholder:text-outline/60 focus:outline-none focus:border-gold-light transition-colors"
-                      placeholder="Enter your password"
-                    />
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <label className="flex items-center gap-2 cursor-pointer">
-                      <input type="checkbox" className="accent-gold-light" />
-                      <span className="text-[11px] text-outline">Remember me</span>
-                    </label>
-                    <a href="#" className="text-[11px] text-gold-light hover:text-gold-hover transition-colors">
-                      Forgot password?
-                    </a>
-                  </div>
-                  <button className="btn-primary w-full py-4">
-                    Sign In
-                  </button>
-                </form>
-              </div>
+export default function AccountOverview() {
+  const { user, isLoaded, isSignedIn } = useUser();
 
-              {/* Register */}
-              <div className="space-y-6">
-                <h2 className="font-headline text-2xl text-navy">Create Account</h2>
-                <p className="text-outline text-[13px] leading-relaxed">
-                  Join the SWARNIKA family and enjoy exclusive access to new collections,
-                  members-only offers, and a personalized jewelry experience.
-                </p>
-                <ul className="space-y-3 text-[13px] text-outline">
-                  {[
-                    "Early access to new collections",
-                    "Exclusive member-only pricing",
-                    "Personalized recommendations",
-                    "Order tracking & history",
-                    "Wishlist management",
-                  ].map((perk) => (
-                    <li key={perk} className="flex items-center gap-2">
-                      <span className="material-symbols-outlined text-gold-light text-[16px]">check_circle</span>
-                      {perk}
-                    </li>
-                  ))}
-                </ul>
-                <button className="btn-secondary w-full py-4">
-                  Create Account
-                </button>
-              </div>
-            </div>
-          </div>
-        </section>
-      </main>
-    );
+  if (!isLoaded) {
+    return <div className="py-12 text-center text-outline text-sm">Loading...</div>;
   }
+  if (!isSignedIn) return null;
+
+  return (
+    <div className="space-y-10">
+      {/* Welcome */}
+      <div>
+        <span className="section-eyebrow">Account Overview</span>
+        <h2 className="font-headline text-[28px] md:text-[34px] text-navy font-light italic leading-tight mt-1">
+          Hello, {user?.firstName || "there"}
+        </h2>
+        <p className="text-outline text-[13px] leading-relaxed mt-2">
+          Manage your profile, addresses, and view your order history.
+        </p>
+      </div>
+
+      {/* Quick-link cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {quickLinks.map((link) => (
+          <Link
+            key={link.href}
+            href={link.href}
+            className="group border border-surface-dim p-6 bg-white hover:border-navy transition-all duration-300 flex items-start gap-4"
+          >
+            <div className="w-10 h-10 bg-surface-low flex items-center justify-center shrink-0 group-hover:bg-navy transition-colors duration-300">
+              <span className="material-symbols-outlined text-[20px] text-outline group-hover:text-white transition-colors duration-300">
+                {link.icon}
+              </span>
+            </div>
+            <div>
+              <p className="font-label text-[10px] tracking-[0.18em] uppercase text-navy font-semibold">
+                {link.label}
+              </p>
+              <p className="text-outline text-[12px] mt-1">{link.desc}</p>
+            </div>
+            <span className="material-symbols-outlined text-[16px] text-outline-var ml-auto mt-1 group-hover:text-navy group-hover:translate-x-1 transition-all duration-300">
+              arrow_forward
+            </span>
+          </Link>
+        ))}
+      </div>
+
+      {/* Account info summary */}
+      <div className="border-t border-surface-dim pt-8">
+        <p className="font-label text-[9px] tracking-[0.25em] uppercase text-outline font-semibold mb-4">
+          Account Details
+        </p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-[13px]">
+          <div>
+            <span className="text-outline text-[11px] uppercase tracking-widest">Name</span>
+            <p className="text-navy font-medium mt-0.5">{user?.fullName || "—"}</p>
+          </div>
+          <div>
+            <span className="text-outline text-[11px] uppercase tracking-widest">Email</span>
+            <p className="text-navy font-medium mt-0.5">{user?.primaryEmailAddress?.emailAddress || "—"}</p>
+          </div>
+          <div>
+            <span className="text-outline text-[11px] uppercase tracking-widest">Member Since</span>
+            <p className="text-navy font-medium mt-0.5">
+              {user?.createdAt ? new Date(user.createdAt).toLocaleDateString("en-IN", { year: "numeric", month: "long" }) : "—"}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

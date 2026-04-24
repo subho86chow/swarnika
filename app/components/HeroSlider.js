@@ -44,8 +44,8 @@ export default function HeroSlider({ heroTitle, heroSubtitle, heroImages }) {
             {heroSubtitle}
           </p>
           <div className="flex flex-wrap gap-4 delay-300 animate-fade-in">
-            <Link href="/categories" className="btn-primary-gold hero">Explore The Archive</Link>
-            <Link href="/contact" className="btn-secondary hero">Book a Private Viewing</Link>
+            <Link href="/categories" className="btn-primary">Explore The Archive</Link>
+            <Link href="/contact" className="btn-secondary">Book a Private Viewing</Link>
           </div>
         </div>
       </div>

@@ -170,13 +170,13 @@ export default function AboutPage() {
             <div className="flex flex-col sm:flex-row justify-center gap-4 pt-4">
               <Link
                 href="/categories"
-                className="btn-primary-gold"
+                className="btn-primary"
               >
                 Explore Collections
               </Link>
               <Link
                 href="/contact"
-                className="btn-primary-gold"
+                className="btn-primary"
               >
                 Book Appointment
               </Link>

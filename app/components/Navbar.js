@@ -4,9 +4,12 @@ import Link from "next/link";
 import Image from "next/image";
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
+import { Show, SignInButton } from "@clerk/nextjs";
+import { useCart } from "../lib/cartStore";
 
 export default function Navbar({ categories = [] }) {
   const pathname = usePathname();
+  const { cartCount } = useCart();
   const isHome = pathname === "/";
 
   const [scrolled, setScrolled] = useState(false);
@@ -109,13 +112,26 @@ export default function Navbar({ categories = [] }) {
             <span className="material-symbols-outlined text-[20px]">favorite</span>
           </Link>
 
-          <Link
-            href="/account"
-            aria-label="Account"
-            className={`hidden md:flex items-center transition-colors duration-300 ${useDarkText ? "text-outline hover:text-navy" : "text-white/80 hover:text-white"}`}
-          >
-            <span className="material-symbols-outlined text-[20px]">person</span>
-          </Link>
+          {/* Account icon — sign-in modal when signed out, link to /account when signed in */}
+          <Show when="signed-out">
+            <SignInButton mode="modal">
+              <button
+                aria-label="Account"
+                className={`hidden md:flex items-center transition-colors duration-300 ${useDarkText ? "text-outline hover:text-navy" : "text-white/80 hover:text-white"}`}
+              >
+                <span className="material-symbols-outlined text-[20px]">person</span>
+              </button>
+            </SignInButton>
+          </Show>
+          <Show when="signed-in">
+            <Link
+              href="/account"
+              aria-label="My Account"
+              className={`hidden md:flex items-center transition-colors duration-300 ${useDarkText ? "text-outline hover:text-navy" : "text-white/80 hover:text-white"}`}
+            >
+              <span className="material-symbols-outlined text-[20px]">person</span>
+            </Link>
+          </Show>
 
           <Link
             href="/cart"
@@ -123,9 +139,11 @@ export default function Navbar({ categories = [] }) {
             className={`flex items-center transition-colors duration-300 relative ${useDarkText ? "text-navy hover:text-gold" : "text-white hover:text-white/80"}`}
           >
             <span className="material-symbols-outlined text-[20px]">shopping_bag</span>
-            <span className="absolute -top-1.5 -right-1.5 bg-gold-light text-white text-[8px] font-bold w-[14px] h-[14px] flex items-center justify-center" style={{ borderRadius: "50%" }}>
-              0
-            </span>
+            {cartCount > 0 && (
+              <span className="absolute -top-1.5 -right-1.5 bg-gold-light text-white text-[8px] font-bold w-[14px] h-[14px] flex items-center justify-center" style={{ borderRadius: "50%" }}>
+                {cartCount}
+              </span>
+            )}
           </Link>
         </div>
       </div>
@@ -156,14 +174,27 @@ export default function Navbar({ categories = [] }) {
                 {link.label}
               </Link>
             ))}
-            <Link
-              href="/account"
-              className="flex items-center gap-3 text-outline font-label text-[10px] tracking-[0.28em] uppercase py-4"
-              onClick={() => setMenuOpen(false)}
-            >
-              <span className="material-symbols-outlined text-[16px]">person</span>
-              My Account
-            </Link>
+            <Show when="signed-out">
+              <SignInButton mode="modal">
+                <button
+                  className="flex items-center gap-3 text-outline font-label text-[10px] tracking-[0.28em] uppercase py-4"
+                  onClick={() => setMenuOpen(false)}
+                >
+                  <span className="material-symbols-outlined text-[16px]">person</span>
+                  Sign In
+                </button>
+              </SignInButton>
+            </Show>
+            <Show when="signed-in">
+              <Link
+                href="/account"
+                className="flex items-center gap-3 text-outline font-label text-[10px] tracking-[0.28em] uppercase py-4 hover:text-navy transition-colors"
+                onClick={() => setMenuOpen(false)}
+              >
+                <span className="material-symbols-outlined text-[16px]">person</span>
+                My Account
+              </Link>
+            </Show>
           </div>
         </div>
       </div>

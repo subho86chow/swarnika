@@ -62,6 +62,23 @@ export default function SettingsForm({ settings }) {
       </div>
 
       <div className="pt-6 border-t border-surface-dim">
+        <h3 className="font-headline text-2xl text-navy italic mb-4">Shipping</h3>
+        <div className="space-y-2">
+          <label className="font-label text-[10px] tracking-widest uppercase text-outline">Free Shipping Threshold (₹)</label>
+          <input
+            type="number"
+            min="0"
+            step="1"
+            required
+            name="free_shipping_threshold"
+            defaultValue={settings.free_shipping_threshold || "50000"}
+            className="w-full border border-surface-dim p-3 font-body text-sm text-navy focus:outline-none focus:border-navy"
+          />
+          <p className="font-body text-outline text-xs">Orders above this amount qualify for free shipping.</p>
+        </div>
+      </div>
+
+      <div className="pt-6 border-t border-surface-dim">
         <button type="submit" disabled={isPending} className="btn-primary w-full max-w-[200px] flex items-center justify-center gap-2">
           {isPending ? "Saving..." : "Save Settings"}
         </button>
