@@ -91,6 +91,7 @@
   }
 
   html {
+    font-size: 90%;
     scroll-behavior: smooth;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -105,11 +106,57 @@
   }
 }
 
-/* ── Sharp corners throughout — Luxe Heritage is architectural ── */
-*,
-*::before,
-*::after {
-  border-radius: 0 !important;
+/* ── Sharp corners throughout — Luxe Heritage is architectural ──
+   Scoped to common elements + custom classes. Avoids `*` so
+   third-party components (Clerk spinners, SVGs, etc.) render correctly.
+── */
+button,
+input,
+textarea,
+select,
+img,
+video,
+iframe,
+.badge,
+.badge-gold,
+.badge-outline,
+.filter-tab,
+.filter-tab-gold,
+.tag-pill,
+.tag-pill.active,
+.inquiry-btn,
+.inquiry-btn.active,
+.card-action-btn,
+.qty-btn,
+.sort-select,
+.trust-tag,
+.social-btn,
+.subscribe-btn,
+.subscribe-input,
+.accordion-btn,
+.wishlist-fab,
+.field-input,
+.input-archive,
+.btn-primary,
+.btn-secondary,
+.btn-ghost,
+.btn-primary.hero,
+.btn-secondary.hero,
+.editorial-card,
+.flagship-card,
+.page-container,
+.nav-inner {
+  border-radius: 0;
+}
+
+/* Clerk components — ensure spinners & avatars stay circular */
+.cl-spinner,
+.cl-activityIndicator,
+.cl-loading,
+.cl-avatar,
+[class*="cl-"][style*="border-radius: 50%"],
+[class*="cl-"][style*="border-radius:50%"] {
+  border-radius: 50% !important;
 }
 
 .rounded-full {
@@ -126,7 +173,7 @@
     display: inline-block;
     padding: 0.35rem 0.75rem;
     font-family: var(--font-label);
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 700;
     letter-spacing: 0.02em;
     text-transform: uppercase;
@@ -152,7 +199,7 @@
     align-items: center;
     padding: 1rem 1.25rem;
     font-family: var(--font-label);
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 500;
     letter-spacing: 0.15em;
     text-transform: uppercase;
@@ -188,7 +235,7 @@
     gap: 0.375rem;
     padding: 0.375rem 0.75rem;
     font-family: var(--font-label);
-    font-size: 8.5px;
+    font-size: 11px;
     font-weight: 500;
     letter-spacing: 0.15em;
     text-transform: uppercase;
@@ -216,7 +263,7 @@
     align-items: center;
     padding: 0.5rem 1rem;
     font-family: var(--font-label);
-    font-size: 8.5px;
+    font-size: 11px;
     font-weight: 600;
     letter-spacing: 0.18em;
     text-transform: uppercase;
@@ -247,7 +294,7 @@
     gap: 0.5rem;
     padding: 0.875rem 0.5rem;
     font-family: var(--font-label);
-    font-size: 8.5px;
+    font-size: 11px;
     font-weight: 600;
     letter-spacing: 0.22em;
     text-transform: uppercase;
@@ -288,7 +335,7 @@
     border: 1px solid var(--luxe-outline-var);
     padding: 0.375rem 0.75rem;
     font-family: var(--font-label);
-    font-size: 9px;
+    font-size: 11px;
     letter-spacing: 0.1em;
     text-transform: uppercase;
     color: var(--luxe-navy);
@@ -326,7 +373,7 @@
 
   .cat-link-label {
     font-family: var(--font-label);
-    font-size: 9.5px;
+    font-size: 11px;
     font-weight: 500;
     letter-spacing: 0.28em;
     text-transform: uppercase;
@@ -363,7 +410,7 @@
     align-items: center;
     padding: 1rem 2rem;
     font-family: var(--font-label);
-    font-size: 9px;
+    font-size: 11px;
     font-weight: 500;
     letter-spacing: 0.2em;
     text-transform: uppercase;
@@ -390,7 +437,7 @@
     border-right: none;
     padding: 1rem 1.25rem;
     font-family: var(--font-body);
-    font-size: 12px;
+    font-size: 14px;
     color: #fff;
     outline: none;
     transition: border-color 0.3s;
@@ -421,7 +468,7 @@
 
   .accordion-label {
     font-family: var(--font-label);
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 600;
     letter-spacing: 0.22em;
     text-transform: uppercase;
@@ -475,7 +522,7 @@
     background: var(--luxe-white);
     padding: 0.75rem 1rem;
     font-family: var(--font-body);
-    font-size: 13px;
+    font-size: 14px;
     color: var(--luxe-navy);
     outline: none;
     transition: border-color 0.3s;
@@ -784,8 +831,8 @@
 
 .btn-secondary:hover {
   background: transparent;
-  color: var(--luxe-secondary);
   letter-spacing: 0.32em;
+  border: 1px solid black;
 }
 
 /* Hero variants — identical inversion on dark backgrounds */
@@ -794,13 +841,23 @@
   background: #fff;
   border-color: #fff;
   color: var(--luxe-navy);
+  border: 1px solid black;
 }
 
-.btn-primary.hero:hover,
-.btn-secondary.hero:hover {
+.btn-primary.hero-main,
+.btn-secondary.hero-main {
+  background: #fff;
+  border-color: #fff;
+  color: var(--luxe-navy);
+  border: 1px solid black;
+}
+
+.btn-primary.hero-main:hover,
+.btn-secondary.hero-main:hover {
   background: transparent;
-  color: #fff;
   letter-spacing: 0.32em;
+  color: white;
+  border: 3px solid white;
 }
 
 
@@ -832,7 +889,7 @@
   background: var(--luxe-navy);
   color: var(--luxe-gold-light);
   font-family: var(--font-label);
-  font-size: 9px;
+  font-size: 10px;
   letter-spacing: 0.28em;
   text-transform: uppercase;
   height: 36px;

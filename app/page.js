@@ -38,11 +38,20 @@ export default async function HomePage() {
     ? `${parts[0]}<br /><span class="font-normal">${parts[1]}</span>`
     : rawHeroTitle;
 
-  const heroImages = [
-    "/products/hero-1.jpg",
-    "/products/product-3.jpg",
-    "/products/product-4.jpg"
-  ];
+  // Fetch Hero Images from DB
+  const dbHeroImages = await prisma.heroImage.findMany({
+    where: { isActive: true },
+    orderBy: { order: "asc" },
+  });
+
+  // Fallback to hardcoded images if no slides in DB yet
+  const heroImages = dbHeroImages.length > 0
+    ? dbHeroImages.map((h) => ({ desktop: h.desktop, mobile: h.mobile }))
+    : [
+        { desktop: "/products/hero-1.jpg", mobile: "/products/hero-1.jpg" },
+        { desktop: "/products/product-3.jpg", mobile: "/products/product-3.jpg" },
+        { desktop: "/products/product-4.jpg", mobile: "/products/product-4.jpg" },
+      ];
 
   // Fetch Categories (cached)
   const categories = await withCache(
@@ -66,10 +75,12 @@ export default async function HomePage() {
   const bestsellers = products.slice(0, 4).map(p => ({
     ...p,
     image: p.images[0]?.url || "",
+    images: p.images.map(i => i.url),
   }));
   const newArrivals = products.slice(4, 8).map(p => ({
     ...p,
     image: p.images[0]?.url || "",
+    images: p.images.map(i => i.url),
   }));
 
   return (
@@ -123,22 +134,6 @@ export default async function HomePage() {
           </div>
         </section>
 
-        {/* ─── Promotion Banner ─── */}
-        <section className={`pb-10 pt-4 bg-background`}>
-          <div className={`relative w-full overflow-hidden bg-surface-dim group cursor-pointer`}>
-            <Link href="/categories">
-              <Image
-                src="/products/discount_banner.png"
-                alt="Discount Promotional Banner"
-                width={1440}
-                height={400}
-                className="w-full h-auto transition-transform duration-700 group-hover:scale-[1.02]"
-              />
-              <div className="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-colors duration-500" />
-            </Link>
-          </div>
-        </section>
-
         {/* ─── Bestsellers ─── */}
         <section className={`${PAD} py-20 bg-background`}>
           <div className={MAX}>
@@ -166,6 +161,22 @@ export default async function HomePage() {
           </div>
         </section>
 
+        {/* ─── Promotion Banner ─── */}
+        <section className={`pb-10 pt-4 bg-background`}>
+          <div className={`relative w-full overflow-hidden bg-surface-dim group cursor-pointer`}>
+            <Link href="/categories">
+              <Image
+                src="/products/discount_banner.png"
+                alt="Discount Promotional Banner"
+                width={1440}
+                height={400}
+                className="w-full h-auto transition-transform duration-700 group-hover:scale-[1.02]"
+              />
+              <div className="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-colors duration-500" />
+            </Link>
+          </div>
+        </section>
+
         <CampaignCarousel />
 
         {/* ─── Heritage Banner ─── */}
@@ -182,7 +193,7 @@ export default async function HomePage() {
               <h2 className="font-headline text-white font-light italic leading-[1.05] mb-8 text-4xl md:text-5xl lg:text-[58px]">
                 A Heritage<br /><span className="font-normal">Reborn</span>
               </h2>
-              <p className="font-body text-white/55 text-[13px] leading-loose mb-4 max-w-[440px]">
+              <p className="font-body text-white/55 text-sm leading-loose mb-4 max-w-[440px]">
                 In an era of fleeting trends, SWARNIKA remains anchored in the philosophy of permanence. Our artisans dedicate hundreds of hours to a single creation.
               </p>
               <p className="font-body text-white/35 text-[12px] leading-loose mb-10 max-w-[400px]">
@@ -233,12 +244,12 @@ export default async function HomePage() {
 
               <span className="section-eyebrow flex justify-center">A Private Viewing</span>
               <h2 className="font-headline text-[36px] md:text-[52px] text-navy font-light italic leading-tight mt-2 mb-6">Experience the Collection</h2>
-              <p className="font-body text-outline text-[13px] leading-relaxed mx-auto mb-10 max-w-[512px]">
+              <p className="font-body text-outline text-sm leading-relaxed mx-auto mb-10 max-w-[512px]">
                 Experience the collection in the quiet luxury of our flagship stores, or via a virtual consultation with our master curators.
               </p>
               <div className="flex flex-wrap gap-4 justify-center">
                 <Link href="/contact" className="btn-primary">Book an Appointment</Link>
-                <Link href="/categories" className="btn-secondary">View All Categories</Link>
+                <Link href="/categories" className="btn-secondary hero">View All Categories</Link>
               </div>
             </div>
           </div>

@@ -24,7 +24,7 @@ export default async function ProductDetailPage({ params }) {
         <div className="text-center space-y-6">
           <div className="w-12 h-[1px] bg-outline-var mx-auto" />
           <h1 className="font-headline text-3xl text-navy font-light italic">Piece Not Found</h1>
-          <p className="font-body text-outline text-[13px]">This treasure may have been moved or is no longer available.</p>
+          <p className="font-body text-outline text-sm">This treasure may have been moved or is no longer available.</p>
           <Link href="/categories" className="btn-primary inline-flex mt-4">Browse The Archive</Link>
         </div>
       </main>
@@ -58,6 +58,7 @@ export default async function ProductDetailPage({ params }) {
   const relatedProducts = initialRelated.map(p => ({
     ...p,
     image: p.images[0]?.url || "",
+    images: p.images.map(i => i.url),
   }));
 
   return (

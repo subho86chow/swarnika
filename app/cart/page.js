@@ -1,16 +1,19 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useAuth, useClerk, useUser } from "@clerk/nextjs";
+import { useAuth, useUser } from "@clerk/nextjs";
 import { useCart } from "../lib/cartStore";
+import { useAuthModal } from "../lib/authModalContext";
+import { usePageLoading } from "../lib/loadingContext";
 import { formatPrice } from "../lib/data";
 import { getCartProducts, getFreeShippingThreshold } from "../lib/cartActions";
 import {
   validateCoupon,
   getApplicableCoupons,
 } from "../lib/couponActions";
+import RecentlyViewed from "../components/RecentlyViewed";
 
 export default function CartPage() {
   return <CartContent />;
@@ -25,50 +28,29 @@ function CartContent() {
     appliedCoupon,
     applyCoupon,
     removeCoupon,
+    hydrated,
   } = useCart();
   const { isSignedIn } = useAuth();
   const { user } = useUser();
-  const { openSignIn } = useClerk();
+  const { openSignIn } = useAuthModal();
+  const { startLoading, stopLoading } = usePageLoading();
 
   const [couponCode, setCouponCode] = useState("");
   const [couponError, setCouponError] = useState("");
   const [couponLoading, setCouponLoading] = useState(false);
   const [applicableCoupons, setApplicableCoupons] = useState([]);
+  const [couponsFetching, setCouponsFetching] = useState(false);
   const [giftMessages, setGiftMessages] = useState({});
   const [showGiftInput, setShowGiftInput] = useState({});
   const [dbProducts, setDbProducts] = useState([]);
   const [crossSellProducts, setCrossSellProducts] = useState([]);
   const [freeShippingThreshold, setFreeShippingThreshold] = useState(50000);
+  const [productsLoading, setProductsLoading] = useState(true);
 
-  // Fetch actual product data from DB whenever cart changes
+  // Immediately signal loading so the page loader stays visible while we hydrate + fetch
   useEffect(() => {
-    if (cart.length === 0) {
-      setDbProducts([]);
-      setCrossSellProducts([]);
-      return;
-    }
-    const productIds = cart.map((item) => item.productId);
-    getCartProducts(productIds).then((fetched) => {
-      setDbProducts(fetched);
-      // Fetch cross-sell products from same categories
-      const categoryIds = [
-        ...new Set(fetched.map((p) => p.categoryId).filter(Boolean)),
-      ];
-      const cartIds = fetched.map((p) => p.id);
-      if (categoryIds.length > 0) {
-        import("../lib/cartActions").then((mod) =>
-          mod.getProductsByCategoryIds(categoryIds, cartIds).then(setCrossSellProducts)
-        );
-      }
-    });
-  }, [cart]);
-
-  // Fetch dynamic free shipping threshold
-  useEffect(() => {
-    getFreeShippingThreshold().then(setFreeShippingThreshold).catch(() => {
-      // fallback already set in initial state
-    });
-  }, []);
+    startLoading();
+  }, [startLoading]);
 
   // Resolve product data from DB
   const cartItems = cart.map((item) => ({
@@ -77,10 +59,14 @@ function CartContent() {
     productId: item.productId,
   }));
 
-  const couponCartItems = cart.map((item) => ({
-    productId: item.productId,
-    quantity: item.quantity,
-  }));
+  const couponCartItems = useMemo(
+    () =>
+      cart.map((item) => ({
+        productId: item.productId,
+        quantity: item.quantity,
+      })),
+    [cart]
+  );
 
   const validCartItems = cartItems.filter((item) => item.product);
 
@@ -100,32 +86,81 @@ function CartContent() {
 
   const completeTheLook = crossSellProducts;
 
-  // Fetch applicable coupons (fire only when cart contents or user changes)
+  // Fetch actual product data from DB + coupons IN PARALLEL whenever cart changes
   useEffect(() => {
-    if (validCartItems.length === 0) {
+    if (!hydrated) return;
+    if (cart.length === 0) {
+      setDbProducts([]);
+      setCrossSellProducts([]);
       setApplicableCoupons([]);
+      setProductsLoading(false);
+      stopLoading();
       return;
     }
-    const fetchCoupons = async () => {
-      try {
-        const coupons = await getApplicableCoupons({
-          userId: user?.id,
-          cartItems: couponCartItems,
-        });
-        setApplicableCoupons(coupons);
-      } catch (e) {
-        console.error("Failed to fetch applicable coupons", e);
-      }
-    };
-    fetchCoupons();
-  }, [cart, user?.id]);
+    setProductsLoading(true);
+    setCouponsFetching(true);
+    startLoading();
 
-  const handleApplyCoupon = useCallback(async () => {
-    if (!couponCode.trim()) return;
+    const productIds = cart.map((item) => item.productId);
+
+    // Fire all async requests in parallel
+    const couponPayload = cart.map((item) => ({
+      productId: item.productId,
+      quantity: item.quantity,
+    }));
+
+    getCartProducts(productIds).then((fetched) => {
+      setDbProducts(fetched);
+
+      // Cross-sell from same categories
+      const categoryIds = [
+        ...new Set(fetched.map((p) => p.categoryId).filter(Boolean)),
+      ];
+      const cartIds = fetched.map((p) => p.id);
+      if (categoryIds.length > 0) {
+        import("../lib/cartActions").then((mod) =>
+          mod.getProductsByCategoryIds(categoryIds, cartIds).then((crossSell) => {
+            setCrossSellProducts(crossSell);
+            setProductsLoading(false);
+            stopLoading();
+          })
+        );
+      } else {
+        setProductsLoading(false);
+        stopLoading();
+      }
+    });
+
+    getApplicableCoupons({
+      userId: user?.id,
+      cartItems: couponPayload,
+    })
+      .then((coupons) => {
+        setApplicableCoupons(coupons);
+      })
+      .catch((e) => {
+        console.error("Failed to fetch applicable coupons", e);
+        setApplicableCoupons([]);
+      })
+      .finally(() => {
+        setCouponsFetching(false);
+      });
+  }, [cart, hydrated, user?.id, startLoading, stopLoading]);
+
+  // Fetch dynamic free shipping threshold
+  useEffect(() => {
+    getFreeShippingThreshold().then(setFreeShippingThreshold).catch(() => {
+      // fallback already set in initial state
+    });
+  }, []);
+
+  const handleApplyCoupon = useCallback(async (codeOverride) => {
+    const code = (codeOverride || couponCode).trim();
+    if (!code) return;
     setCouponError("");
     setCouponLoading(true);
     const result = await validateCoupon({
-      code: couponCode.trim().toUpperCase(),
+      code: code.toUpperCase(),
       userId: user?.id,
       cartItems: couponCartItems,
     });
@@ -153,10 +188,18 @@ function CartContent() {
     }
   };
 
+  if (productsLoading) {
+    return (
+      <main className="pt-[72px] bg-background min-h-screen">
+        {/* Empty shell while loader covers the page */}
+      </main>
+    );
+  }
+
   if (validCartItems.length === 0) {
     return (
       <main className="pt-[72px] bg-background min-h-screen">
-        <section className="py-20 md:py-32 px-6 md:px-12">
+        <section className="py-20 md:py-32 px-6 md:px-14 lg:px-20">
           <div className="max-w-[1440px] mx-auto text-center space-y-6">
             <span className="material-symbols-outlined text-outline-var text-6xl">
               shopping_bag
@@ -179,7 +222,7 @@ function CartContent() {
   return (
     <main className="pt-[72px] bg-background min-h-screen">
       {/* Header */}
-      <section className="py-12 md:py-16 px-6 md:px-12">
+      <section className="pt-8 md:pt-10 pb-6 md:pb-8 px-6 md:px-14 lg:px-20">
         <div className="max-w-[1440px] mx-auto">
           <h1 className="font-headline text-3xl md:text-5xl text-navy italic">
             Your Shopping Bag
@@ -191,20 +234,20 @@ function CartContent() {
         </div>
       </section>
 
-      <section className="pb-16 md:pb-24 px-6 md:px-12">
+      <section className="pb-16 md:pb-24 px-6 md:px-14 lg:px-20">
         <div className="max-w-[1440px] mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 lg:items-start">
             {/* Left Column — Cart Items */}
             <div className="lg:col-span-7 space-y-0">
               {/* Column Headers */}
               <div className="hidden md:grid grid-cols-12 gap-4 pb-4 border-b border-surface-dim">
-                <span className="col-span-6 font-label text-[9px] tracking-[0.2em] uppercase text-outline font-medium">
+                <span className="col-span-6 font-label text-[11px] tracking-[0.2em] uppercase text-outline font-medium">
                   Product
                 </span>
-                <span className="col-span-3 font-label text-[9px] tracking-[0.2em] uppercase text-outline font-medium text-center">
+                <span className="col-span-3 font-label text-[11px] tracking-[0.2em] uppercase text-outline font-medium text-center">
                   Quantity
                 </span>
-                <span className="col-span-3 font-label text-[9px] tracking-[0.2em] uppercase text-outline font-medium text-right">
+                <span className="col-span-3 font-label text-[11px] tracking-[0.2em] uppercase text-outline font-medium text-right">
                   Price
                 </span>
               </div>
@@ -215,9 +258,9 @@ function CartContent() {
                   key={item.product.id}
                   className="py-8 border-b border-surface-dim"
                 >
-                  <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
+                  <div className="flex md:grid md:grid-cols-12 gap-4 md:gap-6 items-start">
                     {/* Product Image */}
-                    <div className="md:col-span-3">
+                    <div className="w-24 flex-shrink-0 md:w-auto md:col-span-3">
                       <Link
                         href={`/product/${item.product.id}`}
                         className="relative block aspect-[3/4] bg-surface-low overflow-hidden"
@@ -232,66 +275,78 @@ function CartContent() {
                       </Link>
                     </div>
 
-                    {/* Product Info */}
-                    <div className="md:col-span-5 space-y-2">
-                      <span className="font-label text-[9px] tracking-[0.2em] uppercase text-gold font-medium">
-                        {item.product.collection}
-                      </span>
-                      <Link
-                        href={`/product/${item.product.id}`}
-                        className="font-headline text-xl md:text-2xl text-navy hover:text-gold transition-colors block leading-tight"
-                      >
-                        {item.product.name}
-                      </Link>
-                      <p className="font-body text-outline text-[11px] leading-relaxed line-clamp-2">
-                        {item.product.description}
-                      </p>
-                      <p className="md:hidden font-headline text-lg text-navy font-light">
-                        {formatPrice(item.product.price * item.quantity)}
-                      </p>
-                    </div>
+                    {/* Right side */}
+                    <div className="flex-1 min-w-0 md:col-span-9">
+                      <div className="flex flex-col md:grid md:grid-cols-9 gap-3 md:gap-6 items-start">
+                        {/* Product Info */}
+                        <div className="md:col-span-5 space-y-1">
+                          <span className="font-label text-[11px] tracking-[0.2em] uppercase text-gold font-medium">
+                            {item.product.collection}
+                          </span>
+                          <div className="flex justify-between items-start gap-2 md:block">
+                            <Link
+                              href={`/product/${item.product.id}`}
+                              className="font-headline text-lg md:text-2xl text-navy hover:text-gold transition-colors block leading-tight"
+                            >
+                              {item.product.name}
+                            </Link>
+                            <button
+                              onClick={() => removeFromCart(item.product.id)}
+                              className="md:hidden text-outline hover:text-error flex-shrink-0 -mt-0.5"
+                            >
+                              <span className="material-symbols-outlined text-[20px]">
+                                close
+                              </span>
+                            </button>
+                          </div>
+                          <p className="font-body text-outline text-xs leading-relaxed line-clamp-2">
+                            {item.product.description}
+                          </p>
+                        </div>
 
-                    {/* Quantity */}
-                    <div className="md:col-span-2 flex items-center justify-start md:justify-center">
-                      <div className="flex items-center border border-surface-dim">
-                        <button
-                          onClick={() =>
-                            updateCartQuantity(item.product.id, item.quantity - 1)
-                          }
-                          className="w-10 h-10 flex items-center justify-center text-outline hover:text-navy hover:bg-surface-low transition-colors text-lg"
-                        >
-                          −
-                        </button>
-                        <span className="w-10 h-10 flex items-center justify-center text-sm font-medium text-navy border-x border-surface-dim">
-                          {item.quantity}
-                        </span>
-                        <button
-                          onClick={() =>
-                            updateCartQuantity(item.product.id, item.quantity + 1)
-                          }
-                          className="w-10 h-10 flex items-center justify-center text-outline hover:text-navy hover:bg-surface-low transition-colors text-lg"
-                        >
-                          +
-                        </button>
+                        {/* Quantity */}
+                        <div className="md:col-span-2 flex items-center justify-start md:justify-center">
+                          <div className="flex items-center border border-surface-dim">
+                            <button
+                              onClick={() =>
+                                updateCartQuantity(item.product.id, item.quantity - 1)
+                              }
+                              className="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center text-outline hover:text-navy hover:bg-surface-low transition-colors text-lg"
+                            >
+                              −
+                            </button>
+                            <span className="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center text-sm font-medium text-navy border-x border-surface-dim">
+                              {item.quantity}
+                            </span>
+                            <button
+                              onClick={() =>
+                                updateCartQuantity(item.product.id, item.quantity + 1)
+                              }
+                              className="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center text-outline hover:text-navy hover:bg-surface-low transition-colors text-lg"
+                            >
+                              +
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* Price + Remove */}
+                        <div className="md:col-span-2 md:text-right space-y-2">
+                          <p className="font-headline text-lg md:text-xl text-navy font-light">
+                            {formatPrice(item.product.price * item.quantity)}
+                          </p>
+                          <button
+                            onClick={() => removeFromCart(item.product.id)}
+                            className="hidden md:inline-flex text-outline hover:text-error transition-colors items-center gap-1"
+                          >
+                            <span className="material-symbols-outlined text-[16px]">
+                              delete
+                            </span>
+                            <span className="font-label text-[11px] tracking-wider uppercase">
+                              Remove
+                            </span>
+                          </button>
+                        </div>
                       </div>
-                    </div>
-
-                    {/* Price + Remove */}
-                    <div className="md:col-span-2 text-right space-y-3">
-                      <p className="hidden md:block font-headline text-xl text-navy font-light">
-                        {formatPrice(item.product.price * item.quantity)}
-                      </p>
-                      <button
-                        onClick={() => removeFromCart(item.product.id)}
-                        className="text-outline hover:text-error transition-colors inline-flex items-center gap-1"
-                      >
-                        <span className="material-symbols-outlined text-[16px]">
-                          delete
-                        </span>
-                        <span className="font-label text-[9px] tracking-wider uppercase">
-                          Remove
-                        </span>
-                      </button>
                     </div>
                   </div>
 
@@ -316,7 +371,7 @@ function CartContent() {
                           }`}
                         />
                       </div>
-                      <span className="font-label text-[10px] tracking-[0.15em] uppercase text-outline group-hover:text-navy transition-colors">
+                      <span className="font-label text-xs tracking-[0.15em] uppercase text-outline group-hover:text-navy transition-colors">
                         Add a Gift Message
                       </span>
                     </button>
@@ -365,12 +420,12 @@ function CartContent() {
                         <h3 className="font-headline text-sm text-navy leading-tight mb-1">
                           {product.name}
                         </h3>
-                        <p className="font-body text-outline text-[12px] mb-4">
+                        <p className="font-body text-outline text-sm mb-4">
                           {formatPrice(product.price)}
                         </p>
                         <button
                           onClick={() => addToCart(product, 1)}
-                          className="btn-primary w-full py-3 text-[8px]"
+                          className="btn-primary w-full py-3 text-[10px]"
                         >
                           ADD TO BAG
                         </button>
@@ -391,7 +446,7 @@ function CartContent() {
 
                   {/* Shipping Progress */}
                   <div className="space-y-3">
-                    <p className="font-label text-[9px] tracking-[0.2em] uppercase text-gold text-center font-medium">
+                    <p className="font-label text-[11px] tracking-[0.2em] uppercase text-gold text-center font-medium">
                       {shipping === 0
                         ? "FREE PREMIUM SHIPPING UNLOCKED"
                         : "FREE PREMIUM SHIPPING"}
@@ -436,7 +491,7 @@ function CartContent() {
                         <button
                           onClick={handleApplyCoupon}
                           disabled={couponLoading || !couponCode.trim()}
-                          className="btn-secondary py-3 px-6 text-[9px]"
+                          className="btn-secondary hero py-3 px-6 text-[11px]"
                         >
                           {couponLoading ? "..." : "APPLY"}
                         </button>
@@ -445,12 +500,15 @@ function CartContent() {
                         <p className="text-error text-[11px]">{couponError}</p>
                       )}
                       {appliedCoupon && (
-                        <div className="flex items-center justify-between bg-surface-low p-3 border border-gold-light/20">
-                          <div>
+                        <div className="flex items-center gap-3 bg-surface-low p-3 border border-gold-light/20">
+                          <span className="material-symbols-outlined text-gold text-[18px]">
+                            confirmation_number
+                          </span>
+                          <div className="flex-1">
                             <span className="font-label text-[9px] tracking-wider uppercase text-gold font-semibold">
                               {appliedCoupon.coupon.code}
                             </span>
-                            <p className="text-[11px] text-outline">
+                            <p className="text-[11px] text-outline mt-0.5">
                               −{formatPrice(appliedCoupon.discount)}
                             </p>
                           </div>
@@ -467,27 +525,37 @@ function CartContent() {
                     </div>
 
                     {/* Applicable Coupons */}
-                    {applicableCoupons.length > 0 && !appliedCoupon && (
-                      <div className="space-y-2">
-                        {applicableCoupons.slice(0, 2).map(({ coupon, discount }) => (
-                          <button
-                            key={coupon.id}
-                            onClick={() => {
-                              setCouponCode(coupon.code);
-                              handleApplyCoupon();
-                            }}
-                            className="w-full text-left bg-surface-low p-3 border border-surface-dim hover:border-gold-light/40 transition-colors"
-                          >
-                            <div className="flex items-center justify-between">
-                              <span className="font-label text-[9px] tracking-wider uppercase text-gold font-semibold">
-                                {coupon.code}
-                              </span>
-                              <span className="font-body text-[11px] text-navy font-medium">
-                                Save {formatPrice(discount)}
-                              </span>
-                            </div>
-                          </button>
-                        ))}
+                    {!appliedCoupon && (
+                      <div className="border-t border-surface-dim pt-5">
+                        <p className="section-eyebrow mb-3">Available Offers</p>
+                        {couponsFetching ? (
+                          <div className="space-y-2">
+                            <div className="w-full h-12 bg-surface-dim animate-pulse" />
+                            <div className="w-full h-12 bg-surface-dim animate-pulse" />
+                          </div>
+                        ) : applicableCoupons.length > 0 ? (
+                          <div className="space-y-2">
+                            {applicableCoupons.map(({ coupon, discount }) => (
+                              <button
+                                key={coupon.id}
+                                onClick={() => handleApplyCoupon(coupon.code)}
+                                className="w-full text-left flex items-center gap-3 bg-surface-low p-3 border border-surface-dim hover:border-gold-light/40 transition-colors"
+                              >
+                                <span className="material-symbols-outlined text-gold text-[18px]">
+                                  confirmation_number
+                                </span>
+                                <div className="flex-1">
+                                  <span className="font-label text-[9px] tracking-wider uppercase text-gold font-semibold">
+                                    {coupon.code}
+                                  </span>
+                                  <p className="text-[11px] text-outline mt-0.5">
+                                    {coupon.name} — Save {formatPrice(discount)}
+                                  </p>
+                                </div>
+                              </button>
+                            ))}
+                          </div>
+                        ) : null}
                       </div>
                     )}
 
@@ -530,7 +598,7 @@ function CartContent() {
 
                     <button
                       onClick={handleCheckout}
-                      className="btn-primary w-full py-4 text-[10px] tracking-[0.3em]"
+                      className="btn-primary w-full py-4 text-[11px] tracking-[0.3em]"
                     >
                       PROCEED TO CHECKOUT
                     </button>
@@ -561,10 +629,10 @@ function CartContent() {
                           <span className="material-symbols-outlined text-gold text-[20px]">
                             {item.icon}
                           </span>
-                          <span className="font-label text-[8px] tracking-wider uppercase text-outline leading-tight">
+                          <span className="font-label text-[10px] tracking-wider uppercase text-outline leading-tight">
                             {item.title}
                           </span>
-                          <span className="font-label text-[8px] tracking-wider uppercase text-outline-var leading-tight">
+                          <span className="font-label text-[10px] tracking-wider uppercase text-outline-var leading-tight">
                             {item.subtitle}
                           </span>
                         </div>
@@ -577,6 +645,8 @@ function CartContent() {
           </div>
         </div>
       </section>
+
+      <RecentlyViewed />
     </main>
   );
 }

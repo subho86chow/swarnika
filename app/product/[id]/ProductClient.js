@@ -16,11 +16,23 @@ const MAX = "max-w-[1440px] mx-auto";
 export default function ProductClient({ product, relatedProducts }) {
   const [quantity, setQuantity] = useState(1);
   const [activeImage, setActiveImage] = useState(0);
+  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
   const [openAccordion, setOpenAccordion] = useState("artistry");
   const [addedToCart, setAddedToCart] = useState(false);
   const { addToCart, toggleFavorite, isFavorite } = useCart();
   const { isSignedIn, user } = useUser();
   const wishlisted = isFavorite(product.id);
+
+  const images = product.images?.length > 0 ? product.images.map(i => i.url) : [""];
+
+  // Auto-carousel every 5 seconds
+  useEffect(() => {
+    if (!isAutoPlaying || images.length <= 1) return;
+    const timer = setInterval(() => {
+      setActiveImage((prev) => (prev + 1) % images.length);
+    }, 5000);
+    return () => clearInterval(timer);
+  }, [isAutoPlaying, images.length]);
 
   // Track time spent on product page
   useEffect(() => {
@@ -59,15 +71,13 @@ export default function ProductClient({ product, relatedProducts }) {
     { id: "shipping", title: "Shipping & Returns", content: "Complimentary insured shipping on all orders. Standard delivery 5–7 business days. 30-day return policy. All pieces ship in signature SWARNIKA archival packaging." },
   ];
 
-  const images = product.images?.length > 0 ? product.images.map(i => i.url) : [""];
-
   return (
     <>
-      <main className="bg-background" style={{ paddingTop: '136px' }}>
+      <main className="bg-background pt-[72px]">
 
         {/* ─── Breadcrumb ─── */}
         <div className={`${PAD} py-5 bg-ivory-dark border-b border-surface-dim`}>
-          <div className={`${MAX} flex flex-wrap items-center gap-2 md:gap-3 font-label text-[9px] tracking-[0.2em] uppercase`}>
+          <div className={`${MAX} flex flex-wrap items-center gap-2 md:gap-3 font-label text-[11px] tracking-[0.2em] uppercase`}>
             <Link href="/" className="text-outline hover:text-navy transition-colors">The Archive</Link>
             <span className="text-outline-var">→</span>
             <Link href="/categories" className="text-outline hover:text-navy transition-colors">Categories</Link>
@@ -102,7 +112,14 @@ export default function ProductClient({ product, relatedProducts }) {
               {images.length > 1 && (
                 <div className="flex gap-2 overflow-x-auto no-scrollbar pb-2">
                   {images.map((img, idx) => (
-                     <button key={idx} onClick={() => setActiveImage(idx)} className={`relative flex-shrink-0 w-16 h-20 border-2 transition-opacity ${activeImage === idx ? 'border-navy opacity-100' : 'border-transparent opacity-60'}`}>
+                     <button
+                       key={idx}
+                       onClick={() => {
+                         setActiveImage(idx);
+                         setIsAutoPlaying(false);
+                       }}
+                       className={`relative flex-shrink-0 w-16 h-20 border-2 transition-opacity ${activeImage === idx ? 'border-navy opacity-100' : 'border-transparent opacity-60'}`}
+                     >
                       {img && <Image src={img} alt="" fill className="object-cover" />}
                     </button>
                   ))}
@@ -113,7 +130,7 @@ export default function ProductClient({ product, relatedProducts }) {
             {/* RIGHT — Product Info */}
             <div className="flex flex-col gap-8 animate-fade-in-up delay-200">
               <div>
-                <span className="font-label text-[9px] tracking-[0.3em] uppercase text-gold font-semibold block mb-2">{product.category?.name || ""}</span>
+                <span className="font-label text-[11px] tracking-[0.3em] uppercase text-gold font-semibold block mb-2">{product.category?.name || ""}</span>
                 <h1 className="font-headline text-navy font-light italic leading-[1.05] text-3xl md:text-5xl">{product.name}</h1>
               </div>
 
@@ -127,15 +144,15 @@ export default function ProductClient({ product, relatedProducts }) {
                 )}
               </div>
 
-              <p className="font-body text-slate-subtle text-[13px] leading-loose">{product.description}</p>
+              <p className="font-body text-slate-subtle text-sm leading-loose">{product.description}</p>
 
               <ProductCoupons productId={product.id} price={product.price} categoryId={product.categoryId} />
 
               <div className="flex items-center gap-6">
-                <span className="font-label text-[9px] tracking-[0.22em] uppercase text-outline font-semibold">Quantity</span>
+                <span className="font-label text-[11px] tracking-[0.22em] uppercase text-outline font-semibold">Quantity</span>
                 <div className="flex items-center border border-surface-dim">
                   <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="qty-btn w-10 h-11 flex items-center justify-center text-lg hover:bg-ivory-dark transition-colors">−</button>
-                  <span className="w-10 h-11 inline-flex items-center justify-center text-[13px] font-medium text-navy border-x border-surface-dim">{quantity}</span>
+                  <span className="w-10 h-11 inline-flex items-center justify-center text-sm font-medium text-navy border-x border-surface-dim">{quantity}</span>
                   <button onClick={() => setQuantity(quantity + 1)} className="qty-btn w-10 h-11 flex items-center justify-center text-lg hover:bg-ivory-dark transition-colors">+</button>
                 </div>
               </div>
@@ -143,12 +160,12 @@ export default function ProductClient({ product, relatedProducts }) {
               <div className="flex flex-col sm:flex-row gap-3">
                 <button
                   onClick={handleAddToCart}
-                  className="btn-primary w-full py-5 text-[10px] flex items-center justify-center gap-2"
+                  className="btn-primary w-full py-5 text-[11px] flex items-center justify-center gap-2"
                 >
                   <span className="material-symbols-outlined text-[16px]">{addedToCart ? "check" : "shopping_bag"}</span>
                   {addedToCart ? "Added to Bag" : "Add to Cart"}
                 </button>
-                <button onClick={handleToggleFavorite} className={`btn-secondary w-full py-5 text-[10px] flex items-center justify-center gap-2 ${wishlisted ? "border-gold-light text-gold" : ""}`}>
+                <button onClick={handleToggleFavorite} className={`btn-secondary hero w-full py-5 text-[11px] flex items-center justify-center gap-2 ${wishlisted ? "border-gold-light text-gold" : ""}`}>
                   <span className="material-symbols-outlined text-[16px]">favorite</span>
                   {wishlisted ? "Saved" : "Add to Wishlist"}
                 </button>
@@ -169,7 +186,7 @@ export default function ProductClient({ product, relatedProducts }) {
                       <span className="material-symbols-outlined text-outline transition-transform duration-300" style={{ transform: openAccordion === section.id ? 'rotate(45deg)' : 'rotate(0deg)', fontSize: '18px' }}>add</span>
                     </button>
                     <div className="overflow-hidden transition-all duration-400 ease-in-out" style={{ maxHeight: openAccordion === section.id ? '20rem' : '0', paddingBottom: openAccordion === section.id ? '1.25rem' : '0' }}>
-                      <p className="font-body text-outline text-[12px] leading-[1.8]">{section.content}</p>
+                       <p className="font-body text-outline text-xs leading-[1.8]">{section.content}</p>
                     </div>
                   </div>
                 ))}

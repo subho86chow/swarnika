@@ -104,21 +104,21 @@ export default function ProfilePage() {
           </h2>
         </div>
         {!editMode ? (
-          <button onClick={() => setEditMode(true)} className="btn-secondary py-3 px-6 text-[9px]">
+          <button onClick={() => setEditMode(true)} className="btn-secondary py-3 px-6 text-[11px]">
             Edit Profile
           </button>
         ) : (
           <div className="flex gap-3">
             <button
               onClick={() => { setEditMode(false); }}
-              className="btn-secondary py-3 px-6 text-[9px]"
+              className="btn-secondary hero py-3 px-6 text-[11px]"
             >
               Cancel
             </button>
             <button
               onClick={handleSave}
               disabled={saving}
-              className="btn-primary py-3 px-6 text-[9px]"
+              className="btn-primary py-3 px-6 text-[11px]"
             >
               {saving ? "Saving..." : "Save Changes"}
             </button>
@@ -226,14 +226,14 @@ export default function ProfilePage() {
         {/* Special dates */}
         <div className="border-t border-surface-dim pt-6">
           <div className="flex items-center justify-between mb-4">
-            <p className="font-label text-[9px] tracking-[0.25em] uppercase text-outline font-semibold">
+            <p className="font-label text-[11px] tracking-[0.25em] uppercase text-outline font-semibold">
               Special Dates
             </p>
             {editMode && (
               <button
                 type="button"
                 onClick={addSpecialDate}
-                className="flex items-center gap-1 font-label text-[9px] tracking-[0.15em] uppercase text-gold hover:text-navy transition-colors"
+                className="flex items-center gap-1 font-label text-[11px] tracking-[0.15em] uppercase text-gold hover:text-navy transition-colors"
               >
                 <span className="material-symbols-outlined text-[16px]">add</span>
                 Add Date
@@ -242,7 +242,7 @@ export default function ProfilePage() {
           </div>
 
           {form.specialDates.length === 0 && (
-            <p className="text-outline text-[12px] italic">No special dates added yet.</p>
+            <p className="text-outline text-xs italic">No special dates added yet.</p>
           )}
 
           <div className="flex flex-col gap-3">
@@ -273,8 +273,8 @@ export default function ProfilePage() {
                   </>
                 ) : (
                   <div className="flex items-center justify-between w-full border-b border-surface-dim pb-2">
-                    <span className="text-navy text-[13px] font-medium">{sd.label || "Untitled"}</span>
-                    <span className="text-outline text-[12px]">
+                    <span className="text-navy text-sm font-medium">{sd.label || "Untitled"}</span>
+                    <span className="text-outline text-xs">
                       {sd.date ? new Date(sd.date).toLocaleDateString("en-IN", { year: "numeric", month: "long", day: "numeric" }) : "—"}
                     </span>
                   </div>
@@ -291,11 +291,11 @@ export default function ProfilePage() {
 function FieldGroup({ label, required, hint, children }) {
   return (
     <div className="flex flex-col gap-1.5">
-      <label className="font-label text-[9px] tracking-[0.25em] uppercase text-outline font-semibold">
+      <label className="font-label text-[11px] tracking-[0.25em] uppercase text-outline font-semibold">
         {label} {required && <span className="text-error">*</span>}
       </label>
       {children}
-      {hint && <span className="text-outline text-[10px] italic">{hint}</span>}
+      {hint && <span className="text-outline text-xs italic">{hint}</span>}
     </div>
   );
 }

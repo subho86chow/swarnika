@@ -74,7 +74,7 @@ export default function ChatBot() {
                 className={`flex w-full ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}
               >
                 <div
-                  className={`max-w-[85%] px-5 py-3.5 text-[13px] font-body leading-relaxed ${
+                  className={`max-w-[85%] px-5 py-3.5 text-sm font-body leading-relaxed ${
                     m.role === 'user'
                       ? 'bg-navy text-white'
                       : 'bg-[#f3ede4] border border-outline-var/30 text-navy'
@@ -89,7 +89,7 @@ export default function ChatBot() {
             ))}
             {isLoading && messages[messages.length - 1]?.role === 'user' && (
               <div className="flex w-full justify-start">
-                <div className="max-w-[85%] px-5 py-3.5 bg-[#f3ede4] border border-outline-var/30 text-navy text-[13px] font-body" style={{ borderRadius: '12px 12px 12px 0' }}>
+                <div className="max-w-[85%] px-5 py-3.5 bg-[#f3ede4] border border-outline-var/30 text-navy text-sm font-body" style={{ borderRadius: '12px 12px 12px 0' }}>
                   <span className="animate-pulse">· · ·</span>
                 </div>
               </div>

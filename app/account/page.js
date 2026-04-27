@@ -26,7 +26,7 @@ export default function AccountOverview() {
         <h2 className="font-headline text-[28px] md:text-[34px] text-navy font-light italic leading-tight mt-1">
           Hello, {user?.firstName || "there"}
         </h2>
-        <p className="text-outline text-[13px] leading-relaxed mt-2">
+        <p className="text-outline text-sm leading-relaxed mt-2">
           Manage your profile, addresses, and view your order history.
         </p>
       </div>
@@ -45,10 +45,10 @@ export default function AccountOverview() {
               </span>
             </div>
             <div>
-              <p className="font-label text-[10px] tracking-[0.18em] uppercase text-navy font-semibold">
+              <p className="font-label text-xs tracking-[0.18em] uppercase text-navy font-semibold">
                 {link.label}
               </p>
-              <p className="text-outline text-[12px] mt-1">{link.desc}</p>
+              <p className="text-outline text-xs mt-1">{link.desc}</p>
             </div>
             <span className="material-symbols-outlined text-[16px] text-outline-var ml-auto mt-1 group-hover:text-navy group-hover:translate-x-1 transition-all duration-300">
               arrow_forward
@@ -59,20 +59,20 @@ export default function AccountOverview() {
 
       {/* Account info summary */}
       <div className="border-t border-surface-dim pt-8">
-        <p className="font-label text-[9px] tracking-[0.25em] uppercase text-outline font-semibold mb-4">
+        <p className="font-label text-[11px] tracking-[0.25em] uppercase text-outline font-semibold mb-4">
           Account Details
         </p>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-[13px]">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
           <div>
-            <span className="text-outline text-[11px] uppercase tracking-widest">Name</span>
+            <span className="text-outline text-xs uppercase tracking-widest">Name</span>
             <p className="text-navy font-medium mt-0.5">{user?.fullName || "—"}</p>
           </div>
           <div>
-            <span className="text-outline text-[11px] uppercase tracking-widest">Email</span>
+            <span className="text-outline text-xs uppercase tracking-widest">Email</span>
             <p className="text-navy font-medium mt-0.5">{user?.primaryEmailAddress?.emailAddress || "—"}</p>
           </div>
           <div>
-            <span className="text-outline text-[11px] uppercase tracking-widest">Member Since</span>
+            <span className="text-outline text-xs uppercase tracking-widest">Member Since</span>
             <p className="text-navy font-medium mt-0.5">
               {user?.createdAt ? new Date(user.createdAt).toLocaleDateString("en-IN", { year: "numeric", month: "long" }) : "—"}
             </p>

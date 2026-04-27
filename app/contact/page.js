@@ -40,7 +40,7 @@ export default function ContactPage() {
           <div className={`${PAD} absolute inset-0 flex flex-col justify-end pb-16`}>
             <div className={`${MAX} animate-fade-in-up w-full`}>
               <span className="section-eyebrow text-gold-light">THE ARCHIVE</span>
-              <h1 className="font-headline text-white font-light italic leading-[1.0] mt-1 text-5xl md:text-7xl lg:text-[88px]">
+                <h1 className="font-headline text-white font-light italic leading-[1.0] mt-1 text-4xl md:text-6xl lg:text-[64px]">
                 Personalized<br /><span className="font-normal">Expertise.</span>
               </h1>
             </div>
@@ -50,7 +50,7 @@ export default function ContactPage() {
         {/* ─── Intro Strip ─── */}
         <section className={`${PAD} py-8 bg-navy`}>
           <div className={MAX}>
-            <p className="font-body text-white/50 text-[13px] tracking-wide leading-relaxed max-w-[42rem]">
+            <p className="font-body text-white/50 text-sm tracking-wide leading-relaxed max-w-[42rem]">
               Whether you seek a bespoke masterpiece or a private viewing of our heritage collection, our specialists are at your disposal.
             </p>
           </div>
@@ -73,7 +73,7 @@ export default function ContactPage() {
                     <span className="material-symbols-outlined text-gold-light text-2xl">check</span>
                   </div>
                   <h3 className="font-headline text-2xl text-navy font-light italic">Thank you</h3>
-                  <p className="font-body text-outline text-[13px] leading-relaxed">Your message has been received. A member of our team will be in touch within 24 hours.</p>
+                  <p className="font-body text-outline text-sm leading-relaxed">Your message has been received. A member of our team will be in touch within 24 hours.</p>
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} className="flex flex-col gap-6">
@@ -97,14 +97,14 @@ export default function ContactPage() {
                     ].map((field) => (
                       <div key={field.key} className="flex flex-col gap-1">
                         <label className="font-label text-[9px] tracking-[0.25em] uppercase text-outline font-semibold">{field.label}</label>
-                        <input type={field.type} required={field.required} value={formData[field.key]} onChange={(e) => setFormData({ ...formData, [field.key]: e.target.value })} className="border border-surface-dim bg-white px-4 py-3 text-[12px] text-navy focus:outline-none focus:border-gold-light w-full" placeholder={field.placeholder} />
+                        <input type={field.type} required={field.required} value={formData[field.key]} onChange={(e) => setFormData({ ...formData, [field.key]: e.target.value })} className="border border-surface-dim bg-white px-4 py-3 text-xs text-navy focus:outline-none focus:border-gold-light w-full" placeholder={field.placeholder} />
                       </div>
                     ))}
                   </div>
 
                   <div className="flex flex-col gap-1 mt-2">
                     <label className="font-label text-[9px] tracking-[0.25em] uppercase text-outline font-semibold">Your Message *</label>
-                    <textarea required rows={5} value={formData.message} onChange={(e) => setFormData({ ...formData, message: e.target.value })} className="border border-surface-dim bg-white px-4 py-3 text-[12px] text-navy focus:outline-none focus:border-gold-light w-full resize-none" placeholder="Describe your inquiry..." />
+                    <textarea required rows={5} value={formData.message} onChange={(e) => setFormData({ ...formData, message: e.target.value })} className="border border-surface-dim bg-white px-4 py-3 text-xs text-navy focus:outline-none focus:border-gold-light w-full resize-none" placeholder="Describe your inquiry..." />
                   </div>
 
                   <div className="pt-4">
@@ -126,7 +126,7 @@ export default function ContactPage() {
                 <div className="absolute bottom-4 left-4 w-6 h-6 border-b border-l border-gold-light/30" />
                 <span className="section-eyebrow text-gold-light">Private Viewing</span>
                 <h3 className="font-headline text-[26px] text-white font-light italic leading-tight mt-2 mb-4">Experience our most exclusive high-jewelry pieces in the comfort of our private salons.</h3>
-                <p className="font-body text-white/40 text-[12px] leading-relaxed mb-7">Our specialists curate a bespoke selection tailored to your style and occasion.</p>
+                <p className="font-body text-white/40 text-xs leading-relaxed mb-7">Our specialists curate a bespoke selection tailored to your style and occasion.</p>
                 <button className="btn-primary inline-flex">Book Appointment</button>
               </div>
 
@@ -139,8 +139,8 @@ export default function ContactPage() {
                       <div className="flex justify-between items-start">
                         <div className="flex flex-col gap-1">
                           <p className="font-label text-[10px] tracking-[0.22em] uppercase text-navy font-bold">{store.city}</p>
-                          <p className="font-body text-[13px] text-slate-subtle leading-relaxed">{store.address}<br />{store.city2}<br /><span className="text-outline text-[11px]">{store.country}</span></p>
-                          <p className="font-body text-[12px] text-gold mt-2">{store.phone}</p>
+                          <p className="font-body text-sm text-slate-subtle leading-relaxed">{store.address}<br />{store.city2}<br /><span className="text-outline text-xs">{store.country}</span></p>
+                          <p className="font-body text-xs text-gold mt-2">{store.phone}</p>
                           <p className="font-label text-[9px] tracking-[0.15em] uppercase text-outline mt-1">{store.hours}</p>
                         </div>
                         <span className="material-symbols-outlined text-outline-var text-[20px] mt-1">location_on</span>
@@ -152,8 +152,8 @@ export default function ContactPage() {
 
               <div className="border-t border-surface-dim pt-8 flex flex-col gap-3">
                 <p className="font-label text-[9px] tracking-[0.25em] uppercase text-outline font-semibold">Direct Contact</p>
-                <a href="mailto:archive@swarnika.com" className="hover-underline font-body text-[13px] text-navy block">archive@swarnika.com</a>
-                <a href="tel:+912233490123" className="hover-underline font-body text-[13px] text-navy block">+91 22 3349 0123</a>
+                <a href="mailto:archive@swarnika.com" className="hover-underline font-body text-sm text-navy block">archive@swarnika.com</a>
+                <a href="tel:+912233490123" className="hover-underline font-body text-sm text-navy block">+91 22 3349 0123</a>
               </div>
             </div>
 

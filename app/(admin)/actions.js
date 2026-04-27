@@ -1,9 +1,10 @@
 "use server";
 
-import { auth, clerkClient } from "@clerk/nextjs/server";
+import { auth } from "@clerk/nextjs/server";
 import { prisma } from "../lib/prisma";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { isAdminUser } from "../lib/adminAuth";
 import {
   invalidateProduct,
   invalidateProductLists,
@@ -16,18 +17,8 @@ async function assertAdmin() {
   if (!userId) {
     throw new Error("Unauthorized — please sign in.");
   }
-
-  const allowedEmails = process.env.ADMIN_EMAILS
-    ? process.env.ADMIN_EMAILS.split(",").map((e) => e.trim()).filter(Boolean)
-    : [];
-
-  if (allowedEmails.length > 0) {
-    const client = await clerkClient();
-    const user = await client.users.getUser(userId);
-    const email = user.emailAddresses[0]?.emailAddress;
-    if (!email || !allowedEmails.includes(email)) {
-      throw new Error("Forbidden — admin access required.");
-    }
+  if (!(await isAdminUser(userId))) {
+    throw new Error("Forbidden — admin access required.");
   }
 }
 
@@ -35,9 +26,17 @@ export async function saveProduct(formData) {
   await assertAdmin();
 
   const data = Object.fromEntries(formData);
-  
+
   const id = data.id;
   const isNew = !id;
+
+  // Extract images array from formData (images[0], images[1], ...)
+  const images = [];
+  for (const [key, value] of formData.entries()) {
+    if (key.startsWith("images[") && value) {
+      images.push(value);
+    }
+  }
 
   const productData = {
     name: data.name,
@@ -50,7 +49,7 @@ export async function saveProduct(formData) {
   };
 
   const tags = data.tags ? data.tags.split(",").map(t => t.trim()) : [];
-  
+
   // Upsert all tags first
   for (const tag of tags) {
     if (!tag) continue;
@@ -61,15 +60,21 @@ export async function saveProduct(formData) {
     });
   }
 
+  let productId = id;
+
   if (isNew) {
-    await prisma.product.create({
+    const created = await prisma.product.create({
       data: {
         ...productData,
         tags: {
-          connect: tags.filter(Boolean).map(t => ({ name: t }))
-        }
-      }
+          connect: tags.filter(Boolean).map(t => ({ name: t })),
+        },
+        images: {
+          create: images.map((url) => ({ url })),
+        },
+      },
     });
+    productId = created.id;
   } else {
     await prisma.product.update({
       where: { id },
@@ -77,13 +82,21 @@ export async function saveProduct(formData) {
         ...productData,
         tags: {
           set: [],
-          connect: tags.filter(Boolean).map(t => ({ name: t }))
-        }
-      }
+          connect: tags.filter(Boolean).map((t) => ({ name: t })),
+        },
+      },
     });
+
+    // Replace images: delete old, create new
+    await prisma.productImage.deleteMany({ where: { productId: id } });
+    if (images.length > 0) {
+      await prisma.productImage.createMany({
+        data: images.map((url) => ({ url, productId: id })),
+      });
+    }
   }
 
-  await invalidateProduct(id || "new");
+  await invalidateProduct(productId);
   revalidatePath("/admin/products");
   revalidatePath("/");
   redirect("/admin/products");
@@ -100,7 +113,8 @@ export async function saveSiteContent(formData) {
     { key: "hero_title", value: formData.get("hero_title") },
     { key: "hero_subtitle", value: formData.get("hero_subtitle") },
     { key: "announcement_texts", value: JSON.stringify(announcementsArray) },
-    { key: "free_shipping_threshold", value: formData.get("free_shipping_threshold") }
+    { key: "free_shipping_threshold", value: formData.get("free_shipping_threshold") },
+    { key: "auth_image", value: formData.get("auth_image") },
   ];
 
   for (const update of updates) {
@@ -117,9 +131,12 @@ export async function saveSiteContent(formData) {
   await invalidateSiteContent("hero_subtitle");
   await invalidateSiteContent("announcement_texts");
   await invalidateSiteContent("free_shipping_threshold");
+  await invalidateSiteContent("auth_image");
   revalidatePath("/admin/settings");
   revalidatePath("/");
   revalidatePath("/cart");
+  revalidatePath("/sign-in");
+  revalidatePath("/sign-up");
 }
 
 export async function saveCategory(formData) {

@@ -1,23 +1,35 @@
 "use server";
 
 import { prisma } from "./prisma";
+import { cacheOrFetch, kvDel } from "./kv";
+import { cacheKeys, CACHE_TTL, invalidateCoupons } from "./cache";
 
 /* ── Admin CRUD ── */
 
 export async function createCoupon(data) {
-  return prisma.coupon.create({ data });
+  const result = await prisma.coupon.create({ data });
+  await invalidateCoupons();
+  return result;
 }
 
 export async function updateCoupon(id, data) {
-  return prisma.coupon.update({ where: { id }, data });
+  const result = await prisma.coupon.update({ where: { id }, data });
+  await invalidateCoupons();
+  return result;
 }
 
 export async function deleteCoupon(id) {
-  return prisma.coupon.delete({ where: { id } });
+  const result = await prisma.coupon.delete({ where: { id } });
+  await invalidateCoupons();
+  return result;
 }
 
 export async function getCoupons() {
-  return prisma.coupon.findMany({ orderBy: { createdAt: "desc" } });
+  return cacheOrFetch(
+    cacheKeys.coupons(),
+    () => prisma.coupon.findMany({ orderBy: { createdAt: "desc" } }),
+    CACHE_TTL.COUPONS
+  );
 }
 
 export async function getCouponById(id) {
@@ -84,13 +96,15 @@ export async function validateCoupon({
 export async function getApplicableCoupons({ userId, cartItems }) {
   const now = new Date();
 
-  // Fetch all active coupons unrestricted to this user
-  const coupons = await prisma.coupon.findMany({
-    where: {
-      isActive: true,
-      OR: [{ userId: null }, { userId: userId || "" }],
-    },
-  });
+  // Fetch all active coupons from cache or DB
+  const coupons = await cacheOrFetch(
+    cacheKeys.publicCoupons(),
+    () =>
+      prisma.coupon.findMany({
+        where: { isActive: true },
+      }),
+    CACHE_TTL.COUPONS
+  );
 
   const enrichedItems = await enrichCartItems(cartItems);
   const subtotal = enrichedItems.reduce(
@@ -114,9 +128,12 @@ export async function getApplicableCoupons({ userId, cartItems }) {
   const applicable = [];
 
   for (const coupon of coupons) {
+    // Skip user-restricted coupons that don't match
+    if (coupon.userId && coupon.userId !== userId) continue;
+
     // Date checks
-    if (coupon.startDate && now < coupon.startDate) continue;
-    if (coupon.endDate && now > coupon.endDate) continue;
+    if (coupon.startDate && now < new Date(coupon.startDate)) continue;
+    if (coupon.endDate && now > new Date(coupon.endDate)) continue;
 
     // Max uses
     if (coupon.maxUses !== null && coupon.usedCount >= coupon.maxUses) continue;
@@ -157,14 +174,19 @@ export async function recordCouponUsage(couponId, userId) {
 
 export async function getPublicCoupons() {
   const now = new Date();
-  const coupons = await prisma.coupon.findMany({
-    where: { isActive: true },
-    orderBy: { discountValue: "desc" },
-  });
+  const coupons = await cacheOrFetch(
+    cacheKeys.publicCoupons(),
+    () =>
+      prisma.coupon.findMany({
+        where: { isActive: true },
+        orderBy: { discountValue: "desc" },
+      }),
+    CACHE_TTL.COUPONS
+  );
 
   return coupons.filter((c) => {
-    if (c.startDate && now < c.startDate) return false;
-    if (c.endDate && now > c.endDate) return false;
+    if (c.startDate && now < new Date(c.startDate)) return false;
+    if (c.endDate && now > new Date(c.endDate)) return false;
     if (c.maxUses !== null && c.usedCount >= c.maxUses) return false;
     return true;
   });

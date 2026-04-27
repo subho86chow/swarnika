@@ -122,7 +122,7 @@ function CategoriesFilterLogic({ initialProducts, initialCategories }) {
             <div className="text-center py-28 space-y-6">
               <div className="w-16 h-[1px] bg-outline-var mx-auto" />
               <h3 className="font-headline text-2xl text-navy font-light italic">No pieces found</h3>
-              <p className="font-body text-outline text-[13px]">Try adjusting your filters to discover more treasures.</p>
+              <p className="font-body text-outline text-sm">Try adjusting your filters to discover more treasures.</p>
               <button onClick={() => { setActiveCategory("all"); setActiveTag(""); }} className="btn-primary mt-2">
                 Clear Filters
               </button>

@@ -1,17 +1,11 @@
 "use client";
 
-import { useAuth, useClerk } from "@clerk/nextjs";
-import { useEffect } from "react";
+import { useAuth } from "@clerk/nextjs";
+import { useAuthModal } from "../lib/authModalContext";
 
 export default function AuthGuard({ children }) {
   const { isLoaded, userId } = useAuth();
-  const { openSignIn } = useClerk();
-
-  useEffect(() => {
-    if (isLoaded && !userId) {
-      openSignIn();
-    }
-  }, [isLoaded, userId, openSignIn]);
+  const { openSignIn } = useAuthModal();
 
   if (!isLoaded) {
     return (
@@ -30,10 +24,10 @@ export default function AuthGuard({ children }) {
         <div className="text-center space-y-6 px-6">
           <span className="material-symbols-outlined text-outline-var text-[48px]">lock</span>
           <h2 className="font-headline text-2xl text-navy italic">Sign in to continue</h2>
-          <p className="text-outline text-[13px] leading-relaxed max-w-sm mx-auto">
+          <p className="text-outline text-sm leading-relaxed max-w-sm mx-auto">
             Please sign in to access this page.
           </p>
-          <button onClick={() => openSignIn()} className="btn-primary">
+          <button onClick={openSignIn} className="btn-primary">
             Sign In
           </button>
         </div>

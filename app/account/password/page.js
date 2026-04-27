@@ -72,7 +72,7 @@ export default function PasswordPage() {
           {hasPassword ? "Change Password" : "Set a Password"}
         </h2>
         {!hasPassword && (
-          <p className="text-outline text-[13px] leading-relaxed mt-2">
+          <p className="text-outline text-sm leading-relaxed mt-2">
             Your account uses social login. Add a password to also sign in with email &amp; password.
           </p>
         )}
@@ -103,7 +103,7 @@ export default function PasswordPage() {
         {/* Current password — only shown if user already has one */}
         {hasPassword && (
           <div className="flex flex-col gap-1.5">
-            <label className="font-label text-[9px] tracking-[0.25em] uppercase text-outline font-semibold">
+            <label className="font-label text-[11px] tracking-[0.25em] uppercase text-outline font-semibold">
               Current Password *
             </label>
             <input
@@ -119,7 +119,7 @@ export default function PasswordPage() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           <div className="flex flex-col gap-1.5">
-            <label className="font-label text-[9px] tracking-[0.25em] uppercase text-outline font-semibold">
+            <label className="font-label text-[11px] tracking-[0.25em] uppercase text-outline font-semibold">
               {hasPassword ? "New Password *" : "Password *"}
             </label>
             <input
@@ -133,7 +133,7 @@ export default function PasswordPage() {
             />
           </div>
           <div className="flex flex-col gap-1.5">
-            <label className="font-label text-[9px] tracking-[0.25em] uppercase text-outline font-semibold">
+            <label className="font-label text-[11px] tracking-[0.25em] uppercase text-outline font-semibold">
               Confirm Password *
             </label>
             <input
@@ -155,7 +155,7 @@ export default function PasswordPage() {
             onChange={(e) => setShowPasswords(e.target.checked)}
             className="accent-gold-light w-4 h-4"
           />
-          <span className="font-label text-[10px] tracking-[0.12em] uppercase text-outline">
+          <span className="font-label text-xs tracking-[0.12em] uppercase text-outline">
             Show passwords
           </span>
         </label>
@@ -164,7 +164,7 @@ export default function PasswordPage() {
           <button
             type="submit"
             disabled={saving}
-            className="btn-primary py-3 px-8 text-[9px]"
+            className="btn-primary py-3 px-8 text-[11px]"
           >
             {saving ? "Saving..." : hasPassword ? "Update Password" : "Create Password"}
           </button>

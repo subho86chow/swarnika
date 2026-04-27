@@ -4,11 +4,13 @@ import Link from "next/link";
 import Image from "next/image";
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
-import { Show, SignInButton } from "@clerk/nextjs";
+import { Show } from "@clerk/nextjs";
+import { useAuthModal } from "../lib/authModalContext";
 import { useCart } from "../lib/cartStore";
 
 export default function Navbar({ categories = [] }) {
   const pathname = usePathname();
+  const { openSignIn } = useAuthModal();
   const { cartCount } = useCart();
   const isHome = pathname === "/";
 
@@ -58,7 +60,7 @@ export default function Navbar({ categories = [] }) {
               <Link
                 key={link.href}
                 href={link.href}
-                className={`hover-underline font-label text-[9.5px] tracking-[0.28em] uppercase leading-relaxed transition-colors duration-300 ${useDarkText
+                className={`hover-underline font-label text-[11px] tracking-[0.28em] uppercase leading-relaxed transition-colors duration-300 ${useDarkText
                   ? (i === 0 ? "text-navy font-semibold" : "text-outline hover:text-navy font-medium")
                   : (i === 0 ? "text-white font-semibold" : "text-white/80 hover:text-white font-medium")
                   }`}
@@ -112,16 +114,15 @@ export default function Navbar({ categories = [] }) {
             <span className="material-symbols-outlined text-[20px]">favorite</span>
           </Link>
 
-          {/* Account icon — sign-in modal when signed out, link to /account when signed in */}
+          {/* Account icon — sign-in page when signed out, link to /account when signed in */}
           <Show when="signed-out">
-            <SignInButton mode="modal">
-              <button
-                aria-label="Account"
-                className={`hidden md:flex items-center transition-colors duration-300 ${useDarkText ? "text-outline hover:text-navy" : "text-white/80 hover:text-white"}`}
-              >
-                <span className="material-symbols-outlined text-[20px]">person</span>
-              </button>
-            </SignInButton>
+            <button
+              aria-label="Account"
+              onClick={openSignIn}
+              className={`hidden md:flex items-center transition-colors duration-300 ${useDarkText ? "text-outline hover:text-navy" : "text-white/80 hover:text-white"}`}
+            >
+              <span className="material-symbols-outlined text-[20px]">person</span>
+            </button>
           </Show>
           <Show when="signed-in">
             <Link
@@ -159,7 +160,7 @@ export default function Navbar({ categories = [] }) {
             <input
               type="text"
               placeholder="Search the archive..."
-              className="w-full bg-transparent border-b border-outline-var px-0 pl-7 py-2.5 text-[12px] text-navy placeholder:text-outline placeholder:tracking-[0.1em] placeholder:uppercase placeholder:text-[10px] focus:outline-none focus:border-navy transition-colors"
+              className="w-full bg-transparent border-b border-outline-var px-0 pl-7 py-2.5 text-base text-navy placeholder:text-outline placeholder:tracking-[0.1em] placeholder:uppercase placeholder:text-[10px] focus:outline-none focus:border-navy transition-colors"
             />
           </div>
 
@@ -168,27 +169,25 @@ export default function Navbar({ categories = [] }) {
               <Link
                 key={link.href}
                 href={link.href}
-                className="text-navy font-label text-[10px] tracking-[0.28em] uppercase py-4 hover:text-gold transition-colors"
+                className="text-navy font-label text-[11px] tracking-[0.28em] uppercase py-4 hover:text-gold transition-colors"
                 onClick={() => setMenuOpen(false)}
               >
                 {link.label}
               </Link>
             ))}
             <Show when="signed-out">
-              <SignInButton mode="modal">
-                <button
-                  className="flex items-center gap-3 text-outline font-label text-[10px] tracking-[0.28em] uppercase py-4"
-                  onClick={() => setMenuOpen(false)}
-                >
-                  <span className="material-symbols-outlined text-[16px]">person</span>
-                  Sign In
-                </button>
-              </SignInButton>
+              <button
+                className="flex items-center gap-3 text-outline font-label text-[11px] tracking-[0.28em] uppercase py-4"
+                onClick={() => { setMenuOpen(false); openSignIn(); }}
+              >
+                <span className="material-symbols-outlined text-[16px]">person</span>
+                Sign In
+              </button>
             </Show>
             <Show when="signed-in">
               <Link
                 href="/account"
-                className="flex items-center gap-3 text-outline font-label text-[10px] tracking-[0.28em] uppercase py-4 hover:text-navy transition-colors"
+                  className="flex items-center gap-3 text-outline font-label text-[11px] tracking-[0.28em] uppercase py-4 hover:text-navy transition-colors"
                 onClick={() => setMenuOpen(false)}
               >
                 <span className="material-symbols-outlined text-[16px]">person</span>

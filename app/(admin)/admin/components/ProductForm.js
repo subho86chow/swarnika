@@ -1,15 +1,23 @@
 "use client";
 
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
 import { saveProduct } from "../../actions";
 import Link from "next/link";
+import MultiImageUploader from "./MultiImageUploader";
 
 export default function ProductForm({ product, categories = [] }) {
   const [isPending, startTransition] = useTransition();
+  const [images, setImages] = useState(
+    product?.images?.map((i) => (typeof i === "string" ? i : i.url)) || []
+  );
 
   const handleSubmit = (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
+    // Append images array to formData
+    images.forEach((url, idx) => {
+      formData.set(`images[${idx}]`, url);
+    });
     startTransition(() => {
       saveProduct(formData);
     });
@@ -78,6 +86,14 @@ export default function ProductForm({ product, categories = [] }) {
           <input type="checkbox" name="inStock" value="true" defaultChecked={product ? product.inStock : true} className="w-4 h-4 accent-navy" />
           <span className="font-label text-[10px] tracking-widest uppercase text-navy font-semibold">In Stock</span>
         </label>
+      </div>
+
+      <div className="pt-6 border-t border-surface-dim">
+        <MultiImageUploader
+          images={images}
+          onChange={setImages}
+          hint="Recommended: 800 × 1066 px (3:4 ratio) per image. Upload multiple for carousel. Formats: JPEG, PNG, WebP."
+        />
       </div>
 
       <div className="pt-6 border-t border-surface-dim">

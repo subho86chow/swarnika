@@ -18,14 +18,14 @@ function FavoritesContent() {
     .filter(Boolean);
 
   return (
-    <main className="pt-[72px] bg-background min-h-screen">
+    <main className="pt-[80px] bg-background min-h-screen">
       {/* Header */}
-      <section className="bg-navy py-16 md:py-20 px-6 md:px-12">
-        <div className="max-w-[1440px] mx-auto text-center space-y-4">
-          <h1 className="font-headline text-3xl md:text-4xl text-white italic">
+      <section className="pt-8 md:pt-10 pb-6 md:pb-8 px-6 md:px-14 lg:px-20">
+        <div className="max-w-[1440px] mx-auto">
+          <h1 className="font-headline text-3xl md:text-5xl text-navy italic">
             Your Wishlist
           </h1>
-          <p className="font-body text-white/50 text-[13px]">
+          <p className="font-body text-outline text-sm mt-2">
             {favoriteProducts.length} {favoriteProducts.length === 1 ? "item" : "items"} saved for later
           </p>
         </div>
@@ -39,7 +39,7 @@ function FavoritesContent() {
                 favorite
               </span>
               <h2 className="font-headline text-2xl text-navy italic">Your wishlist is empty</h2>
-              <p className="font-body text-outline text-[13px] max-w-sm mx-auto">
+              <p className="font-body text-outline text-sm max-w-sm mx-auto">
                 Curate a collection of your favorite pieces from the archive. They will be saved here for your next visit.
               </p>
               <Link

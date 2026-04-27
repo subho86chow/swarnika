@@ -68,7 +68,7 @@ export default function RecentlyViewed() {
                   <h3 className="font-body text-navy text-[12px] leading-snug line-clamp-2 mb-1.5">
                     {product.name}
                   </h3>
-                  <p className="font-headline text-navy text-[13px] font-light">
+                  <p className="font-headline text-navy text-sm font-light">
                     ₹{product.price.toLocaleString("en-IN")}
                   </p>
                 </div>

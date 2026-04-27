@@ -282,7 +282,7 @@ export default function CouponForm({ coupon, categories = [], products = [] }) {
         <button
           type="button"
           onClick={() => router.push("/admin/coupons")}
-          className="btn-secondary"
+          className="btn-secondary hero"
         >
           Cancel
         </button>

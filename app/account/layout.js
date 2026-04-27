@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useUser, useClerk, Show, SignInButton } from "@clerk/nextjs";
+import { useUser, useClerk, Show } from "@clerk/nextjs";
+import { useAuthModal } from "../lib/authModalContext";
 
 const PAD = "px-6 md:px-14 lg:px-20";
 const MAX = "max-w-[1440px] mx-auto";
@@ -18,6 +19,7 @@ const sidebarLinks = [
 export default function AccountLayout({ children }) {
   const pathname = usePathname();
   const router = useRouter();
+  const { openSignIn } = useAuthModal();
   const { isLoaded, isSignedIn, user } = useUser();
   const { signOut } = useClerk();
 
@@ -28,15 +30,15 @@ export default function AccountLayout({ children }) {
 
   return (
     <main className="pt-[72px]">
-      {/* ─── Hero Banner ─── */}
-      <section className="bg-navy py-14 md:py-16 px-6 md:px-12">
-        <div className="max-w-[1440px] mx-auto text-center space-y-3">
-          <span className="font-body text-gold-light tracking-[0.3em] uppercase text-[10px] font-semibold block">
-            {isSignedIn ? `Welcome, ${user?.firstName || "Member"}` : "Your Account"}
-          </span>
-          <h1 className="font-headline text-3xl md:text-4xl text-white italic font-light">
+      {/* ─── Page Header ─── */}
+      <section className="pt-8 md:pt-10 pb-6 md:pb-8 px-6 md:px-14 lg:px-20">
+        <div className="max-w-[1440px] mx-auto">
+          <h1 className="font-headline text-3xl md:text-5xl text-navy italic">
             My Account
           </h1>
+          <p className="font-body text-outline text-sm mt-2">
+            {isSignedIn ? `Welcome, ${user?.firstName || "Member"}` : "Sign in to manage your account"}
+          </p>
         </div>
       </section>
 
@@ -46,12 +48,10 @@ export default function AccountLayout({ children }) {
           <div className={`${MAX} max-w-md mx-auto text-center space-y-6`}>
             <span className="material-symbols-outlined text-outline-var text-[48px]">lock</span>
             <h2 className="font-headline text-2xl text-navy italic">Sign in to continue</h2>
-            <p className="text-outline text-[13px] leading-relaxed">
+            <p className="text-outline text-sm leading-relaxed">
               Access your profile, addresses, order history, and more.
             </p>
-            <SignInButton mode="modal">
-              <button className="btn-primary">Sign In</button>
-            </SignInButton>
+            <button onClick={openSignIn} className="btn-primary">Sign In</button>
           </div>
         </section>
       </Show>
@@ -84,7 +84,7 @@ export default function AccountLayout({ children }) {
                     <p className="font-label text-[11px] font-semibold text-navy tracking-wide">
                       {user.fullName || user.primaryEmailAddress?.emailAddress}
                     </p>
-                    <p className="font-label text-[9px] text-outline tracking-wider uppercase">
+                    <p className="font-label text-[10px] text-outline tracking-wider uppercase">
                       Member
                     </p>
                   </div>
@@ -99,7 +99,7 @@ export default function AccountLayout({ children }) {
                     <Link
                       key={link.href}
                       href={link.href}
-                      className={`flex items-center gap-3 px-4 py-3 font-label text-[10px] tracking-[0.18em] uppercase transition-all duration-200 whitespace-nowrap ${
+                      className={`flex items-center gap-3 px-4 py-3 font-label text-[11px] tracking-[0.18em] uppercase transition-all duration-200 whitespace-nowrap ${
                         isActive
                           ? "bg-navy text-white font-semibold"
                           : "text-outline hover:text-navy hover:bg-surface-low font-medium"
@@ -114,7 +114,7 @@ export default function AccountLayout({ children }) {
                 {/* Logout */}
                 <button
                   onClick={handleSignOut}
-                  className="flex items-center gap-3 px-4 py-3 font-label text-[10px] tracking-[0.18em] uppercase text-error hover:bg-surface-low transition-all duration-200 mt-2 md:mt-4 whitespace-nowrap font-medium w-full text-left"
+                  className="flex items-center gap-3 px-4 py-3 font-label text-[11px] tracking-[0.18em] uppercase text-error hover:bg-surface-low transition-all duration-200 mt-2 md:mt-4 whitespace-nowrap font-medium w-full text-left"
                 >
                   <span className="material-symbols-outlined text-[18px]">logout</span>
                   Sign Out

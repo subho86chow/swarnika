@@ -6,6 +6,7 @@ export const CACHE_TTL = {
   CATEGORIES: 600,         // 10 min
   SITE_CONTENT: 1800,      // 30 min
   RECENTLY_VIEWED: 120,    // 2 min
+  COUPONS: 86400,          // 24 hours
 };
 
 /** Cache key generators */
@@ -15,6 +16,8 @@ export const cacheKeys = {
   categories: () => `categories:all`,
   siteContent: (key) => `sitecontent:${key}`,
   recentlyViewed: (userId) => `recentlyviewed:${userId}`,
+  coupons: () => `coupons:all`,
+  publicCoupons: () => `coupons:public`,
 };
 
 /** Wrap a fetch with caching */
@@ -50,4 +53,12 @@ export async function invalidateCategories() {
 /** Invalidate site content cache */
 export async function invalidateSiteContent(key) {
   await kvDel(cacheKeys.siteContent(key));
+}
+
+/** Invalidate coupon caches */
+export async function invalidateCoupons() {
+  await Promise.all([
+    kvDel(cacheKeys.coupons()),
+    kvDel(cacheKeys.publicCoupons()),
+  ]);
 }
