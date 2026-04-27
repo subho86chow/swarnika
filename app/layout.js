@@ -64,9 +64,15 @@ import ClientLayoutWrapper from "./components/ClientLayoutWrapper";
 import ChatBot from "./components/ChatBot";
 
 export default async function RootLayout({ children }) {
-  const categories = await prisma.category.findMany({
-    orderBy: { name: "asc" }
-  });
+  let categories = [];
+  try {
+    categories = await prisma.category.findMany({
+      orderBy: { name: "asc" }
+    });
+  } catch {
+    // Build-time fallback when DATABASE_URL is not available
+    categories = [];
+  }
 
   return (
     <html lang="en" className={`${cormorant.variable} ${manrope.variable}`}>

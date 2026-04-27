@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import CategoriesClient from "./CategoriesClient";
 import { prisma } from "../lib/prisma";
 import { withCache, cacheKeys, CACHE_TTL } from "../lib/cache";
