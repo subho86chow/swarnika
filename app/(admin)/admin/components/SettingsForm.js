@@ -2,10 +2,12 @@
 
 import { useTransition, useState } from "react";
 import { saveSiteContent } from "../../actions";
+import ImageUploader from "./ImageUploader";
 
 export default function SettingsForm({ settings }) {
   const [isPending, startTransition] = useTransition();
   const [message, setMessage] = useState("");
+  const [authImage, setAuthImage] = useState(settings.auth_image || "");
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -54,10 +56,38 @@ export default function SettingsForm({ settings }) {
       </div>
 
       <div className="pt-6 border-t border-surface-dim">
+        <h3 className="font-headline text-2xl text-navy italic mb-4">Authentication</h3>
+        <ImageUploader
+          value={authImage}
+          onChange={setAuthImage}
+          label="Sign-In Page Image"
+          hint="Recommended: 800 × 1000 px (portrait, 4:5 ratio). Shown on the left side of desktop sign-in page and above on mobile. Formats: JPEG, PNG, WebP."
+        />
+        <input type="hidden" name="auth_image" value={authImage} />
+      </div>
+
+      <div className="pt-6 border-t border-surface-dim">
         <h3 className="font-headline text-2xl text-navy italic mb-4">Announcement Bar</h3>
         <p className="font-body text-outline text-xs mb-4">Enter each announcement separated by a newline.</p>
         <div className="space-y-2">
           <textarea required name="announcement_texts" defaultValue={currentAnnouncements.join("\n")} rows={6} className="w-full border border-surface-dim p-3 font-body text-sm text-navy focus:outline-none focus:border-navy"></textarea>
+        </div>
+      </div>
+
+      <div className="pt-6 border-t border-surface-dim">
+        <h3 className="font-headline text-2xl text-navy italic mb-4">Shipping</h3>
+        <div className="space-y-2">
+          <label className="font-label text-[10px] tracking-widest uppercase text-outline">Free Shipping Threshold (₹)</label>
+          <input
+            type="number"
+            min="0"
+            step="1"
+            required
+            name="free_shipping_threshold"
+            defaultValue={settings.free_shipping_threshold || "50000"}
+            className="w-full border border-surface-dim p-3 font-body text-sm text-navy focus:outline-none focus:border-navy"
+          />
+          <p className="font-body text-outline text-xs">Orders above this amount qualify for free shipping.</p>
         </div>
       </div>
 

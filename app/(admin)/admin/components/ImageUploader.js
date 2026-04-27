@@ -3,7 +3,7 @@
 import { useState, useRef } from "react";
 import Image from "next/image";
 
-export default function ImageUploader({ value, onChange, label = "Image" }) {
+export default function ImageUploader({ value, onChange, label = "Image", hint = "" }) {
   const [uploading, setUploading] = useState(false);
   const [dragActive, setDragActive] = useState(false);
   const [error, setError] = useState("");
@@ -77,6 +77,9 @@ export default function ImageUploader({ value, onChange, label = "Image" }) {
       <label className="font-label text-[10px] tracking-widest uppercase text-outline">
         {label}
       </label>
+      {hint && (
+        <p className="font-body text-[10px] text-outline-var leading-relaxed">{hint}</p>
+      )}
 
       {value ? (
         /* ─── Preview ─── */

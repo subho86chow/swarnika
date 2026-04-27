@@ -2,18 +2,18 @@ export default function ShippingPage() {
   return (
     <main className="pt-[72px]">
         {/* Hero */}
-        <section className="bg-navy py-16 md:py-20 px-6 md:px-12">
-          <div className="max-w-[1440px] mx-auto text-center space-y-4">
-            <span className="font-body text-gold-light tracking-[0.3em] uppercase text-[10px] font-semibold block">
-              Customer Care
-            </span>
-            <h1 className="font-headline text-3xl md:text-4xl text-white italic">
+        <section className="pt-8 md:pt-10 pb-6 md:pb-8 px-6 md:px-14 lg:px-20">
+          <div className="max-w-[1440px] mx-auto">
+            <h1 className="font-headline text-3xl md:text-5xl text-navy italic">
               Shipping & Returns
             </h1>
+            <p className="font-body text-outline text-sm mt-2">
+              Customer care and support
+            </p>
           </div>
         </section>
 
-        <section className="py-16 md:py-24 px-6 md:px-12 bg-ivory">
+        <section className="py-16 md:py-24 px-6 md:px-14 lg:px-20 bg-ivory">
           <div className="max-w-3xl mx-auto space-y-12">
             {/* Shipping */}
             <div className="space-y-6">

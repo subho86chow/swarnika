@@ -5,15 +5,12 @@ export default function AboutPage() {
   return (
     <main className="pt-[72px]">
         {/* Hero */}
-        <section className="bg-navy py-20 md:py-28 px-6 md:px-12">
-          <div className="max-w-[1440px] mx-auto text-center space-y-5">
-            <span className="font-body text-gold-light tracking-[0.3em] uppercase text-[10px] font-semibold block">
-              Our Story
-            </span>
-            <h1 className="font-headline text-4xl md:text-5xl lg:text-6xl text-white italic">
+        <section className="pt-8 md:pt-10 pb-6 md:pb-8 px-6 md:px-14 lg:px-20">
+          <div className="max-w-[1440px] mx-auto">
+            <h1 className="font-headline text-3xl md:text-5xl text-navy italic">
               The Heritage of SWARNIKA
             </h1>
-            <p className="font-body text-slate-400 text-sm max-w-xl mx-auto leading-relaxed">
+            <p className="font-body text-outline text-sm mt-2 max-w-xl">
               Born from a passion for timeless artistry, SWARNIKA crafts jewelry that transcends
               generations — where every piece carries a narrative of devotion and beauty.
             </p>
@@ -21,7 +18,7 @@ export default function AboutPage() {
         </section>
 
         {/* Story Section */}
-        <section className="py-20 md:py-28 px-6 md:px-12 bg-ivory">
+        <section className="py-20 md:py-28 px-6 md:px-14 lg:px-20 bg-ivory">
           <div className="max-w-[1440px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
             <div className="relative aspect-[3/4] w-full">
               <Image
@@ -63,7 +60,7 @@ export default function AboutPage() {
         </section>
 
         {/* Values */}
-        <section className="py-20 md:py-28 px-6 md:px-12 bg-white">
+        <section className="py-20 md:py-28 px-6 md:px-14 lg:px-20 bg-white">
           <div className="max-w-[1440px] mx-auto">
             <div className="text-center mb-16 space-y-4">
               <span className="font-body text-gold tracking-[0.3em] uppercase text-[10px] font-semibold block">
@@ -105,7 +102,7 @@ export default function AboutPage() {
         </section>
 
         {/* Craftsmanship Gallery */}
-        <section className="py-20 md:py-28 px-6 md:px-12 bg-ivory">
+        <section className="py-20 md:py-28 px-6 md:px-14 lg:px-20 bg-ivory">
           <div className="max-w-[1440px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
             <div className="space-y-8 order-2 lg:order-1">
               <span className="font-body text-gold tracking-[0.3em] uppercase text-[10px] font-semibold block">
@@ -158,7 +155,7 @@ export default function AboutPage() {
         </section>
 
         {/* CTA */}
-        <section className="py-20 md:py-28 px-6 md:px-12 bg-navy text-center">
+        <section className="py-20 md:py-28 px-6 md:px-14 lg:px-20 bg-navy text-center">
           <div className="max-w-3xl mx-auto space-y-8">
             <h2 className="font-headline text-3xl md:text-4xl text-white italic">
               Experience the SWARNIKA Difference
@@ -170,13 +167,13 @@ export default function AboutPage() {
             <div className="flex flex-col sm:flex-row justify-center gap-4 pt-4">
               <Link
                 href="/categories"
-                className="btn-primary-gold"
+                className="btn-primary"
               >
                 Explore Collections
               </Link>
               <Link
                 href="/contact"
-                className="btn-primary-gold"
+                className="btn-primary"
               >
                 Book Appointment
               </Link>

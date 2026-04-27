@@ -31,7 +31,7 @@ export default function ChatBot() {
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-6 right-6 z-50 w-12 h-12 bg-white text-navy flex items-center justify-center border border-outline-var transition-all duration-300 hover:scale-105 hover:bg-[#F0EBE5] cursor-pointer shadow-[0_4px_24px_rgba(10,10,10,0.15)]"
+          className="fixed bottom-6 right-6 z-50 w-12 h-12 bg-white text-navy flex items-center justify-center border border-outline-var transition-all duration-300 hover:scale-105 hover:bg-[#f3ede4] cursor-pointer shadow-[0_4px_24px_rgba(10,10,10,0.15)]"
           aria-label="Open Chat"
         >
           <span className="material-symbols-outlined text-[20px]">forum</span>
@@ -74,10 +74,10 @@ export default function ChatBot() {
                 className={`flex w-full ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}
               >
                 <div
-                  className={`max-w-[85%] px-5 py-3.5 text-[13px] font-body leading-relaxed ${
+                  className={`max-w-[85%] px-5 py-3.5 text-sm font-body leading-relaxed ${
                     m.role === 'user'
                       ? 'bg-navy text-white'
-                      : 'bg-[#F0EBE5] border border-outline-var/30 text-navy'
+                      : 'bg-[#f3ede4] border border-outline-var/30 text-navy'
                   }`}
                   style={{ borderRadius: m.role === 'user' ? '12px 12px 0 12px' : '12px 12px 12px 0' }}
                 >
@@ -89,7 +89,7 @@ export default function ChatBot() {
             ))}
             {isLoading && messages[messages.length - 1]?.role === 'user' && (
               <div className="flex w-full justify-start">
-                <div className="max-w-[85%] px-5 py-3.5 bg-[#F0EBE5] border border-outline-var/30 text-navy text-[13px] font-body" style={{ borderRadius: '12px 12px 12px 0' }}>
+                <div className="max-w-[85%] px-5 py-3.5 bg-[#f3ede4] border border-outline-var/30 text-navy text-sm font-body" style={{ borderRadius: '12px 12px 12px 0' }}>
                   <span className="animate-pulse">· · ·</span>
                 </div>
               </div>

@@ -37,6 +37,7 @@ export default function CategoryForm({ category }) {
         value={imageUrl}
         onChange={setImageUrl}
         label="Category Banner Image"
+        hint="Recommended: 1200 × 400 px (3:1 ratio). Formats: JPEG, PNG, WebP."
       />
 
       <div className="space-y-2">

@@ -16,20 +16,33 @@ export default function HeroSlider({ heroTitle, heroSubtitle, heroImages }) {
     return () => clearInterval(timer);
   }, [heroImages.length]);
 
+  const resolveSlide = (slide) =>
+    typeof slide === "string" ? { desktop: slide, mobile: slide } : slide;
+
   return (
     <section className="relative w-full h-[92vh] overflow-hidden">
       <div className="absolute inset-0 z-0 bg-navy">
-        {heroImages.map((src, idx) => (
-          <Image
-            key={src}
-            src={src}
-            alt="The Archive Background"
-            fill
-            priority={idx === 0}
-            className={`object-cover object-top transition-opacity duration-[1500ms] ${idx === currentSlide ? "opacity-100" : "opacity-0"}`}
-            sizes="100vw"
-          />
-        ))}
+        {heroImages.map((slide, idx) => {
+          const { desktop, mobile } = resolveSlide(slide);
+          return (
+            <picture
+              key={desktop}
+              className={`absolute inset-0 transition-opacity duration-[1500ms] ${
+                idx === currentSlide ? "opacity-100" : "opacity-0"
+              }`}
+            >
+              <source media="(max-width: 768px)" srcSet={mobile} />
+              <Image
+                src={desktop}
+                alt="The Archive Background"
+                fill
+                priority={idx === 0}
+                className="object-cover object-top"
+                sizes="100vw"
+              />
+            </picture>
+          );
+        })}
         <div className="absolute inset-0 bg-gradient-to-r from-black/65 via-black/30 to-black/10" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
       </div>
@@ -39,12 +52,12 @@ export default function HeroSlider({ heroTitle, heroSubtitle, heroImages }) {
             <div className="w-[40px] h-[1px] bg-gold-light" />
             <span className="font-label text-[9px] tracking-[0.4em] uppercase text-gold-light font-medium">The Signature Collection</span>
           </div>
-          <h1 className="font-headline text-white font-light italic leading-[1.0] mb-6 text-5xl md:text-7xl lg:text-[88px]" dangerouslySetInnerHTML={{ __html: heroTitle }} />
-          <p className="font-body text-white/70 text-[13px] leading-relaxed mb-10 delay-200 animate-fade-in max-w-[480px]">
+          <h1 className="font-headline text-white font-light italic leading-[1.0] mb-6 text-4xl md:text-6xl lg:text-[64px]" dangerouslySetInnerHTML={{ __html: heroTitle }} />
+          <p className="font-body text-white/70 text-sm leading-relaxed mb-10 delay-200 animate-fade-in max-w-[480px]">
             {heroSubtitle}
           </p>
           <div className="flex flex-wrap gap-4 delay-300 animate-fade-in">
-            <Link href="/categories" className="btn-primary-gold hero">Explore The Archive</Link>
+            <Link href="/categories" className="btn-primary">Explore The Archive</Link>
             <Link href="/contact" className="btn-secondary hero">Book a Private Viewing</Link>
           </div>
         </div>

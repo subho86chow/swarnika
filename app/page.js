@@ -1,9 +1,13 @@
+export const dynamic = "force-dynamic";
+
 import Link from "next/link";
 import Image from "next/image";
 import ProductCard from "./components/ProductCard";
 import HeroSlider from "./components/HeroSlider";
 import CampaignCarousel from "./components/CampaignCarousel";
+import RecentlyViewed from "./components/RecentlyViewed";
 import { prisma } from "./lib/prisma";
+import { withCache, cacheKeys, CACHE_TTL } from "./lib/cache";
 
 const PAD = "px-6 md:px-14 lg:px-20";
 const MAX = "max-w-[1440px] mx-auto";
@@ -11,10 +15,18 @@ const MAX = "max-w-[1440px] mx-auto";
 export const revalidate = 0; // Disable static rendering for now to ensure we see fresh DB data
 
 export default async function HomePage() {
-  // Fetch Hero Configuration
+  // Fetch Hero Configuration (cached)
   const [heroTitleConfig, heroSubtitleConfig] = await Promise.all([
-    prisma.siteContent.findUnique({ where: { key: "hero_title" } }),
-    prisma.siteContent.findUnique({ where: { key: "hero_subtitle" } })
+    withCache(
+      cacheKeys.siteContent("hero_title"),
+      () => prisma.siteContent.findUnique({ where: { key: "hero_title" } }),
+      CACHE_TTL.SITE_CONTENT
+    ),
+    withCache(
+      cacheKeys.siteContent("hero_subtitle"),
+      () => prisma.siteContent.findUnique({ where: { key: "hero_subtitle" } }),
+      CACHE_TTL.SITE_CONTENT
+    ),
   ]);
 
   // Default values
@@ -28,31 +40,49 @@ export default async function HomePage() {
     ? `${parts[0]}<br /><span class="font-normal">${parts[1]}</span>`
     : rawHeroTitle;
 
-  const heroImages = [
-    "/products/hero-1.jpg",
-    "/products/product-3.jpg",
-    "/products/product-4.jpg"
-  ];
-
-  // Fetch Categories
-  const categories = await prisma.category.findMany({
-    orderBy: { name: "asc" }
+  // Fetch Hero Images from DB
+  const dbHeroImages = await prisma.heroImage.findMany({
+    where: { isActive: true },
+    orderBy: { order: "asc" },
   });
 
-  // Fetch Products (assume bestsellers = first 4, new arrivals = next 4)
-  const products = await prisma.product.findMany({
-    include: { images: true, category: true },
-    orderBy: { createdAt: "asc" },
-    take: 8
-  });
+  // Fallback to hardcoded images if no slides in DB yet
+  const heroImages = dbHeroImages.length > 0
+    ? dbHeroImages.map((h) => ({ desktop: h.desktop, mobile: h.mobile }))
+    : [
+        { desktop: "/products/hero-1.jpg", mobile: "/products/hero-1.jpg" },
+        { desktop: "/products/product-3.jpg", mobile: "/products/product-3.jpg" },
+        { desktop: "/products/product-4.jpg", mobile: "/products/product-4.jpg" },
+      ];
+
+  // Fetch Categories (cached)
+  const categories = await withCache(
+    cacheKeys.categories(),
+    () => prisma.category.findMany({ orderBy: { name: "asc" } }),
+    CACHE_TTL.CATEGORIES
+  );
+
+  // Fetch Products (cached)
+  const products = await withCache(
+    cacheKeys.productList("home", 1),
+    () =>
+      prisma.product.findMany({
+        include: { images: true, category: true },
+        orderBy: { createdAt: "asc" },
+        take: 8,
+      }),
+    CACHE_TTL.PRODUCTS_LIST
+  );
 
   const bestsellers = products.slice(0, 4).map(p => ({
     ...p,
     image: p.images[0]?.url || "",
+    images: p.images.map(i => i.url),
   }));
   const newArrivals = products.slice(4, 8).map(p => ({
     ...p,
     image: p.images[0]?.url || "",
+    images: p.images.map(i => i.url),
   }));
 
   return (
@@ -96,29 +126,13 @@ export default async function HomePage() {
                     </span>
                     <div className="w-3.5 h-3.5 md:w-4 md:h-4 rounded-full bg-white flex items-center justify-center shadow-sm transition-transform duration-300 group-hover:scale-110">
                       <svg width="6" height="8" viewBox="0 0 6 8" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M1.5 1L4.5 4L1.5 7" stroke="#0f172a" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                        <path d="M1.5 1L4.5 4L1.5 7" stroke="#1d1b16" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                       </svg>
                     </div>
                   </div>
                 </Link>
               ))}
             </div>
-          </div>
-        </section>
-
-        {/* ─── Promotion Banner ─── */}
-        <section className={`pb-10 pt-4 bg-background`}>
-          <div className={`relative w-full overflow-hidden bg-surface-dim group cursor-pointer`}>
-            <Link href="/categories">
-              <Image
-                src="/products/discount_banner.png"
-                alt="Discount Promotional Banner"
-                width={1440}
-                height={400}
-                className="w-full h-auto transition-transform duration-700 group-hover:scale-[1.02]"
-              />
-              <div className="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-colors duration-500" />
-            </Link>
           </div>
         </section>
 
@@ -149,12 +163,28 @@ export default async function HomePage() {
           </div>
         </section>
 
+        {/* ─── Promotion Banner ─── */}
+        <section className={`pb-10 pt-4 bg-background`}>
+          <div className={`relative w-full overflow-hidden bg-surface-dim group cursor-pointer`}>
+            <Link href="/categories">
+              <Image
+                src="/products/discount_banner.png"
+                alt="Discount Promotional Banner"
+                width={1440}
+                height={400}
+                className="w-full h-auto transition-transform duration-700 group-hover:scale-[1.02]"
+              />
+              <div className="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-colors duration-500" />
+            </Link>
+          </div>
+        </section>
+
         <CampaignCarousel />
 
         {/* ─── Heritage Banner ─── */}
         <section className={`${PAD} py-24 bg-navy relative overflow-hidden`}>
           <div className="absolute inset-0 opacity-10">
-            <div className="absolute inset-0" style={{ backgroundImage: 'repeating-linear-gradient(45deg, #c9a44a 0, #c9a44a 1px, transparent 0, transparent 50%)', backgroundSize: '8px 8px' }} />
+            <div className="absolute inset-0" style={{ backgroundImage: 'repeating-linear-gradient(45deg, #e9c088 0, #e9c088 1px, transparent 0, transparent 50%)', backgroundSize: '8px 8px' }} />
           </div>
           <div className={`${MAX} relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center`}>
             <div className="animate-fade-in-up order-2 lg:order-1">
@@ -165,13 +195,13 @@ export default async function HomePage() {
               <h2 className="font-headline text-white font-light italic leading-[1.05] mb-8 text-4xl md:text-5xl lg:text-[58px]">
                 A Heritage<br /><span className="font-normal">Reborn</span>
               </h2>
-              <p className="font-body text-white/55 text-[13px] leading-loose mb-4 max-w-[440px]">
+              <p className="font-body text-white/55 text-sm leading-loose mb-4 max-w-[440px]">
                 In an era of fleeting trends, SWARNIKA remains anchored in the philosophy of permanence. Our artisans dedicate hundreds of hours to a single creation.
               </p>
               <p className="font-body text-white/35 text-[12px] leading-loose mb-10 max-w-[400px]">
                 From hand-selected ethically sourced gems to traditional lost-wax casting, our process is a pilgrimage toward perfection.
               </p>
-              <Link href="/about" className="btn-primary-gold inline-flex">Discover Our Heritage</Link>
+              <Link href="/about" className="btn-primary inline-flex">Discover Our Heritage</Link>
             </div>
             <div className="relative aspect-[4/5] overflow-hidden order-1 lg:order-2 w-full max-w-md mx-auto lg:max-w-full">
               <Image src="/products/brand-story.jpg" alt="The Art of Slow Craft" fill className="object-cover object-top opacity-80" />
@@ -202,6 +232,8 @@ export default async function HomePage() {
           </div>
         </section>
 
+        <RecentlyViewed />
+
         {/* ─── Private Viewing CTA ─── */}
         <section className={`${PAD} py-20 bg-background`}>
           <div className={MAX}>
@@ -214,12 +246,12 @@ export default async function HomePage() {
 
               <span className="section-eyebrow flex justify-center">A Private Viewing</span>
               <h2 className="font-headline text-[36px] md:text-[52px] text-navy font-light italic leading-tight mt-2 mb-6">Experience the Collection</h2>
-              <p className="font-body text-outline text-[13px] leading-relaxed mx-auto mb-10 max-w-[512px]">
+              <p className="font-body text-outline text-sm leading-relaxed mx-auto mb-10 max-w-[512px]">
                 Experience the collection in the quiet luxury of our flagship stores, or via a virtual consultation with our master curators.
               </p>
               <div className="flex flex-wrap gap-4 justify-center">
                 <Link href="/contact" className="btn-primary">Book an Appointment</Link>
-                <Link href="/categories" className="btn-secondary">View All Categories</Link>
+                <Link href="/categories" className="btn-secondary hero">View All Categories</Link>
               </div>
             </div>
           </div>

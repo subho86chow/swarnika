@@ -1,49 +1,85 @@
 @import "tailwindcss";
 
-@theme inline {
-  /* ── Color Palette: The Archive (Refined) ── */
-  --color-background: #F8F4F0;
-  --color-surface: var(--color-background);
-  --color-surface-low: #F0EBE5;
-  --color-surface-dim: #e8e4db;
-  --color-surface-high: var(--color-background);
-  --color-surface-highest: var(--color-background);
+/* ════════════════════════════════════════════════════════
+   DESIGN TOKENS — Defined in :root so custom component
+   classes can reference them reliably, independent of
+   Tailwind v4's utility tree-shaking.
+   ════════════════════════════════════════════════════════ */
+:root {
+  /* Luxe Heritage core palette */
+  --luxe-primary: #C9A44A;
+  --luxe-primary-dark: #5e4115;
+  --luxe-secondary: #7e7e7e;
+  --luxe-secondary-light: #767471;
+  --luxe-accent-warm: #e9c088;
+  --luxe-accent-warm-light: #ffddb3;
 
-  --color-primary: #0a0a0a;
-  --color-primary-dark: #1a1a1a;
-  --color-secondary: #7a6130;
-  --color-secondary-light: #c9a44a;
-  --color-secondary-pale: #e8d5a0;
-  --color-accent-warm: #c8a96e;
+  --luxe-background: #fff8ef;
+  --luxe-surface: #fff8ef;
+  --luxe-surface-low: #f3ede4;
+  --luxe-surface-dim: #dfd9d0;
+  --luxe-surface-high: #ede7de;
+  --luxe-surface-highest: #e8e2d9;
 
-  --color-on-surface: #111111;
-  --color-on-surface-var: #3a3a3a;
-  --color-outline: #6b6b6b;
-  --color-outline-var: #c8c4bb;
-  --color-error: #9b1a1a;
+  --luxe-on-surface: #1d1b16;
+  --luxe-on-surface-var: #4e453a;
+  --luxe-outline: #807569;
+  --luxe-outline-var: #d2c4b6;
+  --luxe-error: #ba1a1a;
+  --luxe-white: #ffffff;
 
   /* Semantic aliases */
-  --color-ivory: var(--color-background);
-  --color-ivory-dark: #F0EBE5;
-  --color-ivory-darker: #E8E3DC;
-  --color-navy: #0a0a0a;
-  --color-navy-light: #1a1a1a;
-  --color-gold: #7a6130;
-  --color-gold-light: #c9a44a;
-  --color-gold-hover: #b8923d;
-  --color-gold-lighter: #e8d5a0;
-  --color-warm-accent: #c8a96e;
-  --color-slate-subtle: #3a3a3a;
-  --color-white: #ffffff;
+  --luxe-navy: #1d1b16;
+  --luxe-navy-light: #33302a;
+  --luxe-gold: #C9A44A;
+  --luxe-gold-light: #C9A44A;
+  --luxe-gold-hover: #C9A44A;
+  --luxe-gold-lighter: #C9A44A;
+}
 
-  /* Typography — The Archive editorial system */
+@theme inline {
+  /* ── Luxe Heritage Color Palette ── */
+  --color-background: var(--luxe-background);
+  --color-surface: var(--luxe-surface);
+  --color-surface-low: var(--luxe-surface-low);
+  --color-surface-dim: var(--luxe-surface-dim);
+  --color-surface-high: var(--luxe-surface-high);
+  --color-surface-highest: var(--luxe-surface-highest);
+
+  --color-primary: var(--luxe-primary);
+  --color-primary-dark: var(--luxe-primary-dark);
+  --color-secondary: var(--luxe-secondary);
+  --color-secondary-light: var(--luxe-secondary-light);
+  --color-accent-warm: var(--luxe-accent-warm);
+  --color-accent-warm-light: var(--luxe-accent-warm-light);
+
+  --color-on-surface: var(--luxe-on-surface);
+  --color-on-surface-var: var(--luxe-on-surface-var);
+  --color-outline: var(--luxe-outline);
+  --color-outline-var: var(--luxe-outline-var);
+  --color-error: var(--luxe-error);
+
+  /* Semantic aliases */
+  --color-ivory: var(--luxe-background);
+  --color-ivory-dark: var(--luxe-surface-low);
+  --color-ivory-darker: var(--luxe-surface-high);
+  --color-navy: var(--luxe-navy);
+  --color-navy-light: var(--luxe-navy-light);
+  --color-gold: var(--luxe-gold);
+  --color-gold-light: var(--luxe-gold-light);
+  --color-gold-hover: var(--luxe-gold-hover);
+  --color-gold-lighter: var(--luxe-gold-lighter);
+  --color-warm-accent: var(--luxe-accent-warm);
+  --color-slate-subtle: var(--luxe-on-surface-var);
+  --color-white: var(--luxe-white);
+
+  /* Typography */
   --font-headline: "Cormorant Garamond", "Newsreader", serif;
   --font-body: "Manrope", sans-serif;
   --font-label: "Manrope", sans-serif;
-
 }
 
-/* ── Reset (in @layer base so component/utility layers can override) ── */
+/* ── Reset ── */
 @layer base {
 
   *,
@@ -55,25 +91,72 @@
   }
 
   html {
+    font-size: 90%;
     scroll-behavior: smooth;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
   body {
-    background-color: var(--color-background);
-    color: var(--color-on-surface);
+    background-color: var(--luxe-background);
+    color: var(--luxe-on-surface);
     font-family: var(--font-body);
     overflow-x: hidden;
     line-height: 1.6;
   }
 }
 
-/* The Archive uses sharp edges throughout — 0 border radius */
-*,
-*::before,
-*::after {
-  border-radius: 0 !important;
+/* ── Sharp corners throughout — Luxe Heritage is architectural ──
+   Scoped to common elements + custom classes. Avoids `*` so
+   third-party components (Clerk spinners, SVGs, etc.) render correctly.
+── */
+button,
+input,
+textarea,
+select,
+img,
+video,
+iframe,
+.badge,
+.badge-gold,
+.badge-outline,
+.filter-tab,
+.filter-tab-gold,
+.tag-pill,
+.tag-pill.active,
+.inquiry-btn,
+.inquiry-btn.active,
+.card-action-btn,
+.qty-btn,
+.sort-select,
+.trust-tag,
+.social-btn,
+.subscribe-btn,
+.subscribe-input,
+.accordion-btn,
+.wishlist-fab,
+.field-input,
+.input-archive,
+.btn-primary,
+.btn-secondary,
+.btn-ghost,
+.btn-primary.hero,
+.btn-secondary.hero,
+.editorial-card,
+.flagship-card,
+.page-container,
+.nav-inner {
+  border-radius: 0;
+}
+
+/* Clerk components — ensure spinners & avatars stay circular */
+.cl-spinner,
+.cl-activityIndicator,
+.cl-loading,
+.cl-avatar,
+[class*="cl-"][style*="border-radius: 50%"],
+[class*="cl-"][style*="border-radius:50%"] {
+  border-radius: 50% !important;
 }
 
 .rounded-full {
@@ -81,45 +164,44 @@
 }
 
 /* ══════════════════════════════════════════════════════════
-   COMPONENT LAYER — All UI element padding/spacing lives here
-   so it always wins over the base reset.
+   COMPONENT LAYER
    ══════════════════════════════════════════════════════════ */
 @layer components {
 
-  /* ── Badge on product cards ── */
+  /* ── Badge ── */
   .badge {
     display: inline-block;
     padding: 0.35rem 0.75rem;
     font-family: var(--font-label);
-    font-size: 8px;
+    font-size: 11px;
     font-weight: 700;
-    letter-spacing: 0.2em;
+    letter-spacing: 0.02em;
     text-transform: uppercase;
-    background: #0a0a0a;
+    background: var(--luxe-navy);
     color: #fff;
     white-space: nowrap;
   }
 
   .badge-gold {
-    background: var(--color-gold);
+    background: var(--luxe-gold);
     color: #fff;
   }
 
   .badge-outline {
     background: transparent;
     border: 1px solid currentColor;
-    color: var(--color-gold);
+    color: var(--luxe-gold);
   }
 
-  /* ── Filter tabs (collections nav + homepage bestseller tabs) ── */
+  /* ── Filter tabs ── */
   .filter-tab {
     display: inline-flex;
     align-items: center;
     padding: 1rem 1.25rem;
     font-family: var(--font-label);
-    font-size: 9px;
-    font-weight: 600;
-    letter-spacing: 0.22em;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.15em;
     text-transform: uppercase;
     white-space: nowrap;
     cursor: pointer;
@@ -127,82 +209,83 @@
     border: none;
     border-bottom: 2px solid transparent;
     margin-bottom: -1px;
-    color: var(--color-outline);
+    color: var(--luxe-outline);
     transition: color 0.2s, border-color 0.2s;
   }
 
   .filter-tab:hover {
-    color: var(--color-navy);
+    color: var(--luxe-navy);
   }
 
   .filter-tab.active {
-    border-bottom-color: var(--color-navy);
-    color: var(--color-navy);
+    border-bottom-color: var(--luxe-primary);
+    color: var(--luxe-navy);
+    font-weight: 700;
   }
 
   .filter-tab-gold.active {
-    border-bottom-color: var(--color-gold);
-    color: var(--color-gold);
+    border-bottom-color: var(--luxe-gold);
+    color: var(--luxe-gold);
   }
 
-  /* ── Tag pill (filter chips like DIAMOND, BRIDAL) ── */
+  /* ── Tag pill ── */
   .tag-pill {
     display: inline-flex;
     align-items: center;
     gap: 0.375rem;
     padding: 0.375rem 0.75rem;
     font-family: var(--font-label);
-    font-size: 8.5px;
+    font-size: 11px;
     font-weight: 500;
     letter-spacing: 0.15em;
     text-transform: uppercase;
-    border: 1px solid var(--color-outline-var);
+    border: 1px solid var(--luxe-outline-var);
     background: transparent;
-    color: var(--color-outline);
+    color: var(--luxe-outline);
     cursor: pointer;
     transition: border-color 0.2s, color 0.2s;
   }
 
   .tag-pill:hover {
-    border-color: var(--color-navy);
-    color: var(--color-navy);
+    border-color: var(--luxe-navy);
+    color: var(--luxe-navy);
   }
 
   .tag-pill.active {
-    background: var(--color-navy);
-    border-color: var(--color-navy);
+    background: var(--luxe-navy);
+    border-color: var(--luxe-navy);
     color: #fff;
   }
 
-  /* ── Inquiry type toggle buttons (contact page) ── */
+  /* ── Inquiry buttons ── */
   .inquiry-btn {
     display: inline-flex;
     align-items: center;
     padding: 0.5rem 1rem;
     font-family: var(--font-label);
-    font-size: 8.5px;
+    font-size: 11px;
     font-weight: 600;
     letter-spacing: 0.18em;
     text-transform: uppercase;
-    border: 1px solid var(--color-outline-var);
+    border: 1px solid var(--luxe-outline-var);
     background: transparent;
-    color: var(--color-outline);
+    color: var(--luxe-outline);
     cursor: pointer;
     transition: all 0.2s;
   }
 
   .inquiry-btn:hover {
-    border-color: var(--color-navy);
-    color: var(--color-navy);
+    border-color: var(--luxe-navy);
+    color: var(--luxe-navy);
   }
 
   .inquiry-btn.active {
-    background: var(--color-navy);
-    border-color: var(--color-navy);
+    background: var(--luxe-navy);
+    border-color: var(--luxe-navy);
     color: #fff;
   }
 
-  /* ── Product card action buttons (Wishlist / View slide-up) ── */
+  /* ── Product card action buttons ── */
   .card-action-btn {
     flex: 1;
     display: flex;
@@ -211,11 +294,11 @@
     gap: 0.5rem;
     padding: 0.875rem 0.5rem;
     font-family: var(--font-label);
-    font-size: 8.5px;
+    font-size: 11px;
     font-weight: 600;
     letter-spacing: 0.22em;
     text-transform: uppercase;
-    color: var(--color-navy);
+    color: var(--luxe-navy);
     background: transparent;
     cursor: pointer;
     border: none;
@@ -223,10 +306,10 @@
   }
 
   .card-action-btn:hover {
-    background: var(--color-surface-low);
+    background: var(--luxe-surface-low);
   }
 
-  /* ── Quantity stepper buttons ── */
+  /* ── Quantity stepper ── */
   .qty-btn {
     width: 2.75rem;
     height: 2.75rem;
@@ -237,35 +320,35 @@
     border: none;
     font-size: 1.1rem;
     font-weight: 300;
-    color: var(--color-navy);
+    color: var(--luxe-navy);
     cursor: pointer;
     transition: background 0.2s;
   }
 
   .qty-btn:hover {
-    background: var(--color-surface-low);
+    background: var(--luxe-surface-low);
   }
 
   /* ── Sort select ── */
   .sort-select {
     background: transparent;
-    border: 1px solid var(--color-outline-var);
+    border: 1px solid var(--luxe-outline-var);
     padding: 0.375rem 0.75rem;
     font-family: var(--font-label);
-    font-size: 9px;
+    font-size: 11px;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: var(--color-navy);
+    color: var(--luxe-navy);
     cursor: pointer;
     outline: none;
     transition: border-color 0.2s;
   }
 
   .sort-select:focus {
-    border-color: var(--color-navy);
+    border-color: var(--luxe-navy);
   }
 
-  /* ── Trust strip tags ── */
+  /* ── Trust tags ── */
   .trust-tag {
     display: inline-block;
     padding: 0.375rem 0.75rem;
@@ -274,8 +357,8 @@
     font-weight: 500;
     letter-spacing: 0.18em;
     text-transform: uppercase;
-    border: 1px solid var(--color-outline-var);
-    color: var(--color-outline);
+    border: 1px solid var(--luxe-outline-var);
+    color: var(--luxe-outline);
   }
 
   /* ── Category rail links ── */
@@ -290,7 +373,7 @@
 
   .cat-link-label {
     font-family: var(--font-label);
-    font-size: 9.5px;
+    font-size: 11px;
     font-weight: 500;
     letter-spacing: 0.28em;
     text-transform: uppercase;
@@ -299,7 +382,7 @@
   }
 
   .cat-link:hover .cat-link-label {
-    color: var(--color-gold-light);
+    color: var(--luxe-gold-light);
   }
 
   /* ── Social icon button ── */
@@ -317,8 +400,8 @@
   }
 
   .social-btn:hover {
-    border-color: var(--color-gold-light);
-    color: var(--color-gold-light);
+    border-color: var(--luxe-gold-light);
+    color: var(--luxe-gold-light);
   }
 
   /* ── Footer subscribe button ── */
@@ -327,12 +410,12 @@
     align-items: center;
     padding: 1rem 2rem;
     font-family: var(--font-label);
-    font-size: 9px;
+    font-size: 11px;
     font-weight: 500;
     letter-spacing: 0.2em;
     text-transform: uppercase;
     background: white;
-    color: var(--color-navy);
+    color: var(--luxe-navy);
     border: 1px solid white;
     cursor: pointer;
     white-space: nowrap;
@@ -354,7 +437,7 @@
     border-right: none;
     padding: 1rem 1.25rem;
     font-family: var(--font-body);
-    font-size: 12px;
+    font-size: 14px;
     color: #fff;
     outline: none;
     transition: border-color 0.3s;
@@ -367,10 +450,10 @@
   }
 
   .subscribe-input:focus {
-    border-color: rgba(201, 164, 74, 0.6);
+    border-color: rgba(233, 192, 136, 0.6);
   }
 
-  /* ── Accordion toggle button ── */
+  /* ── Accordion toggle ── */
   .accordion-btn {
     width: 100%;
     display: flex;
@@ -385,19 +468,19 @@
 
   .accordion-label {
     font-family: var(--font-label);
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 600;
     letter-spacing: 0.22em;
     text-transform: uppercase;
-    color: var(--color-navy);
+    color: var(--luxe-navy);
     transition: color 0.2s;
   }
 
   .accordion-btn:hover .accordion-label {
-    color: var(--color-gold);
+    color: var(--luxe-gold);
   }
 
-  /* ── Wishlist icon button on product card ── */
+  /* ── Wishlist FAB ── */
   .wishlist-fab {
     position: absolute;
     top: 1.25rem;
@@ -425,18 +508,47 @@
     overflow-x: auto;
     -ms-overflow-style: none;
     scrollbar-width: none;
-    border-bottom: 1px solid var(--color-outline-var);
+    border-bottom: 1px solid var(--luxe-outline-var);
   }
 
   .tab-strip::-webkit-scrollbar {
     display: none;
   }
 
+  /* ── Account form fields ── */
+  .field-input {
+    width: 100%;
+    border: 1px solid var(--luxe-surface-dim);
+    background: var(--luxe-white);
+    padding: 0.75rem 1rem;
+    font-family: var(--font-body);
+    font-size: 14px;
+    color: var(--luxe-navy);
+    outline: none;
+    transition: border-color 0.3s;
+  }
+
+  .field-input::placeholder {
+    color: var(--luxe-outline);
+    font-size: 11px;
+  }
+
+  .field-input:focus {
+    border-color: var(--luxe-gold-light);
+  }
+
+  .field-value {
+    font-family: var(--font-body);
+    font-size: 14px;
+    color: var(--luxe-navy);
+    padding: 0.5rem 0;
+  }
+
 }
 
 ::selection {
-  background-color: rgba(122, 97, 48, 0.18);
-  color: var(--color-navy);
+  background-color: rgba(117, 86, 41, 0.18);
+  color: var(--luxe-navy);
 }
 
 /* ── Scrollbar ── */
@@ -445,16 +557,16 @@
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--color-surface-low);
+  background: var(--luxe-surface-low);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--color-gold-light);
+  background: var(--luxe-gold-light);
   opacity: 0.5;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-gold);
+  background: var(--luxe-gold);
 }
 
 /* ── Material Icons ── */
@@ -486,7 +598,7 @@
 /* ── Ornamental Elements ── */
 .ornament {
   display: inline-block;
-  color: var(--color-gold-light);
+  color: var(--luxe-gold-light);
   font-size: 8px;
   letter-spacing: 0.1em;
 }
@@ -494,7 +606,7 @@
 .rule-gold {
   width: 40px;
   height: 1px;
-  background: linear-gradient(90deg, transparent, var(--color-gold-light), transparent);
+  background: linear-gradient(90deg, transparent, var(--luxe-gold-light), transparent);
   display: inline-block;
 }
 
@@ -509,7 +621,7 @@
   content: '';
   flex: 1;
   height: 1px;
-  background: var(--color-outline-var);
+  background: var(--luxe-outline-var);
 }
 
 /* ── Animations ── */
@@ -671,12 +783,13 @@
 }
 
 /* ── Buttons ── */
+/* Primary: Antique Bronze (#755629) */
 .btn-primary {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  background: var(--color-navy);
+  background: var(--luxe-primary);
   color: #fff;
   padding: 1.1rem 3rem;
   font-family: var(--font-label);
@@ -684,7 +797,7 @@
   font-weight: 600;
   letter-spacing: 0.28em;
   text-transform: uppercase;
-  border: 1px solid var(--color-navy);
+  border: 1px solid var(--luxe-primary);
   transition: background 0.4s, border-color 0.4s, color 0.4s, letter-spacing 0.3s;
   cursor: pointer;
   white-space: nowrap;
@@ -692,108 +805,69 @@
 
 .btn-primary:hover {
   background: transparent;
-  color: var(--color-navy);
+  color: var(--luxe-primary);
   letter-spacing: 0.32em;
 }
 
-/* Hero variant — white bg for use on dark/overlay sections */
-.btn-primary.hero {
-  background: #fff;
-  border-color: #fff;
-  color: var(--color-navy);
-}
-
-.btn-primary.hero:hover {
-  background: transparent;
-  color: #fff;
-  letter-spacing: 0.32em;
-}
-
-/* Hero secondary — white outline on dark backgrounds */
-.btn-secondary.hero {
-  background: transparent;
-  color: #fff;
-  border-color: rgba(255, 255, 255, 0.6);
-}
-
-.btn-secondary.hero:hover {
-  background: #fff;
-  border-color: #fff;
-  color: var(--color-navy);
-  letter-spacing: 0.32em;
-}
-
-.btn-primary-gold {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  background: var(--color-gold);
-  color: #fff;
-  padding: 1.1rem 3rem;
-  font-family: var(--font-label);
-  font-size: 9px;
-  font-weight: 600;
-  letter-spacing: 0.28em;
-  text-transform: uppercase;
-  border: 1px solid var(--color-gold);
-  transition: background 0.4s, border-color 0.4s, color 0.4s, letter-spacing 0.3s;
-  cursor: pointer;
-  white-space: nowrap;
-}
-
-.btn-primary-gold:hover {
-  background: transparent;
-  color: var(--color-gold);
-  letter-spacing: 0.32em;
-}
-
-/* Hero variant — gold bg for dark/overlay sections */
-.btn-primary-gold.hero {
-  background: var(--color-gold-light);
-  border-color: var(--color-gold-light);
-  color: var(--color-navy);
-}
-
-.btn-primary-gold.hero:hover {
-  background: transparent;
-  color: #fff;
-  border-color: #fff;
-  letter-spacing: 0.32em;
-}
-
+/* Secondary: Charcoal (#635d5a) — same hover pattern, different color */
 .btn-secondary {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  background: transparent;
-  color: var(--color-navy);
+  background: var(--luxe-secondary);
+  color: #fff;
   padding: 1.1rem 3rem;
   font-family: var(--font-label);
   font-size: 9px;
   font-weight: 600;
   letter-spacing: 0.28em;
   text-transform: uppercase;
-  border: 1px solid var(--color-navy);
+  border: 1px solid var(--luxe-secondary);
   transition: background 0.4s, border-color 0.4s, color 0.4s, letter-spacing 0.3s;
   cursor: pointer;
   white-space: nowrap;
 }
 
 .btn-secondary:hover {
-  background: var(--color-navy);
-  border-color: var(--color-navy);
-  color: #fff;
+  background: transparent;
   letter-spacing: 0.32em;
+  border: 1px solid black;
 }
+
+/* Hero variants — identical inversion on dark backgrounds */
+.btn-primary.hero,
+.btn-secondary.hero {
+  background: #fff;
+  border-color: #fff;
+  color: var(--luxe-navy);
+  border: 1px solid black;
+}
+
+.btn-primary.hero-main,
+.btn-secondary.hero-main {
+  background: #fff;
+  border-color: #fff;
+  color: var(--luxe-navy);
+  border: 1px solid black;
+}
+
+.btn-primary.hero-main:hover,
+.btn-secondary.hero-main:hover {
+  background: transparent;
+  letter-spacing: 0.32em;
+  color: white;
+  border: 3px solid white;
+}
+
+
 
 .btn-ghost {
   display: inline-flex;
   align-items: center;
   gap: 0.75rem;
   background: transparent;
-  color: var(--color-gold);
+  color: var(--luxe-gold);
   font-family: var(--font-label);
   font-size: 9px;
   font-weight: 600;
@@ -807,15 +881,15 @@
 
 .btn-ghost:hover {
   gap: 1.25rem;
-  color: var(--color-navy);
+  color: var(--luxe-navy);
 }
 
 /* ── Announcement Bar ── */
 .announcement-bar {
-  background: var(--color-navy);
-  color: var(--color-gold-light);
+  background: var(--luxe-navy);
+  color: var(--luxe-gold-light);
   font-family: var(--font-label);
-  font-size: 9px;
+  font-size: 10px;
   letter-spacing: 0.28em;
   text-transform: uppercase;
   height: 36px;
@@ -844,7 +918,7 @@
 .announcement-dot {
   width: 3px;
   height: 3px;
-  background: var(--color-gold-light);
+  background: var(--luxe-gold-light);
   display: inline-block;
   opacity: 0.6;
 }
@@ -856,7 +930,7 @@
   font-weight: 600;
   letter-spacing: 0.3em;
   text-transform: uppercase;
-  color: var(--color-gold);
+  color: var(--luxe-gold);
   display: block;
   margin-bottom: 0.75rem;
 }
@@ -865,14 +939,14 @@
   font-family: var(--font-headline);
   font-weight: 300;
   letter-spacing: 0.04em;
-  color: var(--color-navy);
+  color: var(--luxe-navy);
   line-height: 1.1;
 }
 
 .section-rule {
   width: 100%;
   height: 1px;
-  background: var(--color-outline-var);
+  background: var(--luxe-outline-var);
   display: block;
   margin: 1.5rem 0;
 }
@@ -887,7 +961,7 @@
 .editorial-card-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to top, rgba(10, 10, 10, 0.7) 0%, transparent 60%);
+  background: linear-gradient(to top, rgba(29, 27, 22, 0.7) 0%, transparent 60%);
   opacity: 0;
   transition: opacity 0.5s ease;
 }
@@ -901,25 +975,25 @@
   width: 100%;
   background: transparent;
   border: none;
-  border-bottom: 1px solid var(--color-outline-var);
+  border-bottom: 1px solid var(--luxe-outline-var);
   padding: 0.875rem 0;
   font-family: var(--font-body);
   font-size: 13px;
-  color: var(--color-navy);
+  color: var(--luxe-navy);
   outline: none;
   transition: border-color 0.3s;
   display: block;
 }
 
 .input-archive::placeholder {
-  color: var(--color-outline);
+  color: var(--luxe-outline);
   font-size: 11px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
 .input-archive:focus {
-  border-bottom-color: var(--color-navy);
+  border-bottom-color: var(--luxe-navy);
 }
 
 /* ── Luxury Hover Underline ── */
@@ -960,7 +1034,7 @@
 
 /* ── Flagship card ── */
 .flagship-card {
-  border-top: 1px solid var(--color-outline-var);
+  border-top: 1px solid var(--luxe-outline-var);
   padding-top: 1.5rem;
   padding-bottom: 1.5rem;
 }
@@ -971,13 +1045,13 @@
 
 @layer utilities {
 
-  /* Horizontal page padding — applied to every section */
+  /* Horizontal page padding */
   .page-section {
     padding-left: 3.5rem;
     padding-right: 3.5rem;
   }
 
-  /* Max-width inner wrapper — centers content */
+  /* Max-width inner wrapper */
   .page-container {
     max-width: 1440px;
     margin-left: auto;
@@ -995,7 +1069,7 @@
     width: 100%;
   }
 
-  /* Product grid — 4 cols → 2 cols on mobile */
+  /* Product grid */
   .product-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -1010,7 +1084,7 @@
   }
 }
 
-/* Responsive overrides (must be outside @layer for media query support) */
+/* Responsive overrides */
 @media (max-width: 1024px) {
   .product-grid {
     grid-template-columns: repeat(2, 1fr);
