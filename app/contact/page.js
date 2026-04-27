@@ -26,8 +26,7 @@ export default function ContactPage() {
   ];
 
   const flagships = [
-    { city: "Mayfair Residence", address: "42 New Bond Street", city2: "London, W1S 2ST", country: "United Kingdom", phone: "+44 20 7946 0123", hours: "Mon–Sat: 10am – 7pm" },
-    { city: "Place Vendôme Atelier", address: "12 Place Vendôme", city2: "Paris, 75001", country: "France", phone: "+33 1 42 61 58 58", hours: "Mon–Sat: 10am – 7pm" },
+    { city: "Lucknow", address: "262, Sushila Sadan", address1: "Kaushalpuri Khargapur", address2:"Gomtinagar", state: "Uttar Pradesh", country: "India", phone: "+91 85749 55947", hours: "Mon–Sat: 10am – 7pm" }
   ];
 
   return (
@@ -139,7 +138,7 @@ export default function ContactPage() {
                       <div className="flex justify-between items-start">
                         <div className="flex flex-col gap-1">
                           <p className="font-label text-[10px] tracking-[0.22em] uppercase text-navy font-bold">{store.city}</p>
-                          <p className="font-body text-sm text-slate-subtle leading-relaxed">{store.address}<br />{store.city2}<br /><span className="text-outline text-xs">{store.country}</span></p>
+                          <p className="font-body text-sm text-slate-subtle leading-relaxed">{store.address}<br />{store.address1}<br />{store.address2}<br/>{store.state}<br /><span className="text-outline text-xs">{store.country}</span></p>
                           <p className="font-body text-xs text-gold mt-2">{store.phone}</p>
                           <p className="font-label text-[9px] tracking-[0.15em] uppercase text-outline mt-1">{store.hours}</p>
                         </div>
@@ -152,8 +151,8 @@ export default function ContactPage() {
 
               <div className="border-t border-surface-dim pt-8 flex flex-col gap-3">
                 <p className="font-label text-[9px] tracking-[0.25em] uppercase text-outline font-semibold">Direct Contact</p>
-                <a href="mailto:archive@swarnika.com" className="hover-underline font-body text-sm text-navy block">archive@swarnika.com</a>
-                <a href="tel:+912233490123" className="hover-underline font-body text-sm text-navy block">+91 22 3349 0123</a>
+                <a href="mailto:archive@swarnika.com" className="hover-underline font-body text-sm text-navy block">ajay20132013@gmail.com</a>
+                <a href="tel:+912233490123" className="hover-underline font-body text-sm text-navy block">+91 8574955947</a>
               </div>
             </div>
 
