@@ -13,6 +13,7 @@ export default function Navbar({ categories = [] }) {
   const { openSignIn } = useAuthModal();
   const { cartCount } = useCart();
   const isHome = pathname === "/";
+  const isAccount = pathname?.startsWith("/account");
 
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -35,6 +36,43 @@ export default function Navbar({ categories = [] }) {
   ];
 
   const useDarkText = !isHome || scrolled || menuOpen;
+
+  // ─── Minimal mobile navbar for account pages ───
+  if (isAccount) {
+    return (
+      <nav className="fixed top-9 w-full z-50 bg-background/96 backdrop-blur-md border-b border-surface-dim">
+        <div className="flex items-center w-full py-3 px-4 max-w-[1440px] mx-auto">
+          {/* Back button */}
+          <Link
+            href="/"
+            className="flex items-center gap-1 text-outline hover:text-navy transition-colors"
+            aria-label="Home"
+          >
+            <span className="material-symbols-outlined text-[20px]">arrow_back</span>
+          </Link>
+
+          {/* Title */}
+          <h1 className="flex-1 text-center font-headline text-lg text-navy italic truncate px-2">
+            My Account
+          </h1>
+
+          {/* Cart */}
+          <Link
+            href="/cart"
+            aria-label="Shopping bag"
+            className="relative flex items-center text-navy hover:text-gold transition-colors"
+          >
+            <span className="material-symbols-outlined text-[20px]">shopping_bag</span>
+            {cartCount > 0 && (
+              <span className="absolute -top-1.5 -right-1.5 bg-gold-light text-white text-[8px] font-bold w-[14px] h-[14px] flex items-center justify-center" style={{ borderRadius: "50%" }}>
+                {cartCount}
+              </span>
+            )}
+          </Link>
+        </div>
+      </nav>
+    );
+  }
 
   return (
     <>
@@ -97,7 +135,7 @@ export default function Navbar({ categories = [] }) {
           </Link>
         </div>
 
-        {/* Right: Icons */}
+        {/* Right: icons */}
         <div className="flex-1 flex justify-end items-center gap-5 md:gap-7">
           <button
             aria-label="Search"
@@ -114,7 +152,7 @@ export default function Navbar({ categories = [] }) {
             <span className="material-symbols-outlined text-[20px]">favorite</span>
           </Link>
 
-          {/* Account icon — sign-in page when signed out, link to /account when signed in */}
+          {/* account icon */}
           <Show when="signed-out">
             <button
               aria-label="Account"

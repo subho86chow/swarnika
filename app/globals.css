@@ -97,11 +97,14 @@
     -moz-osx-font-smoothing: grayscale;
   }
 
+  html {
+    overflow-x: clip;
+  }
+
   body {
     background-color: var(--luxe-background);
     color: var(--luxe-on-surface);
     font-family: var(--font-body);
-    overflow-x: hidden;
     line-height: 1.6;
   }
 }

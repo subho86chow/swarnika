@@ -6,8 +6,10 @@ import ProductCard from "./components/ProductCard";
 import HeroSlider from "./components/HeroSlider";
 import CampaignCarousel from "./components/CampaignCarousel";
 import RecentlyViewed from "./components/RecentlyViewed";
+import BestsellersSection from "./components/BestsellersSection";
 import { prisma } from "./lib/prisma";
 import { withCache, cacheKeys, CACHE_TTL } from "./lib/cache";
+import { getBestsellers } from "./lib/salesActions";
 
 const PAD = "px-6 md:px-14 lg:px-20";
 const MAX = "max-w-[1440px] mx-auto";
@@ -62,27 +64,59 @@ export default async function HomePage() {
     CACHE_TTL.CATEGORIES
   );
 
-  // Fetch Products (cached)
-  const products = await withCache(
-    cacheKeys.productList("home", 1),
+  // Fetch real bestsellers (max 3) from order data
+  const bestsellerIds = await getBestsellers();
+
+  const bestsellerProducts = bestsellerIds.length > 0
+    ? await prisma.product.findMany({
+        where: { id: { in: bestsellerIds } },
+        include: { images: true, category: true },
+      })
+    : [];
+
+  // Preserve ranking order from sales data
+  const bestsellers = bestsellerIds
+    .map((id) => bestsellerProducts.find((p) => p.id === id))
+    .filter(Boolean)
+    .map((p) => ({
+      id: p.id,
+      name: p.name,
+      price: p.price,
+      originalPrice: p.originalPrice,
+      description: p.description,
+      inStock: p.inStock,
+      badge: p.badge,
+      categoryId: p.categoryId,
+      category: p.category,
+      images: p.images.map((i) => i.url),
+      image: p.images[0]?.url || "",
+    }));
+
+  // Fetch new arrivals (latest 4, excluding bestsellers)
+  const newArrivalsRaw = await withCache(
+    cacheKeys.productList("new-arrivals", 1),
     () =>
       prisma.product.findMany({
+        where: { id: { notIn: bestsellerIds } },
         include: { images: true, category: true },
-        orderBy: { createdAt: "asc" },
-        take: 8,
+        orderBy: { createdAt: "desc" },
+        take: 4,
       }),
     CACHE_TTL.PRODUCTS_LIST
   );
 
-  const bestsellers = products.slice(0, 4).map(p => ({
-    ...p,
+  const newArrivals = newArrivalsRaw.map((p) => ({
+    id: p.id,
+    name: p.name,
+    price: p.price,
+    originalPrice: p.originalPrice,
+    description: p.description,
+    inStock: p.inStock,
+    badge: p.badge,
+    categoryId: p.categoryId,
+    category: p.category,
+    images: p.images.map((i) => i.url),
     image: p.images[0]?.url || "",
-    images: p.images.map(i => i.url),
-  }));
-  const newArrivals = products.slice(4, 8).map(p => ({
-    ...p,
-    image: p.images[0]?.url || "",
-    images: p.images.map(i => i.url),
   }));
 
   return (
@@ -137,31 +171,7 @@ export default async function HomePage() {
         </section>
 
         {/* ─── Bestsellers ─── */}
-        <section className={`${PAD} py-20 bg-background`}>
-          <div className={MAX}>
-            <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 md:mb-12 gap-4">
-              <div>
-                <span className="section-eyebrow">The Signature Selection</span>
-                <h2 className="font-headline text-[38px] md:text-[52px] text-navy font-light leading-tight">Bestsellers</h2>
-              </div>
-              <Link href="/categories?tag=bestseller" className="btn-ghost self-start md:self-auto mb-1">
-                View All Archives <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
-              </Link>
-            </div>
-            <div className="tab-strip overflow-x-auto whitespace-nowrap mb-12 flex no-scrollbar">
-              {["All", "Necklaces", "Earrings", "Rings", "Bridal"].map((tab, idx) => (
-                <button key={tab} className={`filter-tab${idx === 0 ? " active" : ""}`}>{tab}</button>
-              ))}
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-10">
-              {bestsellers.map((product, i) => (
-                <div key={product.id} className="animate-fade-in-up" style={{ animationDelay: `${i * 0.1}s` }}>
-                  <ProductCard product={product} index={i} />
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
+        <BestsellersSection products={bestsellers.slice(0, 8)} />
 
         {/* ─── Promotion Banner ─── */}
         <section className={`pb-10 pt-4 bg-background`}>

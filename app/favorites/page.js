@@ -52,15 +52,8 @@ function FavoritesContent() {
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-10">
               {favoriteProducts.map((product, i) => (
-                <div key={product.id} className="relative group animate-fade-in-up" style={{ animationDelay: `${i * 0.1}s` }}>
+                <div key={product.id} className="animate-fade-in-up" style={{ animationDelay: `${i * 0.1}s` }}>
                   <ProductCard product={product} index={i} />
-                  <button
-                    onClick={() => removeFromFavorites(product.id)}
-                    className="absolute top-4 right-4 z-20 w-10 h-10 bg-white/95 flex items-center justify-center text-gold-light transition-all duration-300 shadow-sm opacity-0 group-hover:opacity-100 sm:opacity-100"
-                    title="Remove from wishlist"
-                  >
-                    <span className="material-symbols-outlined text-[18px]">close</span>
-                  </button>
                 </div>
               ))}
             </div>

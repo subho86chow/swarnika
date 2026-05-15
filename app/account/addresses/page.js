@@ -2,6 +2,13 @@
 
 import { useState, useEffect } from "react";
 import { useUser } from "@clerk/nextjs";
+import {
+  getAddresses,
+  createAddress,
+  updateAddress,
+  deleteAddress,
+  setDefaultAddress,
+} from "../../lib/addressActions";
 
 const emptyAddress = {
   label: "",
@@ -19,81 +26,106 @@ const emptyAddress = {
 export default function AddressesPage() {
   const { user, isLoaded, isSignedIn } = useUser();
   const [addresses, setAddresses] = useState([]);
-  const [editIndex, setEditIndex] = useState(null); // null = not editing, -1 = adding new
+  const [editId, setEditId] = useState(null); // null = not editing, "new" = adding new
   const [form, setForm] = useState({ ...emptyAddress });
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (isLoaded && user) {
-      const meta = user.unsafeMetadata || {};
-      setAddresses(meta.addresses || []);
+    if (isLoaded && user?.id) {
+      loadAddresses();
     }
-  }, [isLoaded, user]);
+  }, [isLoaded, user?.id]);
+
+  async function loadAddresses() {
+    setLoading(true);
+    try {
+      const data = await getAddresses(user.id);
+      setAddresses(data);
+    } catch (err) {
+      console.error("Failed to load addresses:", err);
+    } finally {
+      setLoading(false);
+    }
+  }
 
   const handleChange = (key, value) => {
     setForm((prev) => ({ ...prev, [key]: value }));
   };
 
-  const persistAddresses = async (updated) => {
+  const startAdd = () => {
+    setForm({ ...emptyAddress });
+    setEditId("new");
+  };
+
+  const startEdit = (address) => {
+    setForm({
+      label: address.label || "",
+      fullName: address.fullName || "",
+      phone: address.phone || "",
+      line1: address.line1 || "",
+      line2: address.line2 || "",
+      city: address.city || "",
+      state: address.state || "",
+      zip: address.zip || "",
+      country: address.country || "India",
+      isDefault: address.isDefault || false,
+    });
+    setEditId(address.id);
+  };
+
+  const cancelEdit = () => {
+    setEditId(null);
+    setForm({ ...emptyAddress });
+  };
+
+  const handleSave = async () => {
     setSaving(true);
     try {
-      await user.update({
-        unsafeMetadata: {
-          ...user.unsafeMetadata,
-          addresses: updated,
-        },
-      });
-      setAddresses(updated);
+      if (editId === "new") {
+        await createAddress(user.id, form);
+      } else {
+        await updateAddress(editId, user.id, form);
+      }
+      await loadAddresses();
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
+      setEditId(null);
+      setForm({ ...emptyAddress });
     } catch (err) {
-      console.error("Failed to save addresses:", err);
+      console.error("Failed to save address:", err);
     } finally {
       setSaving(false);
     }
   };
 
-  const startAdd = () => {
-    setForm({ ...emptyAddress });
-    setEditIndex(-1);
-  };
-
-  const startEdit = (index) => {
-    setForm({ ...addresses[index] });
-    setEditIndex(index);
-  };
-
-  const cancelEdit = () => {
-    setEditIndex(null);
-    setForm({ ...emptyAddress });
-  };
-
-  const handleSave = async () => {
-    const updated = [...addresses];
-    if (form.isDefault) {
-      updated.forEach((a) => (a.isDefault = false));
+  const handleDelete = async (addressId) => {
+    if (!confirm("Are you sure you want to delete this address?")) return;
+    setSaving(true);
+    try {
+      await deleteAddress(addressId, user.id);
+      await loadAddresses();
+    } catch (err) {
+      console.error("Failed to delete address:", err);
+    } finally {
+      setSaving(false);
     }
-    if (editIndex === -1) {
-      updated.push({ ...form });
-    } else {
-      updated[editIndex] = { ...form };
+  };
+
+  const handleSetDefault = async (addressId) => {
+    setSaving(true);
+    try {
+      await setDefaultAddress(addressId, user.id);
+      await loadAddresses();
+    } catch (err) {
+      console.error("Failed to set default address:", err);
+    } finally {
+      setSaving(false);
     }
-    await persistAddresses(updated);
-    setEditIndex(null);
   };
 
-  const handleDelete = async (index) => {
-    const updated = addresses.filter((_, i) => i !== index);
-    await persistAddresses(updated);
-  };
-
-  const setDefault = async (index) => {
-    const updated = addresses.map((a, i) => ({ ...a, isDefault: i === index }));
-    await persistAddresses(updated);
-  };
-
-  if (!isLoaded) {
+  if (!isLoaded || loading) {
     return <div className="py-12 text-center text-outline text-sm">Loading...</div>;
   }
   if (!isSignedIn) return null;
@@ -108,7 +140,7 @@ export default function AddressesPage() {
             Addresses
           </h2>
         </div>
-        {editIndex === null && (
+        {editId === null && (
           <button onClick={startAdd} className="btn-secondary hero py-3 px-6 text-[11px]">
             <span className="material-symbols-outlined text-[14px] mr-1">add</span>
             Add Address
@@ -125,10 +157,10 @@ export default function AddressesPage() {
       )}
 
       {/* Address form */}
-      {editIndex !== null && (
+      {editId !== null && (
         <div className="border border-surface-dim bg-white p-6 md:p-8 space-y-5 animate-fade-in-up">
           <p className="font-label text-xs tracking-[0.2em] uppercase text-navy font-semibold">
-            {editIndex === -1 ? "New Address" : "Edit Address"}
+            {editId === "new" ? "New Address" : "Edit Address"}
           </p>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
@@ -200,7 +232,7 @@ export default function AddressesPage() {
       )}
 
       {/* Address list */}
-      {addresses.length === 0 && editIndex === null && (
+      {addresses.length === 0 && editId === null && (
         <div className="border border-surface-dim bg-white p-10 text-center space-y-4">
           <span className="material-symbols-outlined text-outline-var text-[40px]">location_off</span>
           <p className="text-outline text-sm">No addresses saved yet.</p>
@@ -209,9 +241,9 @@ export default function AddressesPage() {
       )}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {addresses.map((addr, i) => (
+        {addresses.map((addr) => (
           <div
-            key={i}
+            key={addr.id}
             className={`border bg-white p-6 relative transition-colors ${
               addr.isDefault ? "border-gold-light" : "border-surface-dim"
             }`}
@@ -238,21 +270,21 @@ export default function AddressesPage() {
 
             <div className="flex gap-4 mt-4 pt-3 border-t border-surface-dim">
               <button
-                onClick={() => startEdit(i)}
+                onClick={() => startEdit(addr)}
                 className="font-label text-[11px] tracking-[0.15em] uppercase text-navy hover:text-gold transition-colors"
               >
                 Edit
               </button>
               {!addr.isDefault && (
                 <button
-                  onClick={() => setDefault(i)}
+                  onClick={() => handleSetDefault(addr.id)}
                   className="font-label text-[11px] tracking-[0.15em] uppercase text-outline hover:text-navy transition-colors"
                 >
                   Set Default
                 </button>
               )}
               <button
-                onClick={() => handleDelete(i)}
+                onClick={() => handleDelete(addr.id)}
                 className="font-label text-[11px] tracking-[0.15em] uppercase text-error hover:text-red-700 transition-colors ml-auto"
               >
                 Delete

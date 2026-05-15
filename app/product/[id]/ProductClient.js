@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
 import ProductCard from "../../components/ProductCard";
 import ProductCoupons from "../../components/ProductCoupons";
@@ -13,12 +14,16 @@ import { recordProductView } from "../../lib/viewActions";
 const PAD = "px-6 md:px-14 lg:px-20";
 const MAX = "max-w-[1440px] mx-auto";
 
-export default function ProductClient({ product, relatedProducts }) {
+export default function ProductClient({ product, relatedProducts, isBestseller = false }) {
+  const router = useRouter();
   const [quantity, setQuantity] = useState(1);
   const [activeImage, setActiveImage] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
   const [openAccordion, setOpenAccordion] = useState("artistry");
   const [addedToCart, setAddedToCart] = useState(false);
+  const [pincode, setPincode] = useState("");
+  const [pincodeLoading, setPincodeLoading] = useState(false);
+  const [pincodeResult, setPincodeResult] = useState(null);
   const { addToCart, toggleFavorite, isFavorite } = useCart();
   const { isSignedIn, user } = useUser();
   const wishlisted = isFavorite(product.id);
@@ -60,6 +65,41 @@ export default function ProductClient({ product, relatedProducts }) {
 
   const handleToggleFavorite = () => {
     toggleFavorite(product.id);
+  };
+
+  const handleBuyNow = () => {
+    if (!isSignedIn) {
+      // The cart store or auth modal should handle this, but for now just redirect
+      // User will be prompted to sign in at checkout
+    }
+    router.push(`/checkout?buyNow=${product.id}&qty=${quantity}`);
+  };
+
+  const handleCheckPincode = async () => {
+    const cleanPin = pincode.trim();
+    if (!/^[1-9][0-9]{5}$/.test(cleanPin)) {
+      setPincodeResult({ type: "error", message: "Please enter a valid 6-digit pincode." });
+      return;
+    }
+    setPincodeLoading(true);
+    setPincodeResult(null);
+    try {
+      const res = await fetch("/api/delhivery/pincode", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ pincode: cleanPin }),
+      });
+      const data = await res.json();
+      if (data.success && data.serviceable) {
+        setPincodeResult({ type: "success", message: "Delivery available to this pincode." });
+      } else {
+        setPincodeResult({ type: "error", message: data.error || "Delivery not available to this pincode." });
+      }
+    } catch (err) {
+      setPincodeResult({ type: "error", message: "Unable to check delivery. Please try again." });
+    } finally {
+      setPincodeLoading(false);
+    }
   };
 
   const discount = product.originalPrice ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100) : 0;
@@ -130,7 +170,15 @@ export default function ProductClient({ product, relatedProducts }) {
             {/* RIGHT — Product Info */}
             <div className="flex flex-col gap-8 animate-fade-in-up delay-200">
               <div>
-                <span className="font-label text-[11px] tracking-[0.3em] uppercase text-gold font-semibold block mb-2">{product.category?.name || ""}</span>
+                <div className="flex items-center gap-3 mb-2">
+                  <span className="font-label text-[11px] tracking-[0.3em] uppercase text-gold font-semibold">{product.category?.name || ""}</span>
+                  {isBestseller && (
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 font-label text-[8px] tracking-[0.2em] uppercase font-semibold bg-gold text-white">
+                      <span className="material-symbols-outlined text-[10px]">trending_up</span>
+                      Bestseller
+                    </span>
+                  )}
+                </div>
                 <h1 className="font-headline text-navy font-light italic leading-[1.05] text-3xl md:text-5xl">{product.name}</h1>
               </div>
 
@@ -165,9 +213,12 @@ export default function ProductClient({ product, relatedProducts }) {
                   <span className="material-symbols-outlined text-[16px]">{addedToCart ? "check" : "shopping_bag"}</span>
                   {addedToCart ? "Added to Bag" : "Add to Cart"}
                 </button>
-                <button onClick={handleToggleFavorite} className={`btn-secondary hero w-full py-5 text-[11px] flex items-center justify-center gap-2 ${wishlisted ? "border-gold-light text-gold" : ""}`}>
-                  <span className="material-symbols-outlined text-[16px]">favorite</span>
-                  {wishlisted ? "Saved" : "Add to Wishlist"}
+                <button
+                  onClick={handleBuyNow}
+                  className="btn-secondary hero w-full py-5 text-[11px] flex items-center justify-center gap-2"
+                >
+                  <span className="material-symbols-outlined text-[16px]">bolt</span>
+                  Buy Now
                 </button>
               </div>
 
@@ -175,6 +226,36 @@ export default function ProductClient({ product, relatedProducts }) {
                 {["Certified Authentic", "Free Shipping", "30-Day Returns", "Gift Packaged"].map((t) => (
                   <span key={t} className="trust-tag">{t}</span>
                 ))}
+              </div>
+
+              {/* ─── Pincode Serviceability ─── */}
+              <div className="border-t border-surface-dim pt-6 space-y-3">
+                <p className="section-eyebrow">Check Delivery Availability</p>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={pincode}
+                    onChange={(e) => setPincode(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                    placeholder="Enter 6-digit pincode"
+                    className="flex-1 field-input py-3"
+                    maxLength={6}
+                  />
+                  <button
+                    onClick={handleCheckPincode}
+                    disabled={pincodeLoading || pincode.length !== 6}
+                    className="btn-secondary hero py-3 px-5 text-[11px] whitespace-nowrap"
+                  >
+                    {pincodeLoading ? "Checking..." : "Check"}
+                  </button>
+                </div>
+                {pincodeResult && (
+                  <div className={`flex items-center gap-2 text-sm ${pincodeResult.type === "success" ? "text-green-700" : "text-error"}`}>
+                    <span className="material-symbols-outlined text-[18px]">
+                      {pincodeResult.type === "success" ? "check_circle" : "error"}
+                    </span>
+                    <span>{pincodeResult.message}</span>
+                  </div>
+                )}
               </div>
 
               <div className="border-t border-surface-dim pt-6">

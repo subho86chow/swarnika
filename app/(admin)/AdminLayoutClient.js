@@ -12,6 +12,8 @@ export default function AdminLayoutClient({ children }) {
     { label: "Categories", href: "/admin/categories", icon: "category" },
     { label: "Tags", href: "/admin/tags", icon: "label" },
     { label: "Coupons", href: "/admin/coupons", icon: "confirmation_number" },
+    { label: "Orders", href: "/admin/orders", icon: "shopping_bag" },
+    { label: "Inquiries", href: "/admin/inquiries", icon: "mail" },
     { label: "Hero Slides", href: "/admin/hero", icon: "image" },
     { label: "Site Content", href: "/admin/settings", icon: "format_paint" },
     { label: "Admins", href: "/admin/admins", icon: "admin_panel_settings" },

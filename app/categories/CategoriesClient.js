@@ -4,7 +4,7 @@ import { useState, useMemo, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import ProductCard from "../components/ProductCard";
 
-function CategoriesFilterLogic({ initialProducts, initialCategories }) {
+function CategoriesFilterLogic({ initialProducts, initialCategories, bestsellerIds }) {
   const searchParams = useSearchParams();
   const initialCategory = searchParams.get("category") || "all";
   const initialTag = searchParams.get("tag") || "";
@@ -19,7 +19,11 @@ function CategoriesFilterLogic({ initialProducts, initialCategories }) {
       result = result.filter((p) => p.category?.name === activeCategory);
     }
     if (activeTag) {
-      result = result.filter((p) => p.tags.some(t => t.name === activeTag));
+      if (activeTag === "bestseller") {
+        result = result.filter((p) => bestsellerIds.includes(p.id));
+      } else {
+        result = result.filter((p) => p.tags.some(t => t.name === activeTag));
+      }
     }
     switch (sortBy) {
       case "price-low":  result.sort((a, b) => a.price - b.price); break;
@@ -28,16 +32,19 @@ function CategoriesFilterLogic({ initialProducts, initialCategories }) {
       default: break;
     }
     return result;
-  }, [initialProducts, activeCategory, activeTag, sortBy]);
+  }, [initialProducts, activeCategory, activeTag, sortBy, bestsellerIds]);
 
   const allTags = [...new Set(initialProducts.flatMap((p) => p.tags.map(t => t.name)))];
+  if (bestsellerIds.length > 0 && !allTags.includes("bestseller")) {
+    allTags.unshift("bestseller");
+  }
 
   const PAD = "px-6 md:px-14 lg:px-20";
   const MAX = "max-w-[1440px] mx-auto";
 
   return (
     <>
-      <section className={`${PAD} sticky top-[136px] z-30 py-0 bg-background/95 border-b border-surface-dim backdrop-blur-md`}>
+      <section className={`${PAD} pt-3 pb-0 bg-background border-b border-surface-dim`}>
         <div className={MAX}>
           <div className="tab-strip overflow-x-auto whitespace-nowrap flex no-scrollbar">
             <button
@@ -76,9 +83,16 @@ function CategoriesFilterLogic({ initialProducts, initialCategories }) {
               <button
                 key={tag}
                 onClick={() => setActiveTag(tag)}
-                className="tag-pill"
+                className={`tag-pill ${tag === "bestseller" ? "border-gold text-gold" : ""}`}
               >
-                {tag}
+                {tag === "bestseller" ? (
+                  <span className="inline-flex items-center gap-1">
+                    <span className="material-symbols-outlined text-[12px]">trending_up</span>
+                    Bestseller
+                  </span>
+                ) : (
+                  tag
+                )}
               </button>
             ))}
           </div>
@@ -114,15 +128,21 @@ function CategoriesFilterLogic({ initialProducts, initialCategories }) {
                   className="animate-fade-in-up"
                   style={{ animationDelay: `${Math.min(i * 0.06, 0.5)}s` }}
                 >
-                  <ProductCard product={product} index={i} />
+                  <ProductCard product={product} index={i} showBestsellerBadge={bestsellerIds.includes(product.id)} />
                 </div>
               ))}
             </div>
           ) : (
             <div className="text-center py-28 space-y-6">
               <div className="w-16 h-[1px] bg-outline-var mx-auto" />
-              <h3 className="font-headline text-2xl text-navy font-light italic">No pieces found</h3>
-              <p className="font-body text-outline text-sm">Try adjusting your filters to discover more treasures.</p>
+              <h3 className="font-headline text-2xl text-navy font-light italic">
+                {activeTag === "bestseller" ? "No Bestsellers Found" : "No pieces found"}
+              </h3>
+              <p className="font-body text-outline text-sm">
+                {activeTag === "bestseller"
+                  ? "There are no bestselling pieces matching your current filters."
+                  : "Try adjusting your filters to discover more treasures."}
+              </p>
               <button onClick={() => { setActiveCategory("all"); setActiveTag(""); }} className="btn-primary mt-2">
                 Clear Filters
               </button>

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { FaInstagram, FaFacebookF, FaTwitter } from "react-icons/fa";
+import { FaInstagram, FaFacebookF } from "react-icons/fa";
 import NewsletterForm from "./NewsletterForm";
 
 const PAD = "px-6 md:px-14 lg:px-20";
@@ -59,7 +59,6 @@ export default function Footer({ categories = [] }) {
               {[
                 { label: "Facebook", Icon: FaFacebookF, link: "https://www.facebook.com/share/1bwQTZUsb1/" },
                 { label: "Instagram", Icon: FaInstagram, link: "https://www.instagram.com/swar_nikaofficial?igsh=MWtzc2szazJoZjc4ZA==" },
-                { label: "Twitter", Icon: FaTwitter, link: "https://x.com/SwarnikaJewels" },
               ].map(({ label, Icon, link }) => (
                 <a
                   key={label}

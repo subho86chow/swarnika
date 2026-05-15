@@ -4,6 +4,7 @@ import { prisma } from "../../lib/prisma";
 import ProductClient from "./ProductClient";
 import Link from "next/link";
 import { withCache, cacheKeys, CACHE_TTL } from "../../lib/cache";
+import { getBestsellers } from "../../lib/salesActions";
 
 export const revalidate = 0;
 
@@ -51,19 +52,41 @@ export default async function ProductDetailPage({ params }) {
     : [];
 
   // Format to match old data schema expectations
+  // NOTE: Do NOT spread `...initialProduct` — Prisma relations are lost.
   const product = {
-    ...initialProduct,
+    id: initialProduct.id,
+    name: initialProduct.name,
+    price: initialProduct.price,
+    originalPrice: initialProduct.originalPrice,
+    description: initialProduct.description,
+    inStock: initialProduct.inStock,
+    badge: initialProduct.badge,
+    categoryId: initialProduct.categoryId,
+    category: initialProduct.category,
+    tags: initialProduct.tags,
     images: initialProduct.images.length > 0 ? initialProduct.images : [{ url: "" }],
     details: initialProduct.details.map(d => d.text)
   };
 
   const relatedProducts = initialRelated.map(p => ({
-    ...p,
+    id: p.id,
+    name: p.name,
+    price: p.price,
+    originalPrice: p.originalPrice,
+    description: p.description,
+    inStock: p.inStock,
+    badge: p.badge,
+    categoryId: p.categoryId,
+    category: p.category,
+    tags: p.tags,
     image: p.images[0]?.url || "",
     images: p.images.map(i => i.url),
   }));
 
+  const bestsellerIds = await getBestsellers();
+  const isBestseller = bestsellerIds.includes(id);
+
   return (
-    <ProductClient product={product} relatedProducts={relatedProducts} />
+    <ProductClient product={product} relatedProducts={relatedProducts} isBestseller={isBestseller} />
   );
 }

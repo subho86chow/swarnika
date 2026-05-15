@@ -21,15 +21,16 @@ export async function addCartItem(userId, productId, quantity) {
 }
 
 export async function updateCartItemQuantity(userId, productId, quantity) {
-  return prisma.cartItem.update({
+  return prisma.cartItem.upsert({
     where: { userId_productId: { userId, productId } },
-    data: { quantity },
+    update: { quantity },
+    create: { userId, productId, quantity },
   });
 }
 
 export async function removeCartItem(userId, productId) {
-  return prisma.cartItem.delete({
-    where: { userId_productId: { userId, productId } },
+  return prisma.cartItem.deleteMany({
+    where: { userId, productId },
   });
 }
 
@@ -67,6 +68,10 @@ export async function getCartProducts(productIds) {
     categoryId: p.categoryId,
     categoryName: p.category?.name || "",
     collection: p.category?.name || "",
+    weightGrams: p.weightGrams,
+    lengthCm: p.lengthCm,
+    widthCm: p.widthCm,
+    heightCm: p.heightCm,
   }));
 }
 
