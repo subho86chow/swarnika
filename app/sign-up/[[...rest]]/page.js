@@ -63,6 +63,12 @@ export default function SignUpPage({ params }) {
             signInUrl="/sign-in"
             fallbackRedirectUrl="/"
           />
+          <p className="mt-6 text-center font-body text-sm text-outline">
+            Already have an account?{" "}
+            <Link href="/sign-in" className="text-gold font-semibold hover:underline transition-colors">
+              Sign in
+            </Link>
+          </p>
         </div>
       </div>
     </main>

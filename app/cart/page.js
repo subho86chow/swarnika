@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useMemo } from "react";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { useAuth, useUser } from "@clerk/nextjs";
@@ -15,11 +16,14 @@ import {
 } from "../lib/couponActions";
 import RecentlyViewed from "../components/RecentlyViewed";
 
+const PLACEHOLDER_IMAGE = "/placeholder-product.svg";
+
 export default function CartPage() {
   return <CartContent />;
 }
 
 function CartContent() {
+  const router = useRouter();
   const {
     cart,
     updateCartQuantity,
@@ -186,6 +190,11 @@ function CartContent() {
       openSignIn();
       return;
     }
+    if (subtotal > 50000) {
+      alert("Maximum order value is ₹50,000. Please remove some items to continue.");
+      return;
+    }
+    router.push("/checkout");
   };
 
   if (productsLoading) {
@@ -236,7 +245,7 @@ function CartContent() {
 
       <section className="pb-16 md:pb-24 px-6 md:px-14 lg:px-20">
         <div className="max-w-[1440px] mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 lg:items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 lg:items-stretch">
             {/* Left Column — Cart Items */}
             <div className="lg:col-span-7 space-y-0">
               {/* Column Headers */}
@@ -266,7 +275,7 @@ function CartContent() {
                         className="relative block aspect-[3/4] bg-surface-low overflow-hidden"
                       >
                         <Image
-                          src={item.product.images[0]}
+                          src={item.product.images?.[0] || PLACEHOLDER_IMAGE}
                           alt={item.product.name}
                           fill
                           sizes="200px"
@@ -596,9 +605,18 @@ function CartContent() {
                       </span>
                     </div>
 
+                    {/* Max Value Warning */}
+                    {subtotal > 50000 && (
+                      <div className="bg-red-50 border border-red-200 p-4 flex items-center gap-3 text-error text-sm">
+                        <span className="material-symbols-outlined text-[20px]">warning</span>
+                        <span>Maximum order value is ₹50,000. Please remove some items to continue.</span>
+                      </div>
+                    )}
+
                     <button
                       onClick={handleCheckout}
-                      className="btn-primary w-full py-4 text-[11px] tracking-[0.3em]"
+                      disabled={subtotal > 50000}
+                      className="btn-primary w-full py-4 text-[11px] tracking-[0.3em] disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       PROCEED TO CHECKOUT
                     </button>

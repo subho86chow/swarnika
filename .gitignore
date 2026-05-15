@@ -1,5 +1,3 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
 # dependencies
 /node_modules
 /.pnp
@@ -9,7 +7,7 @@
 !.yarn/plugins
 !.yarn/releases
 !.yarn/versions
-.agent
+
 # testing
 /coverage
 
@@ -23,6 +21,7 @@
 # misc
 .DS_Store
 *.pem
+Thumbs.db
 
 # debug
 npm-debug.log*
@@ -30,7 +29,7 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
+# env files
 .env*
 
 # vercel
@@ -40,4 +39,27 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# prisma generated
 /app/generated/prisma
+
+# ide
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# ai/agent files
+.agent/
+.claude/
+.firecrawl/
+CLAUDE.md
+AGENTS.md
+opencode.json
+
+# lock files (keep pnpm-lock.yaml, remove others)
+package-lock.json
+
+# temp/test files
+proxy.js
+test-ver.js

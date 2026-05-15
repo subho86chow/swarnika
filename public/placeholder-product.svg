@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="500" viewBox="0 0 400 500">
+  <rect width="400" height="500" fill="#f3ede4"/>
+  <path d="M200 180c-16.5 0-30 13.5-30 30s13.5 30 30 30 30-13.5 30-30-13.5-30-30-30zm0 50c-11 0-20-9-20-20s9-20 20-20 20 9 20 20-9 20-20 20z" fill="#dfd9d0"/>
+  <path d="M160 270h80v6h-80z" fill="#dfd9d0"/>
+  <text x="200" y="320" text-anchor="middle" font-family="serif" font-size="14" fill="#807569" letter-spacing="2">SWARNIKA</text>
+</svg>

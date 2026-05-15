@@ -17,6 +17,13 @@ model Product {
   description   String
   inStock       Boolean  @default(true)
   badge         String?
+
+  // Physical attributes for shipping
+  weightGrams   Int      @default(50)    // weight in grams (default 50g)
+  lengthCm      Int      @default(10)    // length in cm
+  widthCm       Int      @default(5)     // width in cm
+  heightCm      Int      @default(10)    // height in cm
+
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
@@ -153,4 +160,108 @@ model AdminEmail {
   id        String   @id @default(cuid())
   email     String   @unique
   createdAt DateTime @default(now())
+}
+
+model Address {
+  id        String   @id @default(cuid())
+  userId    String
+  label     String
+  fullName  String
+  phone     String
+  line1     String
+  line2     String?
+  city      String
+  state     String
+  zip       String
+  country   String   @default("India")
+  isDefault Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+}
+
+model Order {
+  id                    String   @id @default(cuid())
+  userId                String
+  status                String   @default("pending") // pending | paid | shipped | delivered | cancelled
+
+  // Address snapshot (immutable record)
+  shippingName          String
+  shippingPhone         String
+  shippingLine1         String
+  shippingLine2         String?
+  shippingCity          String
+  shippingState         String
+  shippingZip           String
+  shippingCountry       String   @default("India")
+
+  // Pricing breakdown
+  subtotal              Int      // sum of item prices
+  taxRate               Int      // e.g. 18 = 18%
+  taxAmount             Int
+  shippingAmount        Int
+  discountAmount        Int      @default(0)
+  totalAmount           Int
+
+  // Coupon snapshot
+  couponCode            String?
+  couponDiscount        Int      @default(0)
+
+  // Payment
+  razorpayOrderId       String?
+  razorpayPaymentId     String?
+
+  // Delivery
+  delhiveryWaybill      String?
+  delhiveryStatus       String?
+  delhiveryTrackingUrl  String?
+  delhiveryLabelUrl     String?
+  shippingMode          String   @default("Surface") // Surface | Express
+
+  // Pickup Request
+  pickupRequestId       String?
+
+  // Shipping timeline
+  shippedAt             DateTime?
+  deliveredAt           DateTime?
+  cancelledAt           DateTime?
+
+  // Shipment error audit
+  shipmentError         String?
+  shipmentErrorAt       DateTime?
+
+  items                 OrderItem[]
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@index([userId, createdAt])
+  @@index([createdAt, status])
+  @@index([delhiveryWaybill])
+}
+
+model Inquiry {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  phone     String?
+  message   String
+  status    String   @default("new") // new | read | replied
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model OrderItem {
+  id            String   @id @default(cuid())
+  orderId       String
+  productId     String
+  productName   String
+  productImage  String?
+  quantity      Int
+  unitPrice     Int
+  totalPrice    Int
+  order         Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+  @@index([productId])
 }

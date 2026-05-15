@@ -18,6 +18,7 @@ export const cacheKeys = {
   recentlyViewed: (userId) => `recentlyviewed:${userId}`,
   coupons: () => `coupons:all`,
   publicCoupons: () => `coupons:public`,
+  bestsellers: () => `bestsellers:30d`,
 };
 
 /** Wrap a fetch with caching */

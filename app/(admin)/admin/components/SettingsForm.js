@@ -92,6 +92,24 @@ export default function SettingsForm({ settings }) {
       </div>
 
       <div className="pt-6 border-t border-surface-dim">
+        <h3 className="font-headline text-2xl text-navy italic mb-4">Tax</h3>
+        <div className="space-y-2">
+          <label className="font-label text-[10px] tracking-widest uppercase text-outline">Tax Rate (%)</label>
+          <input
+            type="number"
+            min="0"
+            max="100"
+            step="1"
+            required
+            name="tax_rate"
+            defaultValue={settings.tax_rate || "18"}
+            className="w-full border border-surface-dim p-3 font-body text-sm text-navy focus:outline-none focus:border-navy"
+          />
+          <p className="font-body text-outline text-xs">Default tax rate applied to all orders (e.g., 18 for 18% GST).</p>
+        </div>
+      </div>
+
+      <div className="pt-6 border-t border-surface-dim">
         <button type="submit" disabled={isPending} className="btn-primary w-full max-w-[200px] flex items-center justify-center gap-2">
           {isPending ? "Saving..." : "Save Settings"}
         </button>

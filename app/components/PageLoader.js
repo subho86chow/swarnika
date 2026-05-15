@@ -1,16 +1,14 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { usePageLoading } from "../lib/loadingContext";
 
 export default function PageLoader() {
   const { isLoading, isExiting, stopLoading } = usePageLoading();
-  const [mounted, setMounted] = useState(false);
   const autoStopTimer = useRef(null);
   const isInitialMount = useRef(true);
 
   useEffect(() => {
-    setMounted(true);
     // Auto-stop after a short delay on every mount.
     // If a page calls startLoading() before this fires, the timer is cancelled.
     autoStopTimer.current = setTimeout(() => {
@@ -33,7 +31,6 @@ export default function PageLoader() {
     }
   }, [isLoading]);
 
-  if (!mounted) return null;
   if (!isLoading && !isExiting) return null;
 
   return (

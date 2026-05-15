@@ -7,7 +7,7 @@ import { formatPrice } from "../lib/data";
 import { useCart } from "../lib/cartStore";
 import ProductCouponBadge from "./ProductCouponBadge";
 
-export default function ProductCard({ product, index = 0 }) {
+export default function ProductCard({ product, index = 0, showBestsellerBadge = false }) {
   const allImages = product.images?.length > 0
     ? product.images
     : [product.image || "/products/product-1.jpg"];
@@ -61,6 +61,16 @@ export default function ProductCard({ product, index = 0 }) {
         {product.badge && (
           <div className="absolute top-4 left-4 z-10">
             <span className="badge">{product.badge}</span>
+          </div>
+        )}
+
+        {/* Bestseller Badge */}
+        {showBestsellerBadge && (
+          <div className="absolute top-4 right-4 z-10">
+            <span className="inline-flex items-center gap-1 px-2.5 py-1 font-label text-[8px] tracking-[0.2em] uppercase font-semibold bg-gold text-white">
+              <span className="material-symbols-outlined text-[12px]">trending_up</span>
+              Bestseller
+            </span>
           </div>
         )}
 

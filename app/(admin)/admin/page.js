@@ -11,10 +11,11 @@ export default function AdminDashboard() {
         <p className="font-body text-outline text-sm">Welcome to the Swarnika control panel.</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-6">
         <DashboardCard title="Total Products" model="product" href="/admin/products" />
         <DashboardCard title="Categories" model="category" href="/admin/categories" />
         <DashboardCard title="Tags" model="tag" href="/admin/tags" />
+        <DashboardCard title="Inquiries" model="inquiry" href="/admin/inquiries" />
         <DashboardCard title="Hero Slides" model="heroImage" href="/admin/hero" />
         <DashboardCard title="Site Sections" model="siteContent" href="/admin/settings" />
       </div>
@@ -26,6 +27,7 @@ export default function AdminDashboard() {
           <Link href="/admin/categories" className="btn-secondary hero">Manage Categories</Link>
           <Link href="/admin/tags" className="btn-secondary hero">Manage Tags</Link>
           <Link href="/admin/hero" className="btn-secondary hero">Manage Hero Slides</Link>
+          <Link href="/admin/inquiries" className="btn-secondary hero">View Inquiries</Link>
         </div>
       </div>
     </div>
@@ -40,6 +42,7 @@ async function DashboardCard({ title, model, href }) {
     else if (model === "tag") count = await prisma.tag.count();
     else if (model === "heroImage") count = await prisma.heroImage.count();
     else if (model === "siteContent") count = await prisma.siteContent.count();
+    else if (model === "inquiry") count = await prisma.inquiry.count();
   } catch (e) {
     console.error("Failed to load metrics for", model);
   }
