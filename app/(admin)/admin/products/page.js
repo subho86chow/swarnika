@@ -2,6 +2,7 @@ export const dynamic = "force-dynamic";
 
 import { prisma } from "../../../lib/prisma";
 import Link from "next/link";
+import DeleteProductButton from "../components/DeleteProductButton";
 import Image from "next/image";
 
 export default async function ProductsManagementPage() {
@@ -71,6 +72,7 @@ export default async function ProductsManagementPage() {
                        <Link href={`/admin/products/${product.id}`} className="text-outline hover:text-navy transition-colors inline-block p-2">
                         <span className="material-symbols-outlined text-[18px]">edit</span>
                       </Link>
+                       <DeleteProductButton id={product.id} name={product.name} />
                     </td>
                   </tr>
                 ))
