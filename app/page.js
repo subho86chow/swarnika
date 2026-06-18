@@ -273,7 +273,7 @@ export default async function HomePage() {
             {[
               { num: "01", label: "Certified Authentic", sub: "Every piece verified" },
               { num: "02", label: "Complimentary Shipping", sub: "On all orders" },
-              { num: "03", label: "30-Day Returns", sub: "No questions asked" },
+              { num: "03", label: "5-Day Returns", sub: "No questions asked" },
               { num: "04", label: "Lifetime Warranty", sub: "Archival guarantee" },
             ].map((item, i) => (
               <div key={item.label} className={`flex flex-col items-center justify-center gap-2 px-6 py-4 text-center ${i > 0 ? 'lg:border-l lg:border-white/10' : ''}`}>
