@@ -25,9 +25,9 @@ export default function ShippingPage() {
                 <div className="bg-white border border-outline-light/30 p-5 space-y-3">
                   <h3 className="font-headline text-base text-navy">Domestic Shipping (India)</h3>
                   <ul className="space-y-2">
-                    <li className="flex items-start gap-2"><span className="text-gold mt-0.5">•</span>Free insured shipping on orders above ₹50,000</li>
-                    <li className="flex items-start gap-2"><span className="text-gold mt-0.5">•</span>Standard delivery: 5–7 business days (₹999 for orders under ₹50,000)</li>
-                    <li className="flex items-start gap-2"><span className="text-gold mt-0.5">•</span>Express delivery: 2–3 business days (₹1,999)</li>
+                    <li className="flex items-start gap-2"><span className="text-gold mt-0.5">•</span>Free insured shipping on orders above ₹3,500</li>
+                    <li className="flex items-start gap-2"><span className="text-gold mt-0.5">•</span>Standard delivery: 5–7 business days (₹99 Delivery Charge per Order)</li>
+                    <li className="flex items-start gap-2"><span className="text-gold mt-0.5">•</span>Express delivery: 2–3 business days (₹199)</li>
                     <li className="flex items-start gap-2"><span className="text-gold mt-0.5">•</span>All shipments are fully insured and tracked</li>
                   </ul>
                 </div>
@@ -46,12 +46,12 @@ export default function ShippingPage() {
               </h2>
               <div className="space-y-4 text-slate-subtle text-sm leading-relaxed">
                 <div className="bg-white border border-outline-light/30 p-5 space-y-3">
-                  <h3 className="font-headline text-base text-navy">30-Day Returns</h3>
+                  <h3 className="font-headline text-base text-navy">5-Day Returns</h3>
                   <ul className="space-y-2">
-                    <li className="flex items-start gap-2"><span className="text-gold mt-0.5">•</span>Return any unworn piece within 30 days for a full refund</li>
+                    <li className="flex items-start gap-2"><span className="text-gold mt-0.5">•</span>Return any unworn piece within 3 days for a full refund</li>
                     <li className="flex items-start gap-2"><span className="text-gold mt-0.5">•</span>Items must be in original condition with tags attached</li>
                     <li className="flex items-start gap-2"><span className="text-gold mt-0.5">•</span>Return shipping is free for domestic orders</li>
-                    <li className="flex items-start gap-2"><span className="text-gold mt-0.5">•</span>Refunds are processed within 5–7 business days</li>
+                    <li className="flex items-start gap-2"><span className="text-gold mt-0.5">•</span>Funds are processed within 5–7 business days</li>
                   </ul>
                 </div>
                 <div className="bg-white border border-outline-light/30 p-5 space-y-3">
