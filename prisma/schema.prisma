@@ -209,6 +209,8 @@ model Order {
   couponDiscount        Int      @default(0)
 
   // Payment
+  paymentMethod         String   @default("RAZORPAY") // RAZORPAY | COD
+  paymentStatus         String   @default("PAID") // PAID | PENDING
   razorpayOrderId       String?
   razorpayPaymentId     String?
 

@@ -46,6 +46,11 @@ export async function saveProduct(formData) {
     description: data.description,
     inStock: data.inStock === "true",
     badge: data.badge || null,
+    // Packaging dimensions for shipping cost calculation
+    weightGrams: parseInt(data.weightGrams) || 50,
+    lengthCm: parseInt(data.lengthCm) || 10,
+    widthCm: parseInt(data.widthCm) || 5,
+    heightCm: parseInt(data.heightCm) || 10,
   };
 
   const tags = data.tags ? data.tags.split(",").map(t => t.trim()) : [];

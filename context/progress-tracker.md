@@ -102,7 +102,6 @@ Update this file after every meaningful implementation change.
 
 - Test end-to-end flow: Buy Now / Cart → Checkout → Razorpay → Order History with a real order
 - Configure Delhivery webhook URL via Business SPOC: `https://swarnikaofficial.com/api/delhivery/webhook` (optional — cron-job.org already covers status polling)
-- Add weight/dimensions inputs to admin product create/edit form so they can be customized per product
 - Deploy and verify cron-job.org schedule (4×/day) is running correctly
 
 ## Open Questions
@@ -178,6 +177,10 @@ Update this file after every meaningful implementation change.
 - [x] **5.13** Shipment payload uses actual product weight (sum + 20% packaging buffer) and max dimensions instead of hardcoded values — both in `POST /api/orders` and admin `retryShipment`
 - [x] **5.14** Checkout button disabled when subtotal > ₹50,000 (was only alert before)
 - [x] **5.15** Admin orders list shows friendly error tooltip on hover for failed shipments
+- [x] **5.16** Admin product form now includes 4 dimension/weight inputs to save actual packaging sizes to DB
+- [x] **5.17** Checkout calculates actual weight + volumetric weight (`(L×W×H)/5000`) across all items and uses whichever is higher
+- [x] **5.18** Checkout shipping cost is fully weight-based (₹49 for first 500g, ₹24 per additional 500g)
+- [x] **5.19** Payment page and checkout UI dynamically display the calculated package weight next to the shipping cost
 
 ## Completed (Phase 6: Cron Job Order Status Refresh)
 

@@ -56,7 +56,7 @@ export default function ShippingPage() {
                 </div>
                 <div className="bg-white border border-outline-light/30 p-5 space-y-3">
                   <h3 className="font-headline text-base text-navy">Exchange Policy</h3>
-                  <p>We offer free exchanges within 30 days of delivery. Contact our concierge team to arrange an exchange for a different piece or size.</p>
+                  <p>We offer free exchanges within 7 days of delivery. Contact our concierge team to arrange an exchange for a different piece or size.</p>
                 </div>
                 <div className="bg-white border border-outline-light/30 p-5 space-y-3">
                   <h3 className="font-headline text-base text-navy">Non-Returnable Items</h3>

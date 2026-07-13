@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { checkPincode } from "../../../lib/delhivery";
+import { checkPincode, getExpectedTAT } from "../../../lib/delhivery";
 
 export async function POST(request) {
   try {
@@ -14,6 +14,28 @@ export async function POST(request) {
     }
 
     const result = await checkPincode(pincode);
+    
+    // If serviceable, try to get expected delivery date
+    if (result.success && result.serviceable) {
+      try {
+        // Fallback origin pin if not configured, 122003 is common hub
+        const originPin = process.env.DELHIVERY_ORIGIN_PIN || "122003"; 
+        const tatResult = await getExpectedTAT({ 
+          origin_pin: originPin, 
+          destination_pin: pincode, 
+          mot: "S" 
+        });
+        
+        if (tatResult.success && tatResult.data) {
+          result.tat = tatResult.data.tat;
+          result.expected_delivery_date = tatResult.data.expected_delivery_date;
+        }
+      } catch (err) {
+        // Ignore TAT errors and just return serviceability
+        console.error("Error fetching TAT:", err);
+      }
+    }
+    
     return NextResponse.json(result);
   } catch (err) {
     return NextResponse.json(

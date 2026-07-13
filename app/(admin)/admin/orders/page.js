@@ -35,6 +35,7 @@ function getFriendlyShipmentError(error) {
 
 const statusColors = {
   pending: "bg-yellow-100 text-yellow-800",
+  processing: "bg-blue-100 text-blue-800",
   paid: "bg-green-100 text-green-800",
   shipped: "bg-blue-100 text-blue-800",
   delivered: "bg-green-800 text-white",
@@ -115,6 +116,11 @@ export default async function AdminOrdersPage() {
                       {order.discountAmount > 0 && (
                         <p className="text-gold text-xs">Saved {formatPrice(order.discountAmount)}</p>
                       )}
+                      {order.paymentMethod === "COD" && (
+                        <span className="inline-block mt-1 px-1.5 py-0.5 bg-surface-dim text-[9px] font-bold tracking-widest text-navy uppercase rounded">
+                          COD
+                        </span>
+                      )}
                     </td>
                     <td className="px-6 py-4">
                       {order.delhiveryWaybill ? (
@@ -147,8 +153,8 @@ export default async function AdminOrdersPage() {
                       )}
                     </td>
                     <td className="px-6 py-4">
-                      <span className={`inline-flex items-center px-3 py-1 rounded-full text-[10px] font-medium uppercase tracking-wider ${statusColors[order.status] || "bg-gray-100 text-gray-800"}`}>
-                        {order.status}
+                      <span className={`inline-flex items-center px-3 py-1 rounded-full text-[10px] font-medium uppercase tracking-wider ${statusColors[order.status === "pending" && order.paymentMethod === "COD" ? "processing" : order.status] || "bg-gray-100 text-gray-800"}`}>
+                        {order.status === "pending" && order.paymentMethod === "COD" ? "processing" : order.status}
                       </span>
                     </td>
                     <td className="px-6 py-4">

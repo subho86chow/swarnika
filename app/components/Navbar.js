@@ -28,12 +28,7 @@ export default function Navbar({ categories = [] }) {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const navLinks = [
-    { href: "/categories", label: "Categories" },
-    { href: "/categories?tag=bridal", label: "Bespoke" },
-    { href: "/about", label: "Heritage" },
-    { href: "/contact", label: "Stores" },
-  ];
+  const navLinks = [];
 
   const useDarkText = !isHome || scrolled || menuOpen;
 

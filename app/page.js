@@ -64,17 +64,30 @@ export default async function HomePage() {
     CACHE_TTL.CATEGORIES
   );
 
-  // Fetch real bestsellers (max 3) from order data
-  const bestsellerIds = await getBestsellers();
+  // Fetch real bestsellers from order data
+  let bestsellerIds = await getBestsellers();
 
-  const bestsellerProducts = bestsellerIds.length > 0
-    ? await prisma.product.findMany({
-        where: { id: { in: bestsellerIds } },
-        include: { images: true, category: true },
-      })
-    : [];
+  let bestsellerProducts = [];
+  if (bestsellerIds.length > 0) {
+    bestsellerProducts = await prisma.product.findMany({
+      where: { id: { in: bestsellerIds } },
+      include: { images: true, category: true },
+    });
+  }
 
-  // Preserve ranking order from sales data
+  // Fallback to random/latest products if no bestsellers exist yet
+  if (bestsellerProducts.length < 8) {
+    const fallbackProducts = await prisma.product.findMany({
+      where: { id: { notIn: bestsellerIds } },
+      include: { images: true, category: true },
+      take: 8 - bestsellerProducts.length,
+      orderBy: { createdAt: 'asc' }, // just getting some products
+    });
+    bestsellerProducts = [...bestsellerProducts, ...fallbackProducts];
+    bestsellerIds = [...bestsellerIds, ...fallbackProducts.map(p => p.id)];
+  }
+
+  // Preserve ranking order from sales data where possible
   const bestsellers = bestsellerIds
     .map((id) => bestsellerProducts.find((p) => p.id === id))
     .filter(Boolean)
@@ -92,7 +105,7 @@ export default async function HomePage() {
       image: p.images[0]?.url || "",
     }));
 
-  // Fetch new arrivals (latest 4, excluding bestsellers)
+  // Fetch new arrivals (latest 12, excluding bestsellers)
   const newArrivalsRaw = await withCache(
     cacheKeys.productList("new-arrivals", 1),
     () =>
@@ -100,7 +113,7 @@ export default async function HomePage() {
         where: { id: { notIn: bestsellerIds } },
         include: { images: true, category: true },
         orderBy: { createdAt: "desc" },
-        take: 4,
+        take: 12,
       }),
     CACHE_TTL.PRODUCTS_LIST
   );

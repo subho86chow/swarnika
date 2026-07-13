@@ -63,3 +63,5 @@ package-lock.json
 # temp/test files
 proxy.js
 test-ver.js
+# clerk configuration (can include secrets)
+/.clerk/

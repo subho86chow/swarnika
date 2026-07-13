@@ -6,11 +6,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { getOrders } from "../../lib/orderActions";
 import { formatPrice } from "../../lib/data";
+import CancelOrderButton from "./CancelOrderButton";
 
 const PLACEHOLDER_IMAGE = "/placeholder-product.svg";
 
 const statusColors = {
   pending: "bg-yellow-100 text-yellow-800",
+  processing: "bg-blue-100 text-blue-800",
   paid: "bg-green-100 text-green-800",
   shipped: "bg-blue-100 text-blue-800",
   delivered: "bg-green-800 text-white",
@@ -113,24 +115,29 @@ export default function OrdersPage() {
                     </p>
                   )}
                 </div>
-                <div className="flex items-center gap-3 flex-wrap">
-                  {order.razorpayPaymentId && (
-                    <span className="text-outline text-[10px] font-mono">{order.razorpayPaymentId}</span>
+                <div className="flex flex-col sm:items-end gap-2">
+                  <div className="flex items-center gap-3 flex-wrap justify-end">
+                    {order.razorpayPaymentId && (
+                      <span className="text-outline text-[10px] font-mono">{order.razorpayPaymentId}</span>
+                    )}
+                    {order.delhiveryTrackingUrl && (
+                      <a
+                        href={order.delhiveryTrackingUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 text-gold text-[10px] font-medium hover:underline"
+                      >
+                        <span className="material-symbols-outlined text-[14px]">local_shipping</span>
+                        Track
+                      </a>
+                    )}
+                    <span className={`inline-flex items-center px-3 py-1 rounded-full text-[11px] font-medium uppercase tracking-wider ${statusColors[order.status === "pending" && order.paymentMethod === "COD" ? "processing" : order.status] || "bg-gray-100 text-gray-800"}`}>
+                      {order.status === "pending" && order.paymentMethod === "COD" ? "processing" : order.status}
+                    </span>
+                  </div>
+                  {order.paymentMethod === "COD" && (
+                    <p className="text-[10px] text-outline font-semibold">Payment to be collected on delivery</p>
                   )}
-                  {order.delhiveryTrackingUrl && (
-                    <a
-                      href={order.delhiveryTrackingUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 text-gold text-[10px] font-medium hover:underline"
-                    >
-                      <span className="material-symbols-outlined text-[14px]">local_shipping</span>
-                      Track
-                    </a>
-                  )}
-                  <span className={`inline-flex items-center px-3 py-1 rounded-full text-[11px] font-medium uppercase tracking-wider ${statusColors[order.status] || "bg-gray-100 text-gray-800"}`}>
-                    {order.status}
-                  </span>
                 </div>
               </div>
 
@@ -171,8 +178,10 @@ export default function OrdersPage() {
                 <div className="px-5 sm:px-6 py-4 border-t border-surface-dim bg-white">
                   <p className="font-label text-[10px] tracking-[0.2em] uppercase text-outline font-semibold mb-3">Shipment Timeline</p>
                   <div className="flex items-center gap-2 text-[11px]">
-                    <div className={`w-2 h-2 rounded-full ${order.status !== "pending" ? "bg-gold" : "bg-surface-dim"}`} />
-                    <span className={order.status !== "pending" ? "text-navy" : "text-outline"}>Paid</span>
+                    <div className={`w-2 h-2 rounded-full ${order.status !== "pending" || order.paymentMethod === "COD" ? "bg-gold" : "bg-surface-dim"}`} />
+                    <span className={order.status !== "pending" || order.paymentMethod === "COD" ? "text-navy" : "text-outline"}>
+                      {order.paymentMethod === "COD" ? "Confirmed" : "Paid"}
+                    </span>
                     <span className="text-surface-dim">→</span>
                     <div className={`w-2 h-2 rounded-full ${order.status === "shipped" || order.status === "delivered" ? "bg-gold" : "bg-surface-dim"}`} />
                     <span className={order.status === "shipped" || order.status === "delivered" ? "text-navy" : "text-outline"}>Shipped</span>
@@ -202,7 +211,7 @@ export default function OrdersPage() {
                 </div>
               )}
 
-              {/* Total */}
+              {/* Total & Actions */}
               <div className="flex flex-wrap items-center justify-between gap-3 px-5 sm:px-6 py-4 border-t border-surface-dim bg-surface-low/20">
                 <div className="flex gap-4 text-[11px] text-outline">
                   <span>Subtotal: {formatPrice(order.subtotal)}</span>
@@ -210,9 +219,14 @@ export default function OrdersPage() {
                   <span>Tax: {formatPrice(order.taxAmount)}</span>
                   <span>Shipping: {order.shippingAmount === 0 ? "Free" : formatPrice(order.shippingAmount)}</span>
                 </div>
-                <div className="flex items-center gap-3">
-                  <span className="font-label text-xs tracking-[0.2em] uppercase text-outline font-semibold">Total</span>
-                  <span className="text-navy font-semibold text-[15px]">{formatPrice(order.totalAmount)}</span>
+                <div className="flex items-center gap-6">
+                  {order.status !== "shipped" && order.status !== "delivered" && order.status !== "cancelled" && (
+                    <CancelOrderButton orderId={order.id} onSuccess={loadOrders} />
+                  )}
+                  <div className="flex items-center gap-3">
+                    <span className="font-label text-xs tracking-[0.2em] uppercase text-outline font-semibold">Total</span>
+                    <span className="text-navy font-semibold text-[15px]">{formatPrice(order.totalAmount)}</span>
+                  </div>
                 </div>
               </div>
             </div>

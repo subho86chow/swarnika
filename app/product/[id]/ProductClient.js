@@ -91,7 +91,14 @@ export default function ProductClient({ product, relatedProducts, isBestseller =
       });
       const data = await res.json();
       if (data.success && data.serviceable) {
-        setPincodeResult({ type: "success", message: "Delivery available to this pincode." });
+        let msg = "Delivery available to this pincode.";
+        if (data.expected_delivery_date) {
+          const dateStr = new Date(data.expected_delivery_date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+          msg = `Delivery available. Expected by ${dateStr}.`;
+        } else if (data.tat) {
+          msg = `Delivery available in ${data.tat} days.`;
+        }
+        setPincodeResult({ type: "success", message: msg });
       } else {
         setPincodeResult({ type: "error", message: data.error || "Delivery not available to this pincode." });
       }
@@ -108,7 +115,7 @@ export default function ProductClient({ product, relatedProducts, isBestseller =
     { id: "artistry", title: "Technical Artistry", content: product.details?.join(" — ") || "Our proprietary alloy is tempered to achieve a unique finish, balancing the richness of high-karat gold with the structural integrity required for archival-grade jewelry." },
     { id: "provenance", title: "Provenance & Setting", content: "Every stone is set under a microscope by master craftsmen with over 30 years of experience. Each piece comes with a digital certificate of authenticity and ethical sourcing." },
     { id: "care", title: "Care & Preservation", content: "Store in the provided archival box when not wearing. Avoid contact with perfumes and harsh chemicals. Clean gently with a soft, dry cloth. Remove before swimming." },
-    { id: "shipping", title: "Shipping & Returns", content: "Free insured shipping on orders above ₹3,500. Standard delivery: 5–7 business days (₹99 Delivery Charge per Order). Express delivery: 2–3 business days (₹199). All shipments are fully insured and tracked. Every SWARNIKA piece ships in our signature luxury packaging — a velvet-lined box nestled inside a branded gift bag with a certificate of authenticity. 5-Day Returns: Return any unworn piece within 5 days for a full refund. Items must be in original condition with tags attached. Return shipping is free for domestic orders. Funds are processed within 5–7 business days." },
+    { id: "shipping", title: "Shipping & Returns", content: "Free insured shipping on orders above ₹3,500. Standard delivery: 5–7 business days (₹99 Delivery Charge per Order). Express delivery: 2–3 business days (₹199). All shipments are fully insured and tracked. Every SWARNIKA piece ships in our signature luxury packaging — a velvet-lined box nestled inside a branded gift bag with a certificate of authenticity. 7-Day Returns & Exchanges: Return or exchange any unworn piece within 7 days for a full refund or replacement. Items must be in original condition with tags attached. Return shipping is free for domestic orders. Funds are processed within 5–7 business days." },
   ];
 
   return (
@@ -223,7 +230,7 @@ export default function ProductClient({ product, relatedProducts, isBestseller =
               </div>
 
               <div className="flex flex-wrap gap-3 border-t border-surface-dim pt-6">
-                {["Certified Authentic", "Free Shipping", "5-Day Returns", "Gift Packaged"].map((t) => (
+                {["Certified Authentic", "Free Shipping", "7-Day Returns", "Gift Packaged"].map((t) => (
                   <span key={t} className="trust-tag">{t}</span>
                 ))}
               </div>

@@ -159,7 +159,8 @@ function CartContent() {
   }, []);
 
   const handleApplyCoupon = useCallback(async (codeOverride) => {
-    const code = (codeOverride || couponCode).trim();
+    const codeStr = typeof codeOverride === "string" ? codeOverride : couponCode;
+    const code = codeStr.trim();
     if (!code) return;
     setCouponError("");
     setCouponLoading(true);

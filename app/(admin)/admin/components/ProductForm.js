@@ -88,6 +88,30 @@ export default function ProductForm({ product, categories = [] }) {
         </label>
       </div>
 
+      {/* Packaging & Shipping */}
+      <div className="space-y-4">
+        <h3 className="font-label text-[11px] tracking-[0.2em] uppercase text-navy font-semibold">Packaging & Shipping</h3>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="space-y-2">
+            <label className="font-label text-[10px] tracking-widest uppercase text-outline">Weight (g)</label>
+            <input type="number" name="weightGrams" min="1" defaultValue={product?.weightGrams || 50} className="w-full border border-surface-dim p-3 font-body text-sm text-navy focus:outline-none focus:border-navy" />
+          </div>
+          <div className="space-y-2">
+            <label className="font-label text-[10px] tracking-widest uppercase text-outline">Length (cm)</label>
+            <input type="number" name="lengthCm" min="1" defaultValue={product?.lengthCm || 10} className="w-full border border-surface-dim p-3 font-body text-sm text-navy focus:outline-none focus:border-navy" />
+          </div>
+          <div className="space-y-2">
+            <label className="font-label text-[10px] tracking-widest uppercase text-outline">Width (cm)</label>
+            <input type="number" name="widthCm" min="1" defaultValue={product?.widthCm || 5} className="w-full border border-surface-dim p-3 font-body text-sm text-navy focus:outline-none focus:border-navy" />
+          </div>
+          <div className="space-y-2">
+            <label className="font-label text-[10px] tracking-widest uppercase text-outline">Height (cm)</label>
+            <input type="number" name="heightCm" min="1" defaultValue={product?.heightCm || 10} className="w-full border border-surface-dim p-3 font-body text-sm text-navy focus:outline-none focus:border-navy" />
+          </div>
+        </div>
+        <p className="text-outline text-[11px] italic">Enter the dimensions of the shipping carton for accurate shipping cost calculation.</p>
+      </div>
+
       <div className="pt-6 border-t border-surface-dim">
         <MultiImageUploader
           images={images}

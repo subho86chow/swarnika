@@ -25,6 +25,7 @@ function PaymentContent() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [processing, setProcessing] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState("RAZORPAY");
 
   useEffect(() => {
     try {
@@ -73,7 +74,7 @@ function PaymentContent() {
     });
     const data = await res.json();
     if (!data.success) throw new Error(data.error || "Failed to create payment order");
-    return data.order;
+    return data;
   };
 
   const verifyAndCreateOrder = async (razorpayOrderId, razorpayPaymentId, signature) => {
@@ -114,16 +115,42 @@ function PaymentContent() {
     setError("");
 
     try {
+      if (paymentMethod === "COD") {
+        const orderRes = await fetch("/api/orders", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            userId: user.id,
+            items: draft.items,
+            address: draft.address,
+            breakdown: draft.breakdown,
+            couponCode: draft.couponCode,
+            couponDiscount: draft.couponDiscount,
+            shippingMode: draft.breakdown.shippingMode || "Surface",
+            paymentMethod: "COD",
+          }),
+        });
+        const orderData = await orderRes.json();
+        if (!orderData.success) throw new Error(orderData.error || "Failed to place COD order");
+
+        localStorage.removeItem("swarnika_checkout_draft");
+        if (draft.source === "cart") {
+          clearCart();
+        }
+        router.push("/account/orders");
+        return;
+      }
+
       await loadRazorpayScript();
-      const razorpayOrder = await createRazorpayOrder();
+      const razorpayData = await createRazorpayOrder();
 
       const options = {
-        key: RAZORPAY_KEY_ID,
+        key: razorpayData.key_id || RAZORPAY_KEY_ID,
         amount: draft.breakdown.total * 100,
         currency: "INR",
         name: "SWARNIKA | House of Jewelry",
         description: `Order — ${draft.items.length} item(s)`,
-        order_id: razorpayOrder.id,
+        order_id: razorpayData.order.id,
         prefill: {
           name: draft.address.fullName,
           email: user?.primaryEmailAddress?.emailAddress || "",
@@ -162,7 +189,7 @@ function PaymentContent() {
       setError(err.message || "Failed to initiate payment. Please try again.");
       setProcessing(false);
     }
-  }, [draft, user, router, clearCart]);
+  }, [draft, user, router, clearCart, paymentMethod]);
 
   if (loading) {
     return (
@@ -251,7 +278,10 @@ function PaymentContent() {
                 </div>
               )}
               <div className="flex justify-between">
-                <span className="text-outline">Shipping</span>
+                <span className="text-outline">
+                  Shipping
+                  {draft.breakdown.shipping > 0 && draft.breakdown.chargeableWeightGrams ? ` (${(draft.breakdown.chargeableWeightGrams / 1000).toFixed(1)} kg)` : ""}
+                </span>
                 <span className="text-navy font-medium">
                   {draft.breakdown.shipping === 0 ? <span className="text-gold">Free</span> : formatPrice(draft.breakdown.shipping)}
                 </span>
@@ -274,13 +304,42 @@ function PaymentContent() {
             </div>
           </div>
 
+          {/* Payment Method */}
+          <div className="bg-white border border-surface-dim p-6 md:p-8 space-y-4">
+            <h3 className="font-headline text-xl text-navy text-center">Payment Method</h3>
+            <div className="space-y-3">
+              <label className="flex items-center gap-3 p-4 border border-surface-dim cursor-pointer hover:bg-surface-low transition-colors">
+                <input
+                  type="radio"
+                  name="paymentMethod"
+                  value="RAZORPAY"
+                  checked={paymentMethod === "RAZORPAY"}
+                  onChange={(e) => setPaymentMethod(e.target.value)}
+                  className="w-4 h-4 text-navy focus:ring-navy"
+                />
+                <span className="font-body text-sm text-navy">Pay Online (Credit Card, UPI, NetBanking)</span>
+              </label>
+              <label className="flex items-center gap-3 p-4 border border-surface-dim cursor-pointer hover:bg-surface-low transition-colors">
+                <input
+                  type="radio"
+                  name="paymentMethod"
+                  value="COD"
+                  checked={paymentMethod === "COD"}
+                  onChange={(e) => setPaymentMethod(e.target.value)}
+                  className="w-4 h-4 text-navy focus:ring-navy"
+                />
+                <span className="font-body text-sm text-navy">Cash on Delivery (COD)</span>
+              </label>
+            </div>
+          </div>
+
           {/* Pay Button */}
           <button
             onClick={handlePayment}
             disabled={processing}
             className="btn-primary w-full py-5 text-[11px] tracking-[0.3em] disabled:opacity-50"
           >
-            {processing ? "Processing..." : "PAY NOW"}
+            {processing ? "Processing..." : paymentMethod === "COD" ? "PLACE ORDER" : "PAY NOW"}
           </button>
 
           <p className="text-center text-outline text-[11px]">

@@ -29,7 +29,7 @@ const faqs = [
       },
       {
         q: "Can I exchange for a different piece?",
-        a: "Absolutely! Contact our concierge team within 30 days of delivery, and we'll arrange a free exchange for any available piece in our collection.",
+        a: "Absolutely! Contact our concierge team within 7 days of delivery, and we'll arrange a free exchange for any available piece in our collection.",
       },
     ],
   },

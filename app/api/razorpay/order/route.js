@@ -27,7 +27,7 @@ export async function POST(request) {
       );
     }
 
-    return NextResponse.json({ success: true, order: result.order });
+    return NextResponse.json({ success: true, order: result.order, key_id: process.env.RAZORPAY_KEY_ID });
   } catch (err) {
     return NextResponse.json(
       { success: false, error: err.message || "Internal server error" },

@@ -14,7 +14,7 @@ function normalizePhone(phone) {
   return digits;
 }
 
-function buildShipmentPayload(order, items, address, productsMap) {
+function buildShipmentPayload(order, items, address, productsMap, paymentMethod = "RAZORPAY") {
   const warehouse = process.env.DELHIVERY_WAREHOUSE;
   if (!warehouse) return null;
 
@@ -54,6 +54,8 @@ function buildShipmentPayload(order, items, address, productsMap) {
 
   // Use order's shipping mode (Surface or Express)
   const delhiveryShippingMode = order.shippingMode === "Express" ? "Express" : "Surface";
+  const delhiveryPaymentMode = paymentMethod === "COD" ? "COD" : "Pre-paid";
+  const codAmount = paymentMethod === "COD" ? order.totalAmount : 0;
 
   return {
     pickup_location: { name: warehouse },
@@ -67,14 +69,14 @@ function buildShipmentPayload(order, items, address, productsMap) {
         city: address.city,
         state: address.state,
         country: address.country || "India",
-        payment_mode: "Prepaid",
+        payment_mode: delhiveryPaymentMode,
         total_amount: order.totalAmount,
         products_desc: productDesc.slice(0, 200),
         weight,
         shipment_width: maxWidth,
         shipment_height: maxHeight,
         shipment_length: maxLength,
-        cod_amount: 0,
+        cod_amount: codAmount,
         quantity: String(items.reduce((sum, item) => sum + item.quantity, 0)),
         fragile_shipment: true,
         shipping_mode: delhiveryShippingMode,
@@ -109,6 +111,7 @@ export async function POST(request) {
       razorpayOrderId,
       razorpayPaymentId,
       shippingMode,
+      paymentMethod = "RAZORPAY", // "RAZORPAY" | "COD"
     } = body;
 
     if (!userId || !items || items.length === 0 || !address || !breakdown) {
@@ -121,7 +124,9 @@ export async function POST(request) {
     const order = await prisma.order.create({
       data: {
         userId,
-        status: "paid",
+        status: paymentMethod === "COD" ? "pending" : "paid",
+        paymentMethod,
+        paymentStatus: paymentMethod === "COD" ? "PENDING" : "PAID",
         shippingName: address.fullName,
         shippingPhone: address.phone,
         shippingLine1: address.line1,
@@ -177,7 +182,7 @@ export async function POST(request) {
       });
       const productsMap = new Map(products.map((p) => [p.id, p]));
 
-      const payload = buildShipmentPayload(order, items, address, productsMap);
+      const payload = buildShipmentPayload(order, items, address, productsMap, paymentMethod);
       if (!payload) {
         shipmentError = "DELHIVERY_WAREHOUSE not configured.";
       } else {

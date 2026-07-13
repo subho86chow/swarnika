@@ -5,7 +5,7 @@ import { withCache } from "./cache";
 
 const BESTSELLER_CACHE_KEY = "bestsellers:30d";
 const BESTSELLER_CACHE_TTL = 7200; // 2 hours
-const BESTSELLER_MAX = 3;
+const BESTSELLER_MAX = 8;
 const BESTSELLER_DAYS = 30;
 
 /**

@@ -84,7 +84,37 @@ function CheckoutContent() {
     (sum, item) => sum + item.product.price * item.quantity,
     0
   );
-  const baseShipping = subtotal >= freeShippingThreshold ? 0 : 999;
+
+  // ── Weight-based shipping calculation ──
+  // Actual weight: sum of each product's weight × quantity
+  const totalWeightGrams = checkoutItems.reduce(
+    (sum, item) => sum + (item.product.weightGrams || 50) * item.quantity,
+    0
+  );
+  // Volumetric weight: (L × W × H) / 5000 per unit, in grams
+  const totalVolumetricGrams = checkoutItems.reduce((sum, item) => {
+    const l = item.product.lengthCm || 10;
+    const w = item.product.widthCm || 5;
+    const h = item.product.heightCm || 10;
+    const volKg = (l * w * h) / 5000;
+    return sum + volKg * 1000 * item.quantity;
+  }, 0);
+  // Delhivery charges on whichever is higher
+  const chargeableWeightGrams = Math.max(totalWeightGrams, totalVolumetricGrams);
+
+  // Rate slab: ₹49 base for first 500g, ₹24 per additional 500g
+  const BASE_RATE = 49;
+  const PER_EXTRA_500G = 24;
+  const BASE_WEIGHT = 500;
+
+  let baseShipping;
+  if (subtotal >= freeShippingThreshold) {
+    baseShipping = 0;
+  } else {
+    const extraGrams = Math.max(0, chargeableWeightGrams - BASE_WEIGHT);
+    const extraSlabs = Math.ceil(extraGrams / 500);
+    baseShipping = BASE_RATE + extraSlabs * PER_EXTRA_500G;
+  }
   const expressSurcharge = shippingMode === "Express" ? 499 : 0;
   const shipping = baseShipping + expressSurcharge;
   const discount = appliedCoupon?.discount || 0;
@@ -246,6 +276,7 @@ function CheckoutContent() {
         total,
         shippingMode,
         expressSurcharge,
+        chargeableWeightGrams,
       },
       couponCode: appliedCoupon?.coupon?.code || null,
       couponDiscount: appliedCoupon?.discount || 0,
@@ -373,8 +404,11 @@ function CheckoutContent() {
                     <div className="pl-6 space-y-1">
                       <p className="text-sm text-slate-subtle">5–7 business days</p>
                       <p className="text-gold text-xs font-medium">
-                        {baseShipping === 0 ? "Free" : formatPrice(baseShipping)}
+                        {subtotal >= freeShippingThreshold ? "Free" : formatPrice(baseShipping)}
                       </p>
+                      {baseShipping > 0 && (
+                        <p className="text-outline text-[10px]">{(chargeableWeightGrams / 1000).toFixed(1)} kg</p>
+                      )}
                     </div>
                   </button>
                   <button
@@ -489,7 +523,7 @@ function CheckoutContent() {
                         <span className="text-gold font-medium">+{formatPrice(expressSurcharge)}</span>
                       </div>
                     )}
-                    <div className="flex justify-between"><span className="text-outline">Shipping</span><span className="text-navy font-medium">{baseShipping === 0 ? <span className="text-gold">Free</span> : formatPrice(baseShipping)}</span></div>
+                    <div className="flex justify-between"><span className="text-outline">Shipping{baseShipping > 0 ? ` (${(chargeableWeightGrams / 1000).toFixed(1)} kg)` : ""}</span><span className="text-navy font-medium">{baseShipping === 0 ? <span className="text-gold">Free</span> : formatPrice(baseShipping)}</span></div>
                     <div className="flex justify-between"><span className="text-outline">Tax ({taxRate}% GST)</span><span className="text-navy font-medium">{formatPrice(taxAmount)}</span></div>
                   </div>
 

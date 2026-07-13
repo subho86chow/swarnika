@@ -332,3 +332,32 @@ export async function cancelShipment(waybill) {
 
   return { success: false, error: remark || "Failed to cancel shipment." };
 }
+
+/**
+ * Get expected Turn Around Time (TAT)
+ * @param {Object} params
+ * @param {string|number} params.origin_pin
+ * @param {string|number} params.destination_pin
+ * @param {string} params.mot
+ * @returns {Promise<{success: boolean, data?: any, error?: string}>}
+ */
+export async function getExpectedTAT({ origin_pin, destination_pin, mot = "S" }) {
+  if (!DELHIVERY_TOKEN) {
+    return { success: false, error: "Delhivery token not configured." };
+  }
+
+  const url = `${DELHIVERY_BASE_URL}/api/dc/expected_tat?origin_pin=${origin_pin}&destination_pin=${destination_pin}&mot=${mot}`;
+  
+  const result = await delhiveryFetch(url, { method: "GET", headers: getHeaders() }, { timeoutMs: 10000 });
+  
+  if (!result.success) {
+    return { success: false, error: result.error };
+  }
+  
+  // Business logic error
+  if (result.data?.success === false) {
+     return { success: false, error: result.data.msg || "Expected TAT failed" };
+  }
+  
+  return { success: true, data: result.data?.data };
+}

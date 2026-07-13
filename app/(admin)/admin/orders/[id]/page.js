@@ -13,6 +13,7 @@ import {
 
 const statusColors = {
   pending: "bg-yellow-100 text-yellow-800",
+  processing: "bg-blue-100 text-blue-800",
   paid: "bg-green-100 text-green-800",
   shipped: "bg-blue-100 text-blue-800",
   delivered: "bg-green-800 text-white",
@@ -89,9 +90,9 @@ export default async function AdminOrderDetailPage({ params }) {
         </div>
         <div className="flex items-center gap-3">
           <span
-            className={`inline-flex items-center px-4 py-1.5 rounded-full text-xs font-medium uppercase tracking-wider ${statusColors[order.status] || "bg-gray-100 text-gray-800"}`}
+            className={`inline-flex items-center px-4 py-1.5 rounded-full text-xs font-medium uppercase tracking-wider ${statusColors[order.status === "pending" && order.paymentMethod === "COD" ? "processing" : order.status] || "bg-gray-100 text-gray-800"}`}
           >
-            {order.status}
+            {order.status === "pending" && order.paymentMethod === "COD" ? "processing" : order.status}
           </span>
         </div>
       </div>
@@ -195,13 +196,17 @@ export default async function AdminOrderDetailPage({ params }) {
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
               <div>
-                <p className="text-outline text-xs">Razorpay Order ID</p>
-                <p className="text-navy font-mono text-xs mt-0.5">{order.razorpayOrderId || "—"}</p>
+                <p className="text-outline text-xs">Method</p>
+                <p className="text-navy font-bold text-xs mt-0.5">
+                  {order.paymentMethod === "COD" ? "Cash on Delivery" : "Online (Razorpay)"}
+                </p>
               </div>
-              <div>
-                <p className="text-outline text-xs">Razorpay Payment ID</p>
-                <p className="text-navy font-mono text-xs mt-0.5">{order.razorpayPaymentId || "—"}</p>
-              </div>
+              {order.paymentMethod !== "COD" && (
+                <div>
+                  <p className="text-outline text-xs">Razorpay Payment ID</p>
+                  <p className="text-navy font-mono text-xs mt-0.5">{order.razorpayPaymentId || "—"}</p>
+                </div>
+              )}
             </div>
             {order.couponCode && (
               <div className="pt-2 border-t border-surface-dim mt-2">
@@ -276,9 +281,9 @@ export default async function AdminOrderDetailPage({ params }) {
                 done
               />
               <TimelineItem
-                label="Paid"
-                date={order.status !== "pending" ? order.createdAt : null}
-                done={order.status !== "pending"}
+                label={order.paymentMethod === "COD" ? "Confirmed" : "Paid"}
+                date={order.status !== "pending" || order.paymentMethod === "COD" ? order.createdAt : null}
+                done={order.status !== "pending" || order.paymentMethod === "COD"}
               />
               <TimelineItem
                 label="Shipped"
